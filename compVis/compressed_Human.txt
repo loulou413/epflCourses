@@ -1,0 +1,302 @@
+Human Vision
+P. Fua
+(Taught by M. Salzmann)
+IC-CVLab
+EPFL
+
+1
+
+Human Vision
+It Works!!
+-->Proof of existence.
+• The image formation process is well understood
+• The image understanding one remains mysterious
+
+2
+
+Pathways To The Brain
+
+Retina
+
+Optic Nerve
+
+Lateral Geniculate
+Nucleus (LGN)
+
+Visual Cortex
+
+3
+
+Human Eye
+
+4
+
+Image Formation
+
+An inverted image forms on the retina.
+
+5
+
+Perspective Projection
+
+bc/d=b’c’/d’
+• This is known as the pinhole camera model.
+• Cameras do something similar and we will revisit it in the next lecture.
+
+6
+
+Retina
+
+7
+
+Rods and Cones
+
+Rods: Low-intensity light vision,
+e.g. night vision.
+Cones: Color-vision with higher
+intensity light.
+
+8
+
+Cell Distribution
+
+# receptors/mm²
+150’000
+100’000
+50’000
+
+9
+
+Fovea vs Periphery
+
+Fovea
+
+Periphery
+
+10
+
+Rel. sensitivity
+
+Scotopic vs Photopic
+
+wavelength (nm)
+
+Low luminance (< 1 cd/m2):
+High luminance (> 100 cd/m2):
+• 120 million rods with peak
+• 7 million cones per retina.
+spectral response around
+• Primarily located in the fovea.
+510 nm.
+• Primarily located outside the • Three types of cones (S, M, L)
+with peak spectral response at
+fovea.
+different nm.
+• Ratio L:M:S ≅ 40:20:1
+
+11
+
+Sensitivity to Different Wavelengths
+
+12
+
+Ganglion Cells
+
+13
+
+Color Illusion
+
+14
+
+Color Balancing
+• Red sand has been blown onto the slopes.
+• The streak of snow in the middle should be white.
+
+iPhone image
+
+Color corrected image
+
+15
+
+Peripheral Vs Foveal Vision
+
+Much higher concentration of cells on the Fovea
+!Active vision:
+• We find objects using our peripheral vision
+• We concentrate our gaze on objects of interest.
+
+16
+
+The Human Eye In Short
+The Retina:
+• rods (low-intensity light, night vision)
+• cones (color-vision)
+• Synapses and ganglions
+• Optic nerve fibers
+Sensing and low-level processing layer:
+• 125 millions rods and cones feed into 1 million
+nerve fibers
+
+17
+
+Visual Cortex
+V7
+V3A
+LGN
+
+V5/MT
+
+V3
+V2
+V1
+
+V8
+
+VP
+V4
+
+Logothetis, Scientific American’99
+
+18
+
+Primary Visual Cortex (V1)
+
+• Largest area in the visual cortex.
+• 100 times as many neurons as
+retinal ganglion cells
+! Overcomplete representation.
+V1
+
+19
+
+From V1 to the Others
+To pathways originate from V1:
+• The “where” pathway: V1→V2→V5→parietal lobe.
+• The “what” pathway: V1→V2→V3→V4→temporal lobe.
+Motion Detection and Object Recognition are mostly performed in
+parallel but interconnections exist.
+parietal lobe
+
+temporal lobe
+
+20
+
+Lateral Geniculate Nucleus (LGN)
+
+Receives feedbacks from V1 and V2. There is ten times
+more feedback than feedforward sent to V1.
+
+21
+
+Hemispherical Vision
+• Optical Nerves
+
+Optic Chiasm
+Lateral Geniculate
+Nucleus
+Primary Visual
+Cortex (V1)
+
+22
+
+Stereoscopical Vision
+
+Our brain is wired for stereo vision:
+• Redundancy
+• Depth perception
+
+23
+
+Optical Illusions
+
+• Every image is the image of thing merely to him who
+knows how to read it, and who is enabled by the aid of
+the image to form an idea of the thing.
+Handbook of Physiological Optics
+H. von Helmholtz
+
+24
+
+Controlled Hallucination?
+
+Perhaps, but very cleverly implemented in “wetware”.
+!
+
+How can we emulate it in hardware?
+
+25
+
+Recognize And Classify Animal vs No Animal
+• Subjects must raise their hand if they see an
+animal:
+• 60 images
+• 1 image per second
+
+•!
+
+Measure their reaction time.
+
+Simon Thorpe, Nature, 1996
+
+26
+
+27
+
+Brain Pathways
+Motor cortex
+
+Association
+cortex
+
+Visual
+cortex
+
+To motor output
+
+28
+
+REACTION TIME
+# images
+
+400 ms
+Visual processing
+
+Reaction time
+
+Memory/association Output/motion
+
+Eye
+
+Recognition time 150ms
+—> Suggests a purely feed-forward processing because
+there is not enough time for feedback loops.
+
+29
+
+Recurrent Pathways
+
+“Shape stimuli are optimally reinforcing each other when separated in time by ∼60 ms,
+suggesting an underlying recurrent circuit with a time constant (feedforward + feedback)
+of 60 ms.”
+Drewes et al. , Journal of Neuroscience, 2016
+
+30
+
+Human vs Computer Vision
+The camera replaces the eye:
+
+• Eye lens
+
+-> Camera optics
+
+• Cones and rods -> Sensor array
+• Ganglion cells
+
+-> Filter banks
+
+The computer replaces the brain:
+But how?
+
+31
+
+

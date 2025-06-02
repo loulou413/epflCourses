@@ -1,0 +1,1325 @@
+Regions
+
+Pascal Fua
+IC-CVLab
+1
+
+Region Segmentation
+
+• Ideal region: Set of pixels with the same
+statistical properties and corresponding to the
+same object.
+• Purpose: Should help with recognition, tracking,
+image database retrieval, and image compression
+among other high-level vision tasks.
+2
+
+Application: Automated Driving
+
+Vu et al. , ArXiv’22
+
+3
+
+Applications: Photoshop
+
+I find this blue sky too bland!
+
+I prefer this one.
+
+Find the sky region.
+
+Replace it.
+
+https://www.photoshopessentials.com/basics/selections/magic-wand-tool/
+
+4
+
+In Theory
+Look for an image partition such that:
+
+where H measures homogeneity.
+
+5
+
+Complex Gray Level Variations
+• Simple thresholding and other basic
+image operations do not suffice.
+• The H predicate is difficult to define.
+
+6
+
+Context is Essential
+
+Without the whole image it is
+hard to make sense of small
+image windows.
+
+7
+
+There is not always a Single Answer
+
+• Segmentations hand-drawn by 5 different people.
+• We cannot say that one is right and the others wrong.
+8
+
+Homogeneous or Not?
+
+What is homogeneous in some
+parts of these images are the
+statistical properties, not the
+actual pixel values.
+
+9
+
+Mitochondria
+
+10
+
+In Theory
+Merge:
+• Start with a partition that satisfies Eq. 3.
+• Satisfy Eq. 4 by merging regions.
+Split:
+• Start with a partition that satisfies Eq. 4.
+• Split regions until they all satisfy Eq. 3.
+Homogeneity:
+• Uniform gray-level or color statistics.
+• Regions to which a parametric surface can be fitted.
+
+11
+
+From Simple to Complex Algorithms
+
+• Region Growing.
+• Histogram Splitting.
+• K-Means.
+• Graph Theoretic Methods.
+• Convolutional Neural Nets.
+
+12
+
+Region Growing
+
+Interactive Segmentation of a Cell
+Adams and Bischof, PAMI’94
+
+13
+
+Region Growing
+• Labeled pixels.
+• Unlabeled pixels.
+
+Given a set of regions A1, … , An, let
+
+T = {x ∉ (∪ni=1Ai), N(x) ∩ (∪ni=1Ai) ≠ ∅},
+the set of unlabeled pixels that are neighbors of already labeled ones and d be a
+metric, such as
+
+δ(x) = | g(x) − meany∈Ai(x)[g(y)] | .
+Until all pixel are labeled:
+1. Represent T as a sorted list, the SSL, according to this metric.
+2. Label the first point in T.
+3. Add its the neighbors to the SSL.
+
+14
+
+Region Growing
+While SSL is not empty do
+Remove first pixel y from SSL.
+If all already labeled neighbors of y, other than boundary
+pixels, have the same label
+then
+Set y to this label.
+Update running mean of corresponding region.
+Add neighbors of y that are neither already set nor
+already in the SSL to the SSL according to their distance
+value.
+else
+Flag y as a boundary pixel.
+fi
+od
+15
+
+Interactive Region Grower
+
+Medical Imaging Interaction Toolkit
+
+https://www.mitk.org/wiki/
+
+16
+
+Limitations
+
+Original image
+
+•
+•
+
+Result given
+two seeds.
+
+Result given
+two different seeds.
+
+Result given
+larger seeds.
+
+The result depends on the order in which the
+pixels are taken into consideration.
+The homogeneity measure is noise sensitive.
+
+17
+
+Image Histogram
+
+Number of pixels that have a given gray level.
+18
+
+Histogram Splitting
+
+- Groups of similar pixels appear as bumps in the brightness histogram
+- Split the histogram at local-minima
+- Label pixels according to which bump they belong to
+
+—> Cannot stop there, must go on.
+19
+
+Recursive Splitting
+P1
+P2
+p(g)
+
+Gray level g
+Threshold T
+
+•
+•
+•
+•
+•
+•
+
+Compute image histogram.
+Smooth histogram.
+Look for peaks separated by deep valleys.
+Group pixels into connected regions.
+Smooth these regions.
+Iterate.
+20
+
+Recursive Splitting
+• A first threshold is used to
+segment the dark pixels.
+• This yields two regions, the
+bottom half of the picture and
+the dark rectangle at the top.
+• The bottom half of the picture
+can now be more easily
+segmented into two regions.
+
+-> Decisions can be deferred until enough information becomes
+available.
+21
+
+Medical Application
+
+It has its applications but …..
+22
+
+Finding Thresholds is Hard
+Probability
+distributions
+
+Corresponding
+histograms
+
+—> Choosing optimal thresholds is a difficult
+optimization problem.
+23
+
+No Obvious Threshold
+
+There are thresholds that would work but you can’t find them
+from the histogram only.
+
+24
+
+No Valid Threshold at All
+
+In this image, no threshold can generates meaningful results.
+25
+
+No Global Threshold
+
+Because of the complex illumination:
+• The top of the page is much lighter than the bottom.
+• No global threshold can be found.
+• Local thresholds can account for this.
+26
+
+Use Local Histograms
+
+Global
+
+Local
+
+• Compute a histogram in each red square.
+• Find a local threshold.
+27
+
+Use Local Histograms
+
+• Compute local histograms on a coarse grid.
+• Use them instead of a global one.
+28
+
+Limitations of Global Histograms
+•
+
+Histograms do not account for neighborhood
+relationships.
+
+•
+
+Thresholds are hard to find.
+
+•
+
+Some boundaries will not be found because
+the gray levels on both side belong to the
+same histogram peak.
+
+Using Color
+
+RGB
+
+R
+
+B
+
+G
+
+30
+
+Color Space
+r
+
+r
+
+b
+
+b
+
+g
+
+g
+
+V=R+G+B
+R
+r=
+V
+G
+g=
+V
+B
+b=
+V
+
+• Value
+• Hue
+• Saturation
+
+31
+
+RGB Chromaticity Diagram
+
+The Maxwell triangle involves projecting the colors in
+RGB space onto R+G+B=1 plane.
+ Chromaticity becomes independent from luminance.
+32
+
+HSV Space
+
+Hue / Saturation / Value
+H = arccos(
+
+0.5(2r − g − b)
+(r − g)2 + (r − g)(g − b)
+
+S = max(r, g, b) − min(r, g, b)
+V=R+G+B
+
+) if b < g
+
+33
+
+HSV Images
+
+RGB
+
+Value
+
+Saturation
+
+Hue
+
+34
+
+Saturation Histogram
+Low saturation background pixels.
+
+• This histogram is a lot easier to split!
+• It makes it easy to segment the head from the background.
+35
+
+CIE LAB Color Space
+
+• Another way to represent color in terms of three coordinates, one for “brightness”
+and the other two for chromaticity.
+• Designed so that the same amount of numerical change in these values corresponds
+to roughly the same amount of visually perceived change.
+
+CS-413 Computational photography
+
+36
+
+Using Multiple Histograms
+
+• Compute multiple histograms for each segment.
+• Use one of them to split each segment.
+• Repeat on the resulting smaller segments.
+
+37
+
+Recursive Algorithm
+
+38
+
+Early Color Segmentation
+
+Ohlander & Price, CGIP’78
+
+39
+
+More Recent Color Segmentation
+
+I find this blue sky too bland!
+
+Replace it.
+
+Manual intervention was still required to find the whole sky region the sky region!
+https://www.photoshopessentials.com/basics/selections/magic-wand-tool/
+
+40
+
+Segmentation as Clustering
+L
+
+b
+
+a
+
+• Each pixel has 2 spatial coordinates and 1 gray level or 3
+color components.
+• Segmentation can be understood as clustering in
+• 1D space (G);
+• 3D space (x,y,G), (H,S,V), (L,a,b);
+• 5D space (x,y,L,a,b).
+• Ideally each cluster should be as compact as possible.
+41
+
+K-Means Clustering
+xi
+
+xj
+
+Given a set of input samples:
+•Group the samples into K clusters.
+•K is assumed to be known/given.
+•In the example above, each sample is a point in 2D.
+•In images, samples can be points in 1D, 3D, or 5D.
+42
+
+<latexit sha1_base64="hYYK3Z3bimPJ3dUiY4elxBvyzh4=">AAAB7HicdVDLSgMxFM3UV62vqks3wSK4GjJtHdtd0Y3LCk5baIeSSTNtaJIZkoxQSr/BjQtF3PpB7vwb04egogcuHM65l3vviVLOtEHow8mtrW9sbuW3Czu7e/sHxcOjlk4yRWhAEp6oToQ15UzSwDDDaSdVFIuI03Y0vp777XuqNEvknZmkNBR4KFnMCDZWCnoi61f7xRJy63VU9XyI3AuEyn7dElQp13wfei5aoARWaPaL771BQjJBpSEca931UGrCKVaGEU5nhV6maYrJGA9p11KJBdXhdHHsDJ5ZZQDjRNmSBi7U7xNTLLSeiMh2CmxG+rc3F//yupmJa+GUyTQzVJLlojjj0CRw/jkcMEWJ4RNLMFHM3grJCCtMjM2nYEP4+hT+T1pl16u46LZaalyt4siDE3AKzoEHLkED3IAmCAABDDyAJ/DsSOfReXFel605ZzVzDH7AefsE95mOyw==</latexit>
+
+K-Means Clusters
+μ3
+µ4
+
+μ1
+
+μ2
+
+• Cluster k is formed by the points {xi1k, …, xinkk}.
+• μk is the center of gravity of cluster k.
+
+The mean of points {x1, …, xN}, xi ∈ ℝD is
+N
+1
+D
+xj
+μ=
+xi , μ ∈ ℝ
+N∑
+i=1
+μ
+• If the xi were physical points of equal
+xi
+mass, m would be their center of gravity.
+• This applies in any dimension.
+In 2D
+43
+
+<latexit sha1_base64="hYYK3Z3bimPJ3dUiY4elxBvyzh4=">AAAB7HicdVDLSgMxFM3UV62vqks3wSK4GjJtHdtd0Y3LCk5baIeSSTNtaJIZkoxQSr/BjQtF3PpB7vwb04egogcuHM65l3vviVLOtEHow8mtrW9sbuW3Czu7e/sHxcOjlk4yRWhAEp6oToQ15UzSwDDDaSdVFIuI03Y0vp777XuqNEvknZmkNBR4KFnMCDZWCnoi61f7xRJy63VU9XyI3AuEyn7dElQp13wfei5aoARWaPaL771BQjJBpSEca931UGrCKVaGEU5nhV6maYrJGA9p11KJBdXhdHHsDJ5ZZQDjRNmSBi7U7xNTLLSeiMh2CmxG+rc3F//yupmJa+GUyTQzVJLlojjj0CRw/jkcMEWJ4RNLMFHM3grJCCtMjM2nYEP4+hT+T1pl16u46LZaalyt4siDE3AKzoEHLkED3IAmCAABDDyAJ/DsSOfReXFel605ZzVzDH7AefsE95mOyw==</latexit>
+
+Formalization
+μ3
+
+small
+µ4
+
+large
+μ1
+
+μ2
+
+• Cluster k is formed by the points {xi1k, …, xinkk}.
+• μk is the center of gravity of cluster k.
+
+• The distances between the points within a cluster should be small.
+• The distances across clusters should be large.
+• This can be encoded via the distance to cluster centers {μ1, …, μK}:
+K
+
+—> Minimize
+
+nk
+
+∑∑
+
+(xijk − μk)2
+
+k=1 j=1
+k
+
+where {xi1k, …, xikk} are the n samples that belong to cluster k.
+n
+
+44
+
+Difficult Minimization Problem
+Minimize
+K
+
+nk
+
+∑∑
+
+(xijk − μk)2
+
+k=1 j=1
+
+but:
+• We don’t know what points belong to what cluster.
+• We don’t know the center of gravity of the clusters.
+
+45
+
+Simple Solution to the Problem
+
+1. Initialize {μ1, …, μK}, randomly if need be.
+2. Until convergence
+2.1. Assign each point xi to the nearest center μk
+2.2. Update each center μk given the points assigned to it
+
+46
+
+Alternating Optimization
+
+Demo
+
+• Initialize
+• Associate point to centers
+• Recompute centers
+
+47
+
+Three Classes
+
+Demo
+
+48
+
+Initial Conditions Matter
+
+Initially, the points are assigned to
+the clusters at random—> Success.
+
+Initially, the points are assigned to
+the closest cluster —> Failure.
+
+—> In practice try several different random
+initialization and keep the one that yields the best
+result in term of the sum of square distances.
+49
+
+GRAY-LEVEL ONLY (1D)
+
+K=2
+
+K=3
+
+K=4
+50
+
+Color Only (3D)
+
+8 iterations for k=5
+51
+
+Color Only (3D)
+Different Initializations for k=5
+
+Different values of k
+
+K=3
+
+K=5
+
+K=8
+
+K=15
+
+• Different results for different initializations.
+• For k well chosen, the results are good for this image
+because it features bright and distinctive colors.
+
+52
+
+<latexit sha1_base64="dwze2Qyv5JEKEnF5+1VP1QLsF9Y=">AAAH9nichZXdbtMwGIazwugofxucIHFiMVHtp0xpNwlOkCZKNTaxMdC6dqpL5ThO6jVOqsTpWkW5Fc4Qp9wEF8HdYCedVtdl+MD++j6vv3yxHdcaejTipvlnqXDn7vK94sr90oOHjx4/WV17eh4FcYhJEwdeELYtFBGP+qTJKfdIexgSxCyPtKxBXfLWiIQRDfwzPhmSLkOuTx2KERdSb23pN7SIS/0EedT1t9JSo7wBGeJ9jLyknvaqFejZAY8qs+KgAi08g8SPwSZ4B2AUs95lPiQUQOqD2WmXqb0BrXGPZjMuN7/VAIQloYCynOwRh3fAdTlhiCZpglMQCxMYye6T7JDoLACJb089AIbU7fOueJQVjBMQhCAF/892KANTdObiZLCUFStLlYWWRYFOiHAixY7ZfS10MQi0nSnVXKlKJU36vUgMMglY0Mrbs7lq+czaTa7dXNm9UfZyZe86eyiGUl52vm291XVzx8wa0IPqNFg3pu20t7b8HNoBjhnxOfZQFHWq5pB3xTJwij0isscRGSI8QC7piNBHjETdJDtwKXglFBs4YqmdwOcgU2dnJIhF0YRZwin3P5pnUlzEOjF33nYT6g9jTnycP8iJPcADIE8vsGlIMPcmIkA4pKJWgPtIrCUXZ7wEPxDxLiE5Fnk/D0mIeBBuJRCFLkPjVLybCysyus1I/WujiP5ljMSip0nW32JhmYUttiSwkSbZ12FZSSNNSyXokyscMIbEtkKrkYrjNTU4mUHlBwo/0Pihwg81fqTwI42fKfxM402FNzXeUnhL422FtzV+ofALuUBzDqQ4kJbBUrilcaxwrHHbVgy2ZnAcxeBoBlfhrsb7Cu9rnFLFQDUDUzjTeKDwQONc4VzjscJjjY8UPtL4lcKvND5W+FjjE4VPtK+EndwY5J/MyXwGdqwajjVDXTXUU3mXVudvTj04r+1URfyltr7/fnqrrhgvjJfGhlE13hj7xkfj1GgauFApfC10CrA4Ln4v/ij+zK2FpemcZ4bSir/+AvJX0Mg=</latexit>
+sha1_base64="Jw2Lh9mlzXfBUQQkHTuSjUJ2lZc=">AAAGIHicfdRva9NAHMDx2zQ649TtmeCT4BBEZKQ+0YdCLXODzgnt2tGUcblc0mO5JNxd+oeQN+BTX4ivxgeC+Fq8ZBX99TcXaPlxn2/SJNALi1Ro4/s/trbv3HXu3d954D7cdR89frK3e67zUjE+ZHmaq3FINU9FxodGmJSPC8WpDFM+Cq+6jY/mXGmRZwOzKvhU0iQTsWDU2KWzy70D/9BvDw8PnfVwQNbH5b7zNIhyVkqeGZZSrScdvzDTiiojWMprNyg1Lyi7ogmf2DGjkutp1d5n7b2wK5EX58p+MuO1q/+eUVGp9UqGtpTUzPSmNYs32aQ08btpJbKiNDxj1z8Ul6lncq95aC8SijOTruxAmRL2Xj02o4oyY1+NG3zg9lkU79vrfiq4oiZXr6qAqkTSZW2fLQleN9Ntocj+hHb6X6hFYrP2+5ZEtom8OamCXl0FzRsIw6pX164bZHzBcilpFlVB2Ksn/nQdxG0A/Qj4EfJj4MfIT4CfIB8AHyAfAh8iHwEfIR8DHyO/AH7RvKCNgoKCoiuEwEPkDDhDHkUgiFAQxyCIUZAAT5DPgM+QCwECgQIJXCLPgefIDXCDvAReIp8DnyNfAF8gXwJfIl8BX6F/iTz9GzCaVqebV5B9GPRR0IVBt67tVtrZ3DjxcP7msGPnzz7ZIc/Ic/KSdMhb8p58JGdkSBiJyBfy1fnmfHd+Xm+521vrvXefgMP59RuH5zn4</latexit>
+sha1_base64="A0A2IF33ffzgOCZQ72A3n4XKMhg=">AAAH63ichZXfbtMwFMazwugoAzaukLixmKj2p0xJNwlukJBKNTaxMdC6FtWlchwn9RonVeJ0raK8CneIJ+EheBvspNPqugxf2Kff7/PJie249sinMTfNPyule/dXH5TXHlYerT9+8nRjc/0yDpMIkxYO/TDq2CgmPg1Ii1Puk84oIojZPmnbw4bk7TGJYhoGF3w6Ij2GvIC6FCMupP7mym9oE48GKfKpF+xmlWZ1GzLEBxj5aSPrWzXoOyGPa/PisAZtPIfEj+EOeAdgnLD+VTGkFEAagPlpV5mzDe1Jn+Yzrna+1wGEFaGAqpzsE5d3wU05UYSmWYozkAgTGMvuk+yQ6GwASeDMPABG1BvwnniUHU5SEEYgA//PdiwDU3Tm8mSwkhcrS5WFVkWBboRwKsWu2XstdDEItJcrVqFYUsnSQT8Wg0wClrTq3nyuejGzfpvroFAObpXDQjm8yR6JoVKUXWxbf2PL3DfzBvTAmgVbxqyd9zdXn0MnxAkjAcc+iuOuZY54TywDp9gnInsSkxHCQ+SRrggDxEjcS/MDl4FXQnGAK5baDQMOcnV+RopYHE+ZLZxy/+NFJsVlrJtw920vpcEo4STAxYPcxAc8BPL0AodGBHN/KgKEIypqBXiAxFpyccYr8AMR7xKRU5H384hEiIfRbgpR5DE0ycS7ebAmo7uMNLgxiuhfxlgsepbm/R0WllvYcksKm1mafx22nTazrFKBAbnGIWNIbCu0m5k4XjODmxtUfqTwI40fK/xY4ycKP9H4hcIvNN5SeEvjbYW3Nd5ReEfj3xT+TS7QggMpDqRlsBVuaxwrHGvccRSDoxlcVzG4msFTuKfxgcIHGqdUMVDNwBTONB4qPNQ4VzjXeKLwRONjhY81fq3wa41PFD7R+FThU+0rYWe3Bvknc7aYgZ2qhlPN0FANjUzepdbizakHl/V9S8RfTGPNeGG8NLYNy3hjvDc+GudGy8ClWulrqVuC5Un5R/lnceuWVmbX7zNDaeVffwHJdM9j</latexit>
+sha1_base64="XAYsMtbqLeVYztH85A3+GZRNHZ8=">AAAH9nichZXdbtMwGIazwugofxucIHFiMVHtp0xpNwlOkCZKNTaxMdC6dqpL5ThO6jVOqsTpWkW5Fc4Qp9wEF8HdYCedVtdl+MD++j6vv3yxHdcaejTipvlnqXDn7vK94sr90oOHjx4/WV17eh4FcYhJEwdeELYtFBGP+qTJKfdIexgSxCyPtKxBXfLWiIQRDfwzPhmSLkOuTx2KERdSb23pN7SIS/0EedT1t9JSo7wBGeJ9jLyknvaqFejZAY8qs+KgAi08g8SPwSZ4B2AUs95lPiQUQOqD2WmXqb0BrXGPZjMuN7/VAIQloYCynOwRh3fAdTlhiCZpglMQCxMYye6T7JDoLACJb089AIbU7fOueJQVjBMQhCAF/892KANTdObiZLCUFStLlYWWRYFOiHAixY7ZfS10MQi0nSnVXKlKJU36vUgMMglY0Mrbs7lq+czaTa7dXNm9UfZyZe86eyiGUl52vm291XVzx8wa0IPqNFg3pu20t7b8HNoBjhnxOfZQFHWq5pB3xTJwij0isscRGSI8QC7piNBHjETdJDtwKXglFBs4YqmdwOcgU2dnJIhF0YRZwin3P5pnUlzEOjF33nYT6g9jTnycP8iJPcADIE8vsGlIMPcmIkA4pKJWgPtIrCUXZ7wEPxDxLiE5Fnk/D0mIeBBuJRCFLkPjVLybCysyus1I/WujiP5ljMSip0nW32JhmYUttiSwkSbZ12FZSSNNSyXokyscMIbEtkKrkYrjNTU4mUHlBwo/0Pihwg81fqTwI42fKfxM402FNzXeUnhL422FtzV+ofALuUBzDqQ4kJbBUrilcaxwrHHbVgy2ZnAcxeBoBlfhrsb7Cu9rnFLFQDUDUzjTeKDwQONc4VzjscJjjY8UPtL4lcKvND5W+FjjE4VPtK+EndwY5J/MyXwGdqwajjVDXTXUU3mXVudvTj04r+1URfzFXN9/P71VV4wXxktjw6gab4x946NxajQNXKgUvhY6BVgcF78XfxR/5tbC0nTOM0NpxV9/AfG30MY=</latexit>
+
+XY + Color (5D)
+E(C1 , . . . , Ck , c1 , . . . , ck ) =
+
+XX
+j
+
+2
+
+3
+
+2
+
+d(xi , cj )2
+
+i∈Cj
+
+3
+
+u
+u
+6 v 7
+6 v 7
+7
+7
+6
+6
+7
+6
+6
+x = 6 L 7 or 6 I 7
+7
+4 0 5
+4 a 5
+0
+b
+(x[0] − c[0])2 + (x[1] − c[1])2
+d(x, c) =
+h2s
+(x[2] − c[2])2 + (x[3] − c[3])2 + (x[4] − c[4])2
++
+h2r
+2
+
+Run K-Means algorithm with regularly spaced seeds on a
+grid and using a distance that is a weighted sum of
+distances in image space and in gray level/color space.
+
+—> Superpixels
+
+Achanta et al. PAMI’12
+
+53
+
+SLIC Superpixels
+1024x1024
+
+256x256
+
+256x256
+
+64x64
+
+• Superpixel segmentations with centers on a
+64x64, 256x256, and 1024x1024 grid.
+• Can be used to describe the image in terms of
+a set of small regions.
+
+54
+
+Color or Black and White
+
+It works in both cases.
+
+55
+
+Electron Microscopy
+
+56
+
+Mitochondria Segmentation
+
+57
+
+Assigning Probabilities
+
+•
+•
+•
+
+Compute image statistics for each superpixel.
+Train a classifier to assign a probability to be
+within a mitochondria.
+Can be used to produce segmentations using the
+graph-based techniques we will describe next.
+58
+
+Images as Graphs
+An image I(x,y) is equivalent to a graph G(V,E)
+
+Original image I(x,y)
+
+Graph G(V,E)
+
+- V is a set of vertices or nodes that represent individual pixels.
+- E is a set of edges linking neighboring nodes together. The weight or strength of
+the edge is proportional to the similarity between the vertices it joins together.
+
+59
+
+Graph-Cut
+
+A cut through a graph is defined as
+the total weight of the links that
+must be removed to divide it into
+two separate components.
+
+B
+
+A
+
+60
+
+Min-Cut
+
+10
+
+10
+
+10
+
+.1
+
+• Find the cut through the graph
+that has the overall minimum
+weight, which can be done
+effectively.
+
+10
+
+.1
+
+10
+.1
+
+.1
+10
+
+10
+10
+
+10
+
+10
+
+10
+
+.1
+
+• It should be the subset of edges
+of least weight that can be
+removed to partition the graph.
+
+.1
+10
+
+.1
+
+10
+
+.1
+
+10
+
+10
+
+10
+
+• Since weight encodes similarity,
+this should be equivalent to
+partitioning the graph along the
+boundary of least similarity.
+61
+
+Trivial Cut
+
+10
+
+10
+
+10
+
+5
+
+10
+
+5
+
+10
+5
+
+5
+10
+
+10
+10
+
+10
+
+10
+
+10
+
+5
+
+5
+10
+
+5
+
+10
+
+5
+
+10
+
+• Has a preference for short cuts,
+which may sometime result in
+trivial solutions.
+
+10
+
+• Must be constrained to avoid
+them.
+
+10
+
+62
+
+ST Min-Cut
+S
+
+- Introduce two special nodes called
+source (S) and sink (T)
+- S and T are linked to some image
+nodes by links of very large weight
+that will never be selected in a cut.
+
+T
+
+- Find the minimum cut separating
+the source from the sink.
+
+--> The problem becomes deciding how to connect S and T to the
+image nodes.
+
+63
+
+Interactive ST Min-Cut
+
+User-selected pixels connected to S (red)
+and pixels connected to T (cyan)
+
+Minimum S-T cut
+
+--> If we have a good initial ‘guess’ to tell us how to link the source and sink to
+the image, we will get an optimal segmentation.
+
+64
+
+Back To Mitochondria
+
+•
+
+•
+
+A high probability of being a mitochondria can
+be represented by a strong edge connecting a
+supervoxel to the source and a weak one to
+the sink.
+And conversely for a low probability.
+65
+
+Back To Mitochondria
+
+Another classifier can be trained to assign a
+high-weight to edges connecting supervoxels
+belonging to the same class and a low one to
+others.
+66
+
+Minimizing a Loss Function
+
+In probabilistic terms, this amounts to minimizing
+
+with respect to the set of labels y = [y1,…,yn] given the set of
+supervoxels [y1,…,yn], where E is negative log-likelihood of
+the labels being correct.
+67
+
+3D Mitochondria
+
+Lucchi et al. TMI’11
+
+68
+
+Modeling Membranes
+
+Here we use three classes instead of two:
+• Inside
+• Membrane
+• Everything else
+—>Because the inside is fully enclosed by the membranes, we
+can still find a global optimum.
+Lucchi et al. MICCAI’14
+
+69
+
+Speeding up the Analysis Process
+3.21 µm × 3.21 µm × 1.08 µm: 53 mitochondria
+
+Automated result
+
+Interactively cleaned-up result
+
+• By hand: 6 hours.
+• Semi-automatically: 1.5 hours
+—> Substantial time saving for the neuroscientists.
+
+70
+
+Graph-Cut on Ordinary Images
+
+Galun et al., ICCV’03
+
+71
+
+Interactive Foreground Extraction
+
+R
+
+Foreground &
+Background
+
+Background G
+
+Iterated
+graph cut
+
+R
+Foreground
+
+Background
+
+G
+
+• K-means to learn color distributions
+• Graph cuts to infer the segmentation
+
+GrabCut Rother & al. SIGGRAPH 04
+
+72
+
+Relatively Easy Examples
+
+GrabCut Rother & al. SIGGRAPH 04
+
+73
+
+More Difficult Examples
+
+Camouflage &
+Low Contrast
+
+Fine structure
+
+No telepathy
+
+Initial
+Rectangle
+
+Initial
+Result
+
+GrabCut Rother & al. SIGGRAPH 04
+
+74
+
+Convolutional Neural Nets
+
+• Connect input layer to output one made of segmentation labels.
+• Need layers that both downscale and upscale.
+• Connect the lower layers directly to the upper ones.
+75
+
+Reminder: U-Net for Delineation
+Image
+
+Tubularity Map
+
+Downsampling
+
+Upsampling
+Skip connection
+
+Skip connection
+
+—> Train a U-Net to output a tubularity map.
+76
+
+U-Net for Segmentation
+
+• Same architecture (in more details).
+• Train it to produce a segmentation mask instead of
+a delineation mask.
+
+77
+
+Potential Interpretation
+• A key role of the ConvNet is
+t o g e n e ra t e fo r e ve r y
+output pixel a feature
+vector containing the
+output of all the
+intermediate layers.
+• A classifier then assigns a
+label to the individual
+pixels.
+
+78
+
+In the Street
+
+79
+
+<latexit sha1_base64="mJJ76jPyQ8uJ2Jv/hFYuF35/Q3E=">AAACxnicjVHLSsNAFD2Nr1pfVZdugkVwVRIp6LLgpsuK9gFaSpJO26F5MZkopQj+gFv9NPEP9C+8M05BLaITkpw5954zc+/105Bn0nFeC9bS8srqWnG9tLG5tb1T3t1rZ0kuAtYKkjARXd/LWMhj1pJchqybCuZFfsg6/uRcxTu3TGQ8ia/kNGW9yBvFfMgDTxJ1Oe67/XLFqTp62YvANaACs5pJ+QU3GCBBgBwRGGJIwiE8ZPRcw4WDlLgeZsQJQlzHGe5RIm1OWYwyPGIn9B3R7tqwMe2VZ6bVAZ0S0itIaeOINAnlCcLqNFvHc+2s2N+8Z9pT3W1Kf994RcRKjIn9SzfP/K9O1SIxxJmugVNNqWZUdYFxyXVX1M3tL1VJckiJU3hAcUE40Mp5n22tyXTtqreejr/pTMWqfWByc7yrW9KA3Z/jXATtk6pL+KJWqdfMqIs4wCGOaZ6nqKOBJlrkPcIjnvBsNazYyq27z1SrYDT7+Lashw/jqJAD</latexit>
+sha1_base64="GHLPJBNLK0RPdLQtC2GwIp/aq68=">AAACynicjVHLSsNAFD2Nr1pfVZdugkVwY0mKoMuCGxcuKthWqKUk02k7NE3CZCKU0J0/4FY/TPwD/QvvjCmoRXRCkjPnnnNn7r1+HIhEOc5rwVpaXlldK66XNja3tnfKu3utJEol400WBZG89b2EByLkTSVUwG9jyb2JH/C2P77Q8fY9l4mIwhs1jXl34g1DMRDMU0S1R71MnbizXrniVB2z7EXg5qCCfDWi8gvu0EcEhhQTcIRQhAN4SOjpwIWDmLguMuIkIWHiHDOUyJuSipPCI3ZM3yHtOjkb0l7nTIyb0SkBvZKcNo7IE5FOEtan2Saemsya/S13ZnLqu03p7+e5JsQqjIj9yzdX/tena1EY4NzUIKim2DC6OpZnSU1X9M3tL1UpyhATp3Gf4pIwM855n23jSUztureeib8ZpWb1nuXaFO/6ljRg9+c4F0GrVnUJX59W6rV81EUc4BDHNM8z1HGJBpqmykc84dm6sqQ1tbJPqVXIPfv4tqyHD0zEkcI=</latexit>
+sha1_base64="HXo13VZOYnqnNzApCVex47tDIXA=">AAACxnicjVHLSsNAFD2Nr1pfVZdugkVwVZIi6LLgpsuK9gFaSjKdtqF5MZkopQj+gFv9NPEP9C+8M05BLaITkpw5954zc+/10zDIpOO8Fqyl5ZXVteJ6aWNza3unvLvXzpJcMN5iSZiIru9lPAxi3pKBDHk3FdyL/JB3/Mm5induuciCJL6S05T3Im8UB8OAeZKoy3Ff9ssVp+roZS8C14AKzGom5RfcYIAEDDkicMSQhEN4yOi5hgsHKXE9zIgThAId57hHibQ5ZXHK8Iid0HdEu2vDxrRXnplWMzolpFeQ0sYRaRLKE4TVabaO59pZsb95z7SnutuU/r7xioiVGBP7l26e+V+dqkViiDNdQ0A1pZpR1THjkuuuqJvbX6qS5JASp/CA4oIw08p5n22tyXTtqreejr/pTMWqPTO5Od7VLWnA7s9xLoJ2reoSvjip1Gtm1EUc4BDHNM9T1NFAEy3yHuERT3i2GlZs5dbdZ6pVMJp9fFvWwweCPZBE</latexit>
+sha1_base64="90e/O/3UR/sIdO8DrDXWF9MQdvc=">AAACxnicjVHLSsNAFD2Nr1pfVZdugkVwVRIp6LLgpsuK9gG1lGQ6rUPzIjNRShH8Abf6aeIf6F94Z0xBLaITkpw5954zc+/1k0BI5TivBWtpeWV1rbhe2tjc2t4p7+61ZZyljLdYHMRp1/ckD0TEW0qogHeTlHuhH/COPznX8c4tT6WIoys1TXg/9MaRGAnmKaIu5UANyhWn6phlLwI3BxXkqxmXX3CNIWIwZAjBEUERDuBB0tODCwcJcX3MiEsJCRPnuEeJtBllccrwiJ3Qd0y7Xs5GtNee0qgZnRLQm5LSxhFpYspLCevTbBPPjLNmf/OeGU99tyn9/dwrJFbhhti/dPPM/+p0LQojnJkaBNWUGEZXx3KXzHRF39z+UpUih4Q4jYcUTwkzo5z32TYaaWrXvfVM/M1kalbvWZ6b4V3fkgbs/hznImifVF3CF7VKvZaPuogDHOKY5nmKOhpookXeYzziCc9Ww4qszLr7TLUKuWYf35b18AGdDZBR</latexit>
+sha1_base64="6G/85z0t9jtP03SxzWNkjo3wMcs=">AAACxHicjVHLSsNAFD2Nr1pfVZdugkVwVRIp6LIgiMsW7ANqkWQ6raHTJMxMhFL0B9zqt4l/oH/hnTEFtYhOSHLm3HvOzL03TEWktOe9Fpyl5ZXVteJ6aWNza3unvLvXVkkmGW+xRCSyGwaKiyjmLR1pwbup5MEkFLwTjs9NvHPHpYqS+EpPU96fBKM4GkYs0EQ11U254lU9u9xF4Oeggnw1kvILrjFAAoYME3DE0IQFAih6evDhISWujxlxklBk4xz3KJE2oyxOGQGxY/qOaNfL2Zj2xlNZNaNTBL2SlC6OSJNQniRsTnNtPLPOhv3Ne2Y9zd2m9A9zrwmxGrfE/qWbZ/5XZ2rRGOLM1hBRTallTHUsd8lsV8zN3S9VaXJIiTN4QHFJmFnlvM+u1Shbu+ltYONvNtOwZs/y3Azv5pY0YP/nOBdB+6TqE27WKvVaPuoiDnCIY5rnKeq4RAMt6/2IJzw7F45wlJN9pjqFXLOPb8t5+ABbCI9q</latexit>
+sha1_base64="xCnAHMzujG4cENI8GEByQYgVjTI=">AAACxnicjVHLSsNAFD2Nr1pfVZdugkVwVRIp6LLgpsuK9gFaSjKdtqF5MZkopQj+gFv9NPEP9C+8M05BLaITkpw5954zc+/10zDIpOO8Fqyl5ZXVteJ6aWNza3unvLvXzpJcMN5iSZiIru9lPAxi3pKBDHk3FdyL/JB3/Mm5induuciCJL6S05T3Im8UB8OAeZKoy3Hf6ZcrTtXRy14ErgEVmNVMyi+4wQAJGHJE4IghCYfwkNFzDRcOUuJ6mBEnCAU6znGPEmlzyuKU4RE7oe+IdteGjWmvPDOtZnRKSK8gpY0j0iSUJwir02wdz7WzYn/znmlPdbcp/X3jFRErMSb2L9088786VYvEEGe6hoBqSjWjqmPGJdddUTe3v1QlySElTuEBxQVhppXzPttak+naVW89HX/TmYpVe2Zyc7yrW9KA3Z/jXATtk6pL+KJWqdfMqIs4wCGOaZ6nqKOBJlrkPcIjnvBsNazYyq27z1SrYDT7+Lashw/hSJAC</latexit>
+
+Recursive Segmentation
+s
+
+st
+
+Up
+
+Up
+
+state
+ht−1
+Rec.
+
+Conv
+
+ht
+
+Conv
+
+Image
+x
+
+U-Net
+
+T=1
+
+T=2
+
+T=3
+
+Ground Truth
+
+x
+
+Rec. U-Net
+
+As for delineation, feeding the output back into the network is an
+effective way to take context into account.
+Wang et al., ICCV’19
+
+80
+
+KBH
+
+HOF
+
+EgoHand
+
+GTEA
+
+EYTH
+
+Recursive Hand Segmentation
+
+Rec-Simple
+Image
+
+Ours
+
+Ground Truth
+
+Wang et al., ICCV’19
+
+81
+
+Mitochondria
+Context Features + CRF
+
+U-Net 3D
+
+Striatum Mitochondria
+Method
+
+Jaccard Index
+
+Context F. + CRF
+
+84.6%
+
+U-Net 2D
+
+82.4%
+
+U-Net 3D
+
+86.1%
+
+—> Using a ConvNet boosts performance but there is still work to do!
+
+82
+
+Synapses
+Context Features 3D CRF
+
+U-Net 3D
+
+83
+
+Jaccard
+Index
+
+Method
+
+66.8%
+
+Context Features 2D
+
+85.2%
+
+Context Features 3D
+
+73.5%
+
+U-Net 2D
+
+77.0%
+
+U-Net 3D
+
+?
+
+83
+
+Context-Based Features
+Synapse:
+
+Post-synap*c region
+•
+•
+
+Dendrite
+No vesicles
+
+Pre-synap*c region
+•
+•
+
+Axon terminal
+Many vesicles
+
+Non-Synapse:
+
+• The old style context-based features explicitly model orientation.
+• How can we do that in a deep-learning framework?
+Becker et al. TMI’13
+
+84
+
+Probabilistic Atlases
+
+Synapse in canonical
+orientation
+
+Probability of being
+a post-synaptic voxel
+
+Probability of being
+a cleft voxel
+
+Probability of being
+a pre-synaptic voxel
+
+85
+
+<latexit sha1_base64="bJZGB+uPr1KFApoa9aLmsacwWVE=">AAAHE3icfdVNbtNAFMDxaaGhhI+2sGRjESEhhKKkRYJlS4matkopatKkiqNqPB47o3hsazxuklo+AkvgMOwQWw7AVVgxToPg5ZVaSvQ0v78d25FlJw5Eomu1n0vLt26vlO6s3i3fu//g4dr6xqPTJEoV4x0WBZHqOTThgQh5Rwsd8F6sOJVOwLvOaLfw7gVXiYjCtp7GfCCpHwpPMKrN0snO+db5eqVWrc02Cw/1+VAh8+34fGPll+1GLJU81CygSdKv12I9yKjSggU8L9tpwmPKRtTnfTOGVPJkkM3ONbeemRXX8iJlPqG2Zqv/7pFRmSRT6ZhSUj1MFq1YvM76qfbeDDIRxqnmIbv6IS8NLB1ZxYVbrlCc6WBqBsqUMOdqsSFVlGlze8r2O26uRfGWOe77mCuqI/Uis6nyJZ3k5tp8+2Ux3RSK8E9opv+FifBNNvu+IZGzRF6fZHYjz+ziDjhO1sjzctkO+ZhFUtLQzWxnJ+/XBvPAy3ZMAL0BvIF8D/ge8ibwJvJ94PvID4EfIj8AfoC8DbyNvAO8g7wLvIu8B7yH/Az4WfEHLBQUFBQdwQHuIGfAGXLXBYGLAs8DgYcCH7iPfAh8iFwIEAgUjICPkEvgEnkEPEKugWvkKfAU+QXwC+Rj4GPkE+AT5FPgU+SXwC/RUyx3/waMBtnu4hHkEQyOUNCCQQsFJzA4QUEbBuZRM2+L+uK7AQ+nm9X6VnXzw6vK9tv5e2OVPCFPyXNSJ6/JNmmSY9IhjPjkI/lMvpQ+lb6WvpW+X6XLS/N9HhOwlX78Bh+zlt4=</latexit>
+sha1_base64="lFXws4XXqIU8jYN0IyHiZFjvUUg=">AAAHInicfdVNb9MwGMBxb7AyylsHRy4RFdJAaGoHEhw3SrU3bQytXTs1VeU4Tmo1TiLHaddF+SYcgQ/DDXFC4pNwwumK4OkzFqmV5d8/bl6UxokDkeha7cfS8o2bK6Vbq7fLd+7eu/+gsvbwNIlSxXibRUGkug5NeCBC3tZCB7wbK06lE/COM2oU3hlzlYgobOlpzPuS+qHwBKPaTA0qFVtSPWQ0yFr5+vag/mxQqdY2arPNwoP6fFAl8+14sLbyy3YjlkoeahbQJOnVa7HuZ1RpwQKel+004TFlI+rznhmGVPKkn80OPbeemhnX8iJlPqG2ZrP/7pFRmSRT6ZiyONBk0YrJq6yXau9NPxNhnGoesssf8tLA0pFVXAfLFYozHUzNgDIlzLFabEgVZdpcrbL9jptzUfzQrPs+5orqSD3PbKp8Sc9zc26+/aIYXReK8E9oRv8LE+GbbPZ9TSJnibw6yexmns1uo+NkzTwvl+2QT1gkJQ3dzHa2816tPw+8bNsE0JvAm8h3gO8g3wW+i3wP+B7yA+AHyPeB7yNvAW8hbwNvI+8A7yDvAu8iPwN+VtyAhYKCgqIVHOAOcgacIXddELgo8DwQeCjwgfvIh8CHyIUAgUDBCPgIuQQukUfAI+QauEaeAk+Rj4GPkU+AT5CfAz9HPgU+RX4B/AI9xbLxNyj+rRuLK8gjGByh4BAGhyg4gcEJClowMI+aeVvUF98NeHC6uVF/ubH54VV16+38vbFKHpMnZJ3UyWuyRXbJMWkTRsbkI/lMvpQ+lb6WvpW+X6bLS/N9HhGwlX7+BrJOnGI=</latexit>
+sha1_base64="4KJeUmZnwg209GDTDKjzRpdMQk4=">AAAHInicfdVNb9MwGMBxb7AyylsHRy4RE9JAaGoLEhxXSrU3bQytXTs1VeU4Tmo1TiLH6dZF+SYcgQ/DDXFC4pNwwumK4OkzFqmV5d8/bl6UxokDkehq9cfS8o2bK6Vbq7fLd+7eu/+gsvbwJIlSxXiHRUGkeg5NeCBC3tFCB7wXK06lE/CuM24W3p1wlYgobOtpzAeS+qHwBKPaTA0rFVtSPWI0yNr5RmNYfzasrFc3q7PNwoPafLBO5tvRcG3ll+1GLJU81CygSdKvVWM9yKjSggU8L9tpwmPKxtTnfTMMqeTJIJsdem49NTOu5UXKfEJtzWb/3SOjMkmm0jFlcaDJohWTV1k/1d6bQSbCONU8ZJc/5KWBpSOruA6WKxRnOpiaAWVKmGO12IgqyrS5WmX7HTfnoviBWfd9zBXVkXqe2VT5kp7n5tx8+0Uxui4U4Z/QjP4XJsI32ez7mkTOEnl1ktmtPJvdRsfJWnleLtshP2ORlDR0M9tp5P3qYB54WcME0FvAW8i3gW8j3wG+g3wX+C7yfeD7yPeA7yFvA28j7wDvIO8C7yLvAe8hPwV+WtyAhYKCgqIVHOAOcgacIXddELgo8DwQeCjwgfvIR8BHyIUAgUDBGPgYuQQukUfAI+QauEaeAk+RT4BPkJ8BP0N+Dvwc+RT4FPkF8Av0FMvm36D4t24uriAPYXCIggMYHKDgGAbHKGjDwDxq5m1RW3w34MFJfbP2crP+4dX61tv5e2OVPCZPyAapkddki+yQI9IhjEzIR/KZfCl9Kn0tfSt9v0yXl+b7PCJgK/38Dbj8nGM=</latexit>
+sha1_base64="1wNeVpPJSAkBHMRwQq44f8DeMXI=">AAAHInicfdXbbtMwGMBxb7AyymEdXHITMSENhKZ2Q4LLjVHtpI2htWunpqocx0mtxknkOD0syptwCTwMd4grJJ6EK5yuCL5+Y5FaWf794+agNE4ciERXqz8WFm/dXirdWb5bvnf/wcOVyuqj8yRKFeNNFgWRajs04YEIeVMLHfB2rDiVTsBbzmC38NaQq0REYUNPYt6V1A+FJxjVZqpXqdiS6j6jQdbI13d6W897lbXqRnW6WXhQmw3WyGw77a0u/bLdiKWSh5oFNEk6tWqsuxlVWrCA52U7TXhM2YD6vGOGIZU86WbTQ8+tZ2bGtbxImU+orensv3tkVCbJRDqmLA40mbdi8jrrpNp7081EGKeah+zqh7w0sHRkFdfBcoXiTAcTM6BMCXOsFutTRZk2V6tsv+PmXBQ/Nuu+j7miOlIvMpsqX9Jxbs7Nt18Wo5tCEf4Jzeh/YSJ8k02/b0jkNJHXJ5ldz7PpbXScrJ7n5bId8hGLpKShm9nOTt6pdmeBl+2YAHodeB35HvA95PvA95EfAD9AfgT8CPkh8EPkDeAN5E3gTeQt4C3kbeBt5BfAL4obMFdQUFC0ggPcQc6AM+SuCwIXBZ4HAg8FPnAfeR94H7kQIBAoGAAfIJfAJfIIeIRcA9fIU+Ap8iHwIfIR8BHyMfAx8gnwCfJL4JfoKZa7f4Pi33p3fgV5AoMTFBzD4BgFZzA4Q0EDBuZRM2+L2vy7AQ/ONzdqWxubH16tbb+dvTeWyRPylKyTGnlNtsk+OSVNwsiQfCSfyZfSp9LX0rfS96t0cWG2z2MCttLP37+qnGQ=</latexit>
+sha1_base64="/RMbnGfb2keBM4yei2Du8yyYEhk=">AAAHE3icfdXLbtNAFIDhaaGmhFsLSzYWERJCqHIKEixbStSbUoqSNKniqBqPx84oHtsaj9umlh+BJfAw7BBbHoBXYcU4DYKTU2op0dF8vx3bkWUvjUSmHefnwuKNm0vWreXbtTt3791/sLL68ChLcsV4lyVRovoezXgkYt7VQke8nypOpRfxnjfeqrx3ylUmkrijJykfShrGIhCMarPU3jxpnKzUnTVnutl4aMyGOplthyerS79cP2G55LFmEc2yQcNJ9bCgSgsW8bLm5hlPKRvTkA/MGFPJs2ExPdfSfmpWfDtIlPnE2p6u/rtHQWWWTaRnSkn1KJu3avEqG+Q6eDMsRJzmmsfs8oeCPLJ1YlcXbvtCcaajiRkoU8Kcq81GVFGmze2pue+4uRbFW+a471OuqE7U88KlKpT0vDTXFrovqum6UMR/QjP9L8xEaLLp9zWJnCby6qRwm2XhVnfA84pmWdZqbszPWCIljf3C9TbLgTOcBUGxaQLoTeBN5NvAt5HvAN9Bvgt8F/k+8H3ke8D3kHeAd5B3gXeR94D3kPeB95EfAz+u/oC5goKCoiN4wD3kDDhD7vsg8FEQBCAIUBACD5GPgI+QCwECgYIx8DFyCVwiT4AnyDVwjTwHniM/BX6K/Az4GfJz4OfIJ8AnyC+AX6CnWG79DRiNiq35I8gDGBygoAWDFgraMGijoAMD86iZt0Vj/t2Ah6P1tcbLtfUPr+obb2fvjWXymDwhz0iDvCYbZIccki5hJCQfyWfyxfpkfbW+Wd8v08WF2T6PCNisH78BElmW3A==</latexit>
+sha1_base64="ckdo275O50khW9XZgPVlYlU/HAc=">AAAHE3icfdVNbtNAFMDxaaGhhK8WlmwsKiSEUOQEJFg2lKhpq5aiJE2qOKrG47Ezise2xuO2qeUjsAQOww6x5QBchRXjNAheXqmlRE/z+9uxHVl2k1Ck2rZ/Li3fuLlSubV6u3rn7r37D9bWHx6lcaYY77E4jNXApSkPRcR7WuiQDxLFqXRD3ncnW6X3T7lKRRx19TThI0mDSPiCUW2WOs2Txsnahl2zZ5uFh/p82CDz7fBkfeWX48UskzzSLKRpOqzbiR7lVGnBQl5UnSzlCWUTGvChGSMqeTrKZ+daWE/Nimf5sTKfSFuz1X/3yKlM06l0TSmpHqeLVi5eZcNM+29GuYiSTPOIXf6Qn4WWjq3ywi1PKM50ODUDZUqYc7XYmCrKtLk9VecdN9ei+L457vuEK6pj9Tx3qAokPS/MtQXOi3K6LhTRn9BM/wtTEZhs9n1NImeJvDrJnVaRO+UdcN28VRTVqhPxMxZLSSMvd9xmMbRH88DPmyaA3gLeQr4NfBt5G3gb+Q7wHeR7wPeQ7wLfRd4F3kXeA95D3gfeRz4APkB+DPy4/AMWCgoKio7gAneRM+AMueeBwEOB74PAR0EAPEA+Bj5GLgQIBAomwCfIJXCJPAYeI9fANfIMeIb8FPgp8jPgZ8jPgZ8jnwKfIr8AfoGeYrn1N2A0zLcWjyAPYHCAgn0Y7KOgA4MOCrowMI+aeVvUF98NeDhq1Oova40PrzY2387fG6vkMXlCnpE6eU02SZsckh5hJCAfyWfypfKp8rXyrfL9Ml1emu/ziICt8uM3GQaW3Q==</latexit>
+
+U-Net + Atlases
+
+Affine transform: Accounts for orientation and scaling.
+
+A1
+
+A2
+
+A3
+
+T (A1 ) T (A2 )
+
+T (A3 )
+
+86
+
+3D Synapses
+
+87
+
+Atlases for Optic Disk Segmentation
+
+Probabilistic Atlases
+
+Optic disk
+
+Ground truth
+
+U-Net
+
+Optic nerve
+
+PA-Net
+
+88
+
+Optional: Transformers in NLP
+
+Given X = [x1, …, xN],
+• compute SelfAttention(X) using far fewer weights
+than if we used a fully connected network.
+• In NLP the xn are embedding for words.
+• In Vision they can be taken to be image patches.
+https://www.borealisai.com/en/blog/tutorial-14-transformers-i-introduction/
+
+89
+
+Vision Transformers for Recognition
+
+• Break up the images into square patches.
+• Transform each path into a feature vector.
+• Feed to a transformer architecture.
+Dosovitskiy et al., ICLR’21
+
+90
+
+Vision Transformers for Segmentation
+
+• Replace the “recognition” machinery by a “mask transformer”.
+• Pros: Good at modeling long range relationships.
+• Cons: Flattening the patches looses some amount of information.
+Strudel et al., ICCV’21
+
+91
+
+U-NET + Transformers
+
+• A CNN operates at low-resolution and produces a feature vector.
+• A transform operates on that feature vector.
+• The upsampling is similar to that of U-Net
+—> Best of both worlds?
+Chen et al., ArXiv’21
+
+92
+
+Moral of the Story
+
+• Deep Networks are powerful tools, especially
+when there is enough training data.
+• However, modeling your problem properly is
+still needed to achieve the highest possible
+level of performance.
+• The old techniques often inform our design
+choices.
+
+—> Yet another reason why I am still talking
+about them.
+93
+
+In Short
+• Local methods can provide valuable information but are inherently
+limited.
+• Domain knowledge, user interaction, and training data can be used
+to turn this data into usable results:
+• Given enough training data, deep nets deliver the best
+performance today.
+• It can be further enhanced by introducing domain knowledge.
+• Given smaller amounts of training data, K-Means and graphical
+models still have their uses.
+• Same philosophy as for delineation.
+
+94
+
+What About the Dog?
+
+Most current algorithms won’t “see” it!
+
+95
+
+

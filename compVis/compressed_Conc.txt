@@ -1,0 +1,72 @@
+Computer Vision
+Goal: Inferring the properties of the world from one or
+more images
+• Photographs
+• Video Sequences
+• Medical images
+• Microscopy data
+ Image Understanding
+
+1
+
+Challenges
+Vision involves dealing with:
+• Noisy images
+• Many-to-one mapping
+• Aperture problem
+ Requires:
+• Assumptions about the world
+• Statistical and physics-based models
+• Training data
+True image understanding seems to require a great deal of
+thinking. We are not quite there yet.
+2
+
+Opportunities
+
+C
+
+ameras are becoming ever more prevalent and
+Deep networks have immensely boosted the
+performance of Computer Vision algorithms:
+
+• Tremendous potential for applications.
+• A window on the way the mind works.
+• But limited understanding of why things work.
+➡ Still much work to be done !!!!
+➡ Lots of jobs in Switzerland and elsewhere.
+
+3
+
+Course Outline
+Introduction:
+• Definition
+• Human vision
+• Image formation
+Extracting features:
+• Contours
+• Texture
+• Regions
+Shape recovery:
+• From one image
+• Using additional images
+
+4
+
+Deep Learning Revolution
+
+or
+…..
+deep nets
+
+5
+
+Final Exam
+
+Tuesday 20.06.2023 from 09h15 to 10h45 (CE1, CE1515)
+• One sheet of hand-written notes is allowed.
+• No other documents or electronic devices.
+
+6
+
+

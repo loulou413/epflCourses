@@ -1,0 +1,1352 @@
+Delineation
+
+•Dynamic Programming
+•Deformable Models
+•Hough Transform
+•Graph Based Approaches
+
+1
+
+From Gradients to Outlines
+
+2
+
+From Deep-Nets to Outlines
+
+—> Still work to do!
+3
+
+Mapping and Overlays
+
+Connectivity matters!
+4
+
+Connectomics
+
+—> Topology needed
+
+Courtesy of C. Petersen
+
+5
+
+Analogy
+Low level processing
+
+• Uses Deep Nets to find
+the most promising
+locations to focus on.
+High level processing
+
+• Performs tree-based
+search when possible.
+• Relies on reinforcement
+learning and other ML
+techniques to train.
+
+6
+
+Techniques
+Semi-Automated Techniques:
+• Dynamic Programming
+• Deformable Models
+Fully Automated Techniques:
+• Hough Transform
+• Graph Based Approaches
+
+7
+
+Reminder: Canny Limitations
+
+• There is no ideal value of σ!
+• Deep nets can help but do not solve the problem.
+8
+
+Interactive Delineation
+
+Image
+
+Gradient
+
+• The user provides the start and end points (red x).
+• The algorithm does the rest (yellow line).
+9
+
+Live Wire in Action
+
+Mortensen and Barrett, SIGGRAPH’95
+
+10
+
+1D Dynamic Programming
+
+xk
+k
+
+n
+
+h(x1, x2, …, xn) = −
+
+∑
+k=1
+
+n−1
+
+g(xk) +
+
+∑
+
+r(xk, xk+1)
+
+k=1
+
+r(xk, xk+1) = diff(ϕ(xk), ϕ(xk+1))
+where ϕ denotes the gradient orientation.
+
+11
+
+1D Dynamic Programming
+1
+
+2
+
+3
+
+…
+
+s
+
+N
+
+g
+
+• N Locations
+• Q Quantized values
+ Global optimum O(NQ2)
+
+12
+
+1D Dynamic Programming
+
+r
+
+r
+
+r
+
+r
+
+r
+
+r
+r
+r
+
+13
+
+2D Dynamic Programming
+Notations:
+s
+
+Start point
+
+L
+
+List of active nodes
+
+g
+c(u,v)
+d(v)
+
+c(u,v)
+
+u
+v
+
+Local costs for link u -> v
+s
+
+d(v)
+
+Total cost from s to v
+
+14
+
+Dijkstra Path Expansion
+
+Open nodes represent "unvisited" nodes. Filled nodes are
+visited ones, with color representing the distance: The
+greener, the shorter the path. Nodes in all the different
+directions are explored uniformly, appearing more-or-less as
+a circular wavefront.
+https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
+
+15
+
+Dijkstra’s Algorithm
+
+Maintain a sorted list of paths
+16
+
+Live Wire
+•
+
+Sorting is the expensive operation. Normally nlog(n), but can
+be reduced to log(n) if all costs are integer costs
+
+•
+
+Local costs computed using gradient:
+c(u,v) = 255 – ½ (g(u)+ g(v))
+
+•
+
+Diagonal penalized by multiplying cost of non diagonal edges
+by:
+
+•
+
+Add a constant cost for each edge.
+
+17
+
+Cost Expansion
+
+(a) Local cost map. (b) Seed point expanded. (c) 2 points expanded. (d) 5 points
+expanded. (e) 47 points expanded. (f) Completed cost path-pointer map with
+optimal paths shown from nodes with total costs 42 and 39.
+
+18
+
+Magnetic Lasso in Photoshop
+
+Integrating the LiveWire into a powerful interface that
+allows a user to correct mistakes yields a useful too.
+
+19
+
+Tracing Neurons
+
+▪ In the biomedical world, images are 3D cubes of data.
+▪ The approach extends naturally to tracking of 3D
+structures such as dendritic trees in the brain, blood
+vessels, etc …
+20
+
+Face Image
+
+21
+
+Live Wire
+
+22
+
+Limitations
+
+•
+•
+•
+
+The “optimal” path is not always the “best” one.
+Difficult to impose global constraints.
+The cost grows exponentially with the dimension
+of the space in which we work.
+
+--> Must often look for local, as opposed to global,
+optimum using gradient descent techniques.
+23
+
+Techniques
+Semi-Automated Techniques:
+• Dynamic programming
+• Deformable Models
+Fully Automated Techniques:
+• Hough transform
+• Graph Based Approaches
+
+24
+
+Snakes
+
+25
+
+2—D Snake
+
+Deformable contours that
+• Maximize the gradient along the curve;
+• Minimize their deformation energy.
+--> Interactive tools for contour detection that can be
+generalized to handle sophisticated models
+26
+
+Polygonal Approximation
+
+Weighting coefficient
+N
+1 N
+λ
+G(xi, yi) + −
+((2xi − xi−1 − xi+1)2 + (2yi − yi−1 − yi+1)2)
+E=−
+∑
+N+1∑
+N
+i=0
+i=1
+
+Average gradient
+
+Average sum of squared 2nd derivatives
+
+≈
+Average sum of square curvature
+
+27
+
+Matrix Notation
+
+28
+
+Local Optimum
+
+But K is not invertible!
+29
+
+Dynamics
+Embed curve in a viscous medium and solve at
+each step:
+
+0=
+0=
+
+dX ∂EG
+dX
+∂E
++α
+=
++ KX + α
+∂X
+dt
+∂X
+dt
+dY ∂EG
+dY
+∂E
++α
+=
++ KY + α
+∂Y
+dt
+∂Y
+dt
+30
+
+<latexit sha1_base64="bkovhkitHu+gcBRzGDTPTTT3hXg=">AAADY3icjVJNb9NAEN04QEsokBRuCGlEBEpBjexcgEOkCoQA9VIQobGykbVer+NV12uzuwYFy3+SG0cu/A7W+YCkRYWRVn7z5ut5NGEuuDau+73hNK9cvbaze711Y+/mrdvtzv5HnRWKshHNRKbGIdFMcMlGhhvBxrliJA0FOw3PXtbx089MaZ7JD2aes2lKZpLHnBJjqaDT+IpDNuOyZJ8kUYrMH1ctF2AIOFaEljhiwhB4FbyuYO2MK3gCxzAOjP1iIvKEQK/2Di1XmkOvOgB4BPg9nyXG9sy+WK93/Cf57cGieLj212W2weVjMa614UTnhLLS7Xs0rYYAm9TAUpd18Zfi/S3x/kK8/1v8v9T7W+r9/1Fv57Ywk9HmnoN21+27C4OLwFuBLlrZSdD+hqOMFimThgqi9cRzczMtiTKcCla1cKGZ3cMZmbGJhZKkTE/LxZFU8NAyEcSZsk8aWLCbFSVJtZ6noc1MiUn0+VhN/i02KUz8bFpymReGSbocFBcCTAb1xUHEFaNGzC0gVHGrFWhC7KKMvct6Cd75X74IRoP+8773btA9erHaxi66hx6gHvLQU3SE3qATNEK08cPZcdpOx/nZ3GvuN+8uU53GquYO2rLm/V89gQK7</latexit>
+
+Iterating
+
+At every step:
+δEG
++ KXt + α(Xt − Xt−1 )
+0=
+δX
+δEG
++ KYt + α(Yt − Yt−1 )
+0 =
+δY
+
+δEG
+⇒ (K + αI)Xt = αXt−1 −
+δX
+δEG
+⇒ (K + αI)Yt = αYt−1 −
+δY
+
+ Solve two linear equations at each iteration.
+
+31
+
+Derivatives of the Image Gradient
+…
+
+…
+
+• We have values of g for integer values
+of x and y.
+• But xi and yi are not integers.
+
+y+1
+
+g(x, y + 1)
+
+y
+
+g(x, y)
+
+g(x + 1,y)
+
+x
+
+x+1
+
+—> We need to interpolate.
+32
+
+Bilinear Interpolation
+
+33
+
+Open and Closed Snakes
+
+34
+
+Cysts Tumors in Ultrasound Images
+
+Drawn by the physician.
+
+Refined by the Computer.
+Luo et al., 2017
+
+35
+
+Network Snakes
+
+--> Updated field boundaries.
+Butenuth, PhD 2008
+
+36
+
+Ribbon Snakes
+
++1/2W t KWW
+
+37
+
+<latexit sha1_base64="e8Xqs1vnOxByzZ8wjQ+eCKE2e6o=">AAAC8XicjVJLj9MwEHbCq5THduHIZUQFWkBbJXsBDkgrEALEZZEoadVU0cSdtNY6TrAdpCrKz+DCARBX/g03/g3uY6XS7mFHGunzNzOfPTNOSymMDYK/nn/p8pWr11rX2zdu3rq919m/88kUlebU54Us9CBFQ1Io6lthJQ1KTZinkqL09NUiHn0hbUShPtp5SeMcp0pkgqN1VLLvteKUpkLV9Fmh1jh/3LQP3sMTiFGWM4R3j2CQWHgIL5yfkY6q7WHYwKGjMo28jickLcLr5E0DZ4dBA3G8LTbcFRteRGzYwDlq0UJtUyy6iFa00opJTTbaTjrdoBcsDXZBuAZdtraTpPMnnhS8yklZLtGYURiUdlyjtoJLatpxZahEfopTGjmoMCczrpcra+CBYyaQFdq5srBkNytqzI2Z56nLzNHOzHZsQZ4XG1U2ezauhSorS4qvLsoqCbaAxf5hIjRxK+cOINfCvRX4DN2orPslbTeEcLvlXdA/6j3vhR+Ouscv19NosXvsPjtgIXvKjtlbdsL6jHuF99X77v3wrf/N/+n/WqX63rrmLvvP/N//ADu133Y=</latexit>
+
+Dynamics Equations
+(K + αI)Xt
+
+=
+
+(K + αI)Yt
+
+=
+
+(K + αI)Wt
+
+=
+
+δEG
+αXt−1 −
+δX
+δEG
+αYt−1 −
+δY
+δEG
+αWt−1 −
+δW
+
+ Solve three linear equations at each
+iteration.
+
+38
+
+Delineating Roads
+
+39
+
+Delineating Roads
+
+40
+
+Evaluation
+
+It takes far fewer clicks to trace the roads using semiautomated tools than doing entirely by hand.
+41
+
+Modeling a Ridge Line in 3D
+
+Three different views
+Synthetic side view.
+
+42
+
+Modeling a Building in 3D
+
+43
+
+3D Snakes
+
+Smooth 3—D snake
+
+Rectilinear 3—D snake
+44
+
+<latexit sha1_base64="3pcOVvrNjD0FyHDXvAQU//+UkDk=">AAAC8nicjVJLb9QwEHbCq11eWzhyGbECFVBXSS/QA1IFQoC4FIml+8gqmjiTXauOk9oO0irK3+DCARBXfg03/g3eR6Wy20NHGunzNzOfPeNJSimMDYK/nn/l6rXrN7a2Wzdv3b5zt71z77MpKs2pxwtZ6H6ChqRQ1LPCSuqXmjBPJB0nJ6/n8eMvpI0o1Cc7K2mc40SJTHC0jop3vO0ooYlQNZ0q1BpnT5vW7gd4BhHKcorw/gn0YwuP4aXzM9JRtd0LG9hzVKaR11FK0iK8id82cHboNxBF62KDDbHBZbQGDVwgNtwQG15GbLgUi0il59uO252gGywMNkG4Ah22sqO4/SdKC17lpCyXaMwoDEo7rlFbwSU1ragyVCI/wQmNHFSYkxnXiz9r4JFjUsgK7VxZWLDnK2rMjZnlicvM0U7NemxOXhQbVTZ7Ma6FKitLii8vyioJtoD5AkAqNHErZw4g18K9FfgU3aysW5P5EML1ljdBb7970A0/7ncOX62mscUesIdsl4XsOTtk79gR6zHuld5X77v3w6/8b/5P/9cy1fdWNffZf+b//gfeut+T</latexit>
+
+Dynamics Equations
+
+(K + αI)Xt
+
+=
+
+(K + αI)Yt
+
+=
+
+(K + αI)Zt
+
+=
+
+δEG
+αXt−1 −
+δX
+δEG
+αYt−1 −
+δY
+δEG
+αZt−1 −
+δZ
+
+ Solve three linear equations at each
+iteration.
+
+45
+
+Constrained Optimization
+
+• Minimize F(S) subject to C(S) = 0
+
+46
+
+Site Modeling (1996)
+
+47
+
+Site Modeling (2019)
+
+48
+
+Level Sets
+
+49
+
+Implicit vs Explicit
+
+xi, yi
+xi+1, yi+1
+
+z = Φ(x, y) ,
+z > 0 outside,
+z < 0 inside,
+—> Consider the curve as the zero level set of
+a surface.
+
+50
+
+Topology Changes are Possible
+z = Φ(x, y, t1)
+
+z = Φ(x, y, t2)
+
+51
+
+<latexit sha1_base64="lDUlTsdzl3MgKv+zgz14k2Vlrss=">AAACxXicbVFNb9NAEF2brxI+GuDIZUQFKlREji/AAamilx6DRGilbBKNN+NklfXa7K5LLGPxH7lx4L+wiS21tIw00tN7b2Z3ZpJCSeui6HcQ3rp95+69vfu9Bw8fPd7vP3n61ealETQWucrNeYKWlNQ0dtIpOi8MYZYoOkvWJ1v97IKMlbn+4qqCphkutUylQOepef8PT2gpdU3fNBqD1ZumF8Er+OiTj1Zy7uAIvMUhHPI1FgW+Bq4odT+Aa0wU7lzAjVyuthzvAc+SfFPD9xUZggbaqq4l8NSgqHed682maUHVzOK3cUdWHXkpHnXgUpnFTdtjM4tbtfIUQI+TXlwdZd4/iAbRLuAmGHbggHUxmvd/8UUuyoy0EwqtnQyjwk1rNE4KRU2Pl5YKFGtc0sRDjRnZab07QwMvPbOANDc+tYMde7WixszaKku8M0O3ste1Lfk/bVK69P20lrooHWnRPpSWClwO25vCQhoSTlUeoDDS/xXECv2mnb/8dgnD6yPfBON48GEw/BwfHH/qtrHHnrMX7JAN2Tt2zE7ZiI2ZCE4CGZjAhqehDl140VrDoKt5xv6J8OdfAKzaOg==</latexit>
+sha1_base64="NYGFU5Kvac/pnyoXKTZRB+FiXrU=">AAAB+XicbVBNT8JAEJ36ifhV9OhlI5hgQkjLRT2YEL14xMQKCTRkuyywYfuR3a1aKz/Fiwc1Xv0n3vw3LtCDgi+Z5OW9mczM8yLOpLKsb2NpeWV1bT23kd/c2t7ZNQt7tzKMBaEOCXkoWh6WlLOAOoopTluRoNj3OG16o8uJ37yjQrIwuFFJRF0fDwLWZwQrLXXNQukRnaNOY8jKD5Wkoo5LXbNoVa0p0CKxM1KEDI2u+dXphST2aaAIx1K2bStSboqFYoTTcb4TSxphMsID2tY0wD6Vbjo9fYyOtNJD/VDoChSaqr8nUuxLmfie7vSxGsp5byL+57Vj1T91UxZEsaIBmS3qxxypEE1yQD0mKFE80QQTwfStiAyxwETptPI6BHv+5UXi1KpnVfu6VqxfZGnk4AAOoQw2nEAdrqABDhC4h2d4hTfjyXgx3o2PWeuSkc3swx8Ynz/JcJHx</latexit>
+
+Curve Evolution
+
+Consider the curve as the zero level set of the surface:
+
+z = Φ(x, y, t)
+Evolution equation:
+0
+
+=
+
+where κ
+
+=
+
+Φt + β(κ) |rΦ|
+Φxx Φ2y 2Φxy Φx Φy + Φyy Φ2x
+Φ2x + Φ2y
+
+curvature
+
+β(κ) is the speed at which the surface deforms.
+52
+
+<latexit sha1_base64="yN2lJWGvMDL+91Bc+B6PcjitelE=">AAACA3icbZC7SgNBFIZn4y3G26plmsFEiIVhN41aCEEbywiuCWSXcHYymwyZvTAzK4QlhY2vYmOhYutL2Pk2TpItNPGHgY//nMOZ8/sJZ1JZ1rdRWFldW98obpa2tnd298z9g3sZp4JQh8Q8Fh0fJOUsoo5iitNOIiiEPqdtf3Q9rbcfqJAsju7UOKFeCIOIBYyA0lbPLFddnyrANXcESQIn+BKf4jlXe2bFqlsz4WWwc6igXK2e+eX2Y5KGNFKEg5Rd20qUl4FQjHA6KbmppAmQEQxoV2MEIZVeNjtigo+108dBLPSLFJ65vycyCKUch77uDEEN5WJtav5X66YqOPcyFiWpohGZLwpSjlWMp4ngPhOUKD7WAEQw/VdMhiCAKJ1bSYdgL568DE6jflG3bxuV5lWeRhGV0RGqIRudoSa6QS3kIIIe0TN6RW/Gk/FivBsf89aCkc8coj8yPn8A04aV2A==</latexit>
+
+Level Set Smoothing
+
+Smoothing occurs when
+
+β(κ) = −κ
+
+Desirable properties:
+• Converges towards circles.
+• Total curvature decreases.
+• Number of curvature extrema and zeros of curvature decreases.
+
+Relationship with Gaussian smoothing:
+• Analogous to Gaussian smoothing of boundary over the short run, but does not
+cause self-intersections or overemphasize elongated parts.
+• Can be implemented by Gaussian smoothing the characteristic function of a region.
+
+53
+
+<latexit sha1_base64="zWGJgk47GiNrmqMaviOyynnwxXk=">AAAC2HicbVJLi9RAEO7E1xofO+rRS+GgjC4OyYKoC8KiCO5tBGd3IR2GTk9lpplOJ9vdWR2yOXhQ8epP8+a/8CfYkwmyzlpQ8PHV46uq7rSUwtgw/OX5ly5fuXpt63pw4+at29u9O3cPTVFpjmNeyEIfp8ygFArHVliJx6VGlqcSj9LFm1X86BS1EYX6YJclJjmbKZEJzqyjJr3fNMWZUDWeKKY1Wz5pgOZp8ammaQZvTwtZrfIAT6q2YK8BoA5PIQjhEbxyTkdzMbGwA66TZTCgC1aW7DFQiZk9A6pYKlmbBVSL2XzF0TgcPuN5EnRi8HGOGveg2WyyllhMDmAQwVOgWBoh3Tx/RWjQRrtRMs14HTV1tNPJHjQBRTU9t96k1w+HYWtwEUQd6JPORpPeTzoteJWjslwyY+IoLG1SM20Fl+j6VwZLxhdshrGDiuVokrp9mQYeOmYKWaGdKwste76iZrkxyzx1mTmzc7MZW5H/i8WVzV4ktVBlZVHxtVBWSbAFrJ4ZpkIjt3LpAONauFmBz5k7j3WfIXBHiDZXvgjGu8OXw+j9bn//dXeNLXKfPCADEpHnZJ+8IyMyJtw79M68L95XP/Y/+9/87+tU3+tq7pF/zP/xB5Ve2/Y=</latexit>
+
+Shape Recovery
+
+Evolution equation:
+where:
+
+0
+
+=
+
+Φt + () |rΦ|
+
+()
+
+=
+
+kI
+
+=
+
+kI (1 ✏)
+1
+1 + rI
+
+ Expansion stops at the boundaries.
+54
+
+Level Sets
+
+55
+
+Level Sets
+
+56
+
+Techniques
+Semi-Automated Techniques:
+• Dynamic programming
+• Deformable Models
+Fully Automated Techniques:
+• Hough transform
+• Graph Based Approaches
+
+57
+
+Finding Lines
+
+Input:
+• Canny edge points.
+• Gradient magnitude and orientation.
+Output:
+• All straight lines in image.
+58
+
+Hough Transform
+
+Given a parametric model of a curve:
+• Map each contour point onto the set of parameter
+values for which the curves passes through it.
+• Find the intersection for all parameter sets thus
+mapped.
+
+59
+
+<latexit sha1_base64="rO1nx5mZFD7yLtBitKKVhPrv6fU=">AAACKnicbVDLSsNAFJ3Ud31VXboZLEJFKYkKCiL42LhUsA9oQplMb9qhk0mcuRFL8Xvc+CtuXCji1g8xaSP4OjDDmXPu5c49fiyFQdt+swoTk1PTM7NzxfmFxaXl0spq3USJ5lDjkYx002cGpFBQQ4ESmrEGFvoSGn7/PPMbt6CNiNQ1DmLwQtZVIhCcYSq1S6d31OWRqbjYA2Rb2wPqGqG+nvSYauoe0Z3ssqkr4YaOrZzHotgule2qPQL9S5yclEmOy3bp2e1EPAlBIZfMmJZjx+gNmUbBJdwX3cRAzHifdaGVUsVCMN5wtOo93UyVDg0inR6FdKR+7xiy0JhB6KeVIcOe+e1l4n9eK8Hg0BsKFScIio8HBYmkGNEsN9oRGjjKQUoY1yL9K+U9phnHNN0sBOf3yn9Jfbfq7FV3r/bLJ2d5HLNknWyQCnHIATkhF+SS1AgnD+SJvJBX69F6tt6s93Fpwcp71sgPWB+fxBijyA==</latexit>
+
+Voting Scheme
+y
+
+r
+
+θ
+
+x cos(θ) + y sin(θ) = r , 0 ≤ θ ≤ π
+
+x
+
+60
+
+Synthetic Lines
+
+Image
+
+Contours
+
+Accumulator
+
+Lines
+
+Once the contour points are associated to
+individual lines, you can perform least
+squares fitting.
+61
+
+Real Lines
+
+62
+
+Road Lines
+
+63
+
+Road Edges
+
+Kong et al. CVPR’09
+
+64
+
+Generic Algorithm
+•
+
+Quantize parameter space with 1 dimension per
+parameter.
+
+•
+
+Form an accumulator array.
+
+•
+
+For each point in the gradient image such that
+the gradient strength exceeds a threshold,
+increment appropriate element of the
+accumulator.
+
+•
+
+Find local maxima in the accumulator.
+
+65
+
+Iris Detection
+
+66
+
+Occlusions
+In theory:
+
+In practice:
+
+67
+
+Circle Detection
+
+Circle of equation:
+
+Therefore:
+
+68
+
+Gradient Orientation
+
+Can vote either along the entire circle or
+only at two points per value of the radius.
+69
+
+Simple Image
+Voting scheme:
+
+Result:
+
+70
+
+Eye Image
+Image and accumulator:
+
+Best four candidates:
+
+71
+
+Ellipses
+
+72
+
+Ellipse Detection
+Ellipse of equation:
+
+Therefore:
+
+73
+
+<latexit sha1_base64="+2a+YdAkK5gXAKPWKNIZ/6djIOk=">AAAB7XicbZBNSwMxEIZn61etX1WPXoJF8FR2RdBj0YvHCvYD2qVk07SNzSZLMiuUpf/BiwdFvPp/vPlvTNs9aOsLgYd3ZsjMGyVSWPT9b6+wtr6xuVXcLu3s7u0flA+PmlanhvEG01KbdkQtl0LxBgqUvJ0YTuNI8lY0vp3VW0/cWKHVA04SHsZ0qMRAMIrOanZxxJH2yhW/6s9FViHIoQK56r3yV7evWRpzhUxSazuBn2CYUYOCST4tdVPLE8rGdMg7DhWNuQ2z+bZTcuacPhlo455CMnd/T2Q0tnYSR64zpjiyy7WZ+V+tk+LgOsyESlLkii0+GqSSoCaz00lfGM5QThxQZoTblbARNZShC6jkQgiWT16F5kU1cHx/Wand5HEU4QRO4RwCuIIa3EEdGsDgEZ7hFd487b14797HorXg5TPH8Efe5w+j+Y8o</latexit>
+sha1_base64="ZLjv+jTFA+6jjNTHYobnFkc/lug=">AAAD4HicjVPNb9MwFHcTPkb56uDIxaIaatE2JeMAF6QJLhwHotukOqqeHSexljiR7cCqKCcuHECIK38WN/4RzrhJp7VLETwp0svvvd/vfdimRSq08bxfPce9dv3Gza1b/dt37t67P9h+cKzzUjE+YXmaq1MKmqdC8okRJuWnheKQ0ZSf0LPXi/jJB660yOV7My94kEEsRSQYGAvNtnu/CeWxkBWkIpZP6z6JFLAqPK+rkJiEG6jxk5d4DzDRQo5aaIwJuUicrydikugCGK+eZVmNKSYs12usIhF4ozXkjObnFRiQ9Wiv28lut+bYam7W26wKq2Ps0tX2mv7+obUqhdtuoK5ojYmF1oRawE477or8hdfQ3ok4MaBU/hG38H8M1QrS2mriy7rjPuEyvDzYxU+YszLj0tSzwdDb9xrDXcdfOkO0tKPZ4Ce5ILMUtJ76XmGCCpQRLOVWvtTcHvwZxHxqXQkZ10HVXNAa71gkxFGu7CcNbtBVRgWZ1vPM7mMnA5Poq7EFuCk2LU30IqiELErDJWsLRWWKTY4Xtx2HQnFm0rl1gClhe8UsAbstY99E3y7Bvzpy1zk+2Pet//ZgePhquY4t9Ag9RiPko+foEL1BR2iCmBM4n5wvzleXup/db+73NtXpLTkP0Zq5P/4AJKEnqA==</latexit>
+sha1_base64="PdhWVh/tEl8E9PYvf/tqc4f5kVI=">AAACEHicbZDLSsNAFIYnXmu9RV26GSyiCymJCLosunFZwV4gDWUymbRDJxdmTsQQ8ghufBU3LhRx69Kdb+O0DaitPwz8fOcczpzfSwRXYFlfxsLi0vLKamWtur6xubVt7uy2VZxKylo0FrHsekQxwSPWAg6CdRPJSOgJ1vFGV+N6545JxePoFrKEuSEZRDzglIBGffPI6QWS0Ny/L3K/B0MGpDgpUfaD3L5Zs+rWRHje2KWpoVLNvvnZ82OahiwCKohSjm0l4OZEAqeCFdVeqlhC6IgMmKNtREKm3HxyUIEPNfFxEEv9IsAT+nsiJ6FSWejpzpDAUM3WxvC/mpNCcOHmPEpSYBGdLgpSgSHG43SwzyWjIDJtCJVc/xXTIdFpgM6wqkOwZ0+eN+3Tuq39zVmtcVnGUUH76AAdIxudowa6Rk3UQhQ9oCf0gl6NR+PZeDPep60LRjmzh/7I+PgGwe6eSg==</latexit>
+sha1_base64="0j/K2RdRegOOeNjJV3/AGql5IW4=">AAACEXicbZDLSsNAFIYn9VbrLerSTbAIXWhJRNBl0Y3LCvYCSSiTyaQdOrkwcyKGkFdw46u4caGIW3fufBunbUBt/WHg5zvncOb8XsKZBNP80ipLyyura9X12sbm1vaOvrvXlXEqCO2QmMei72FJOYtoBxhw2k8ExaHHac8bX03qvTsqJIujW8gS6oZ4GLGAEQwKDfSG7QQCk9zPitx3YEQBF8cnJbv/Ye5Ar5tNcypj0VilqaNS7YH+6fgxSUMaAeFYStsyE3BzLIARTouak0qaYDLGQ2orG+GQSjefXlQYR4r4RhAL9SIwpvT3RI5DKbPQU50hhpGcr03gfzU7heDCzVmUpEAjMlsUpNyA2JjEY/hMUAI8UwYTwdRfDTLCKg1QIdZUCNb8yYume9q0lL85q7cuyziq6AAdogay0DlqoWvURh1E0AN6Qi/oVXvUnrU37X3WWtHKmX30R9rHNzcMnoE=</latexit>
+sha1_base64="h9d6wjmnVGPhUxkpPKdF7mEh2Nc=">AAAB63icbZDNSgMxFIVv6l+tf1WXboJFcFVmRNBl0Y3LCrYW2qFk0kwnNMkMSUYoQ1/BjQtF3PpC7nwbM+0stPVA4OPce8m9J0wFN9bzvlFlbX1jc6u6XdvZ3ds/qB8edU2Saco6NBGJ7oXEMMEV61huBeulmhEZCvYYTm6L+uMT04Yn6sFOUxZIMlY84pTYwhqkMR/WG17Tmwuvgl9CA0q1h/WvwSihmWTKUkGM6fteaoOcaMupYLPaIDMsJXRCxqzvUBHJTJDPd53hM+eMcJRo95TFc/f3RE6kMVMZuk5JbGyWa4X5X62f2eg6yLlKM8sUXXwUZQLbBBeH4xHXjFoxdUCo5m5XTGOiCbUunpoLwV8+eRW6F03f8f1lo3VTxlGFEziFc/DhClpwB23oAIUYnuEV3pBEL+gdfSxaK6icOYY/Qp8/E4qOPw==</latexit>
+
+Gradient Orientation
+dy dx
+[ ,− ]
+dθ
+dθ
+φ
+
+For each ellipse point:
+θ
+
+dx
+= −a sin(θ)
+dθ
+dx dy
+[ , ]
+dy
+dθ dθ
+= b cos(θ)
+dθ
+dx dy
+φ = atan(− , )
+dθ dθ
+= atan(a sin(θ), b cos(θ))
+a
+= atan( tan(θ))
+b
+a
+tan(φ) = tan(θ)
+b
+b
+⇒ θ = atan( tan(φ))
+The accumulator need only be incremented for this θ.
+a
+
+74
+
+Generalized Hough
+
+Finding a becher …
+
+… or a lake.
+75
+
+Generalized Hough
+[xc,yc]
+
+f
+
+r(f)
+
+p
+
+• We want to find a shape defined by its boundary
+points in terms of the location of a reference point
+[xc,yc].
+• For every boundary point p, we can compute the
+displacement vector r = [xc,yc] – p as a function of
+local gradient orientation f.
+Ballard. , PR’81
+
+76
+
+R-Table
+
+• Set of potential displacement vectors r,a
+given the boundary orientation f.
+--> Generalized template matching.
+77
+
+Algorithm
+1.
+
+Make an R-table for the shape to be located.
+
+2.
+
+Form an accumulator array of possible reference points
+initialized to zero.
+
+3.
+
+For each edge point,
+•
+
+Compute the possible centers, that is, for each table entry, compute
+
+•
+
+Increment the accumulator array
+
+78
+
+Real-Time Hough
+
+79
+
+Accumulator
+
+80
+
+From Delineation To Detection
+
+Visual codeword with
+displacement vectors
+
+Training image
+
+Instead of indexing displacements by gradient
+orientation, index by “visual codeword”.
+Leibe & al. , ECCV’04
+
+81
+
+Limitations
+Computational cost grows exponentially with
+the number of model parameters:
+Only works for objects whose shape can be
+defined by a small number of parameters.
+Approach is robust but lacks flexibility.
+
+82
+
+From Delineation To Detection
+
+Test image
+
+Instead of indexing displacements by gradient
+orientation, index by “visual codeword”.
+Leibe & al. , ECCV’04
+
+83
+
+Optional: Training
+
+1. Use clustering to build codebook of patches around extracted
+interest points.
+2. Map the patch around each interest point to closest codebook entry.
+3. For each codebook entry, store all positions it was found, relative to
+object center.
+
+--> Build an R table.
+
+84
+
+Optional: Testing
+
+1. Given test image, extract patches, match to codebook entry.
+2. Cast votes for possible positions of object center.
+3. Search for maxima in voting space.
+4. Extract weighted segmentation mask based on stored masks
+for the codebook occurrences.
+85
+
+Pedestrian Detection
+
+Gall & al. , PAMI’11
+
+86
+
+Occlusion Handling
+
+87
+
+Deep Hough Transform
+
+“Hough space”
+
+ρ
+θ
+
+Hough
+Transform
+
+Deep feature map
+
+y
+
+“Hough space”
+
+Convolutions in
+parametric space
+
+ρ
+
+θ
+
+ρ
+
+Inverse
+Hough
+Transform
+
+θ
+
+Deep feature map
+
+y
+x
+
+x
+Zhao, PAMI’21
+
+88
+
+Techniques
+Semi-Automated Techniques:
+• Dynamic programming
+• Deformable Models
+Fully Automated Techniques:
+• Hough transform
+• Graph Based Approaches
+
+89
+
+Magnitude and Orientation
+
+90
+
+Minimum Spanning Tree
+Image modeled as a graph:
+
+-> Generate minimal distance graph O(N log(N) algorithm)
+91
+
+Delineation 1998
+Detect road centerlines
+Find generic paths
+Apply semantic filter
+Find road widths
+
+Fischler & Heller, 1998.
+
+92
+
+From Image To Roads
+
+93
+
+Road Editing
+
+94
+
+Dendrites And Axons
+
+Fluorescent neurons in the adult mouse brain
+imaged imaged in vivo through a cranial window
+using a 2-photon microscope.
+95
+
+Delineation 2012: Neurites …
+
+Filtered Image
+
+Graph
+
+Maximum Likelihood Subtree
+
+96
+
+.. and Roads
+
+Image
+
+Filtered image
+
+Graph
+
+Weighted graph
+
+Subtree
+
+—> Machine plays a crucial role to ensure that the
+same algorithm works in different situations.
+Turetken et al, CVPR’12.
+
+97
+
+Histogram of Gradient Deviations
+
+—> One histogram per radius interval plus four
+geometric features (curvature, tortuosity, .…).
+98
+
+Optional: Embedding
+
+—> Same length feature vectors whatever
+the actual length of the path.
+99
+
+Optional: Path Classification
+
+100
+
+Optional: Finding the Best Tree
+
+101
+
+Optional: QMIP Formulation
+
+102
+
+Roads
+
+103
+
+Brainbow Images
+
+104
+
+Blood Vessels
+
+105
+
+Deep Tsunami
+
+106
+
+Reminder: AlexNet (2012)
+
+Task: Image classification
+Training images: Large Scale Visual Recognition Challenge 2010
+Training time: 2 weeks on 2 GPUs
+Major Breakthrough: Training large networks
+has now been shown to be practical!!
+107
+
+Delineation 2012
+These two steps are closely related!
+
+Turetken et al., PAMI’16
+
+108
+
+Reminder: U-Net
+Image
+
+Tubularity Map
+
+Downsampling
+
+Upsampling
+Skip connection
+
+Skip connection
+
+—> Train a U-Net to output a tubularity map.
+109
+
+<latexit sha1_base64="y6uVcXpeee8E8ZCbyyhOx0GC6pw=">AAADSHicbVJNb9QwEE1SPkr4auHIZcQWaSva1aYcAKFKFVw4gFQkllZaL5HjTDZWEzuyHdpg5e9x4caN/8CFAyBuONnVClpGsvNm5o3yPDNJVXBtxuOvfrB26fKVq+vXwus3bt66vbF5552WtWI4YbKQ6jihGgsucGK4KfC4UkjLpMCj5ORFlz/6gEpzKd6apsJZSeeCZ5xR40Lxph8TIblIURh4zQUv+UcMyTQkZSLPLMl1RRna3UesbFt4FduEYTu0JMngrN3pv9C08Ax6eNpuwz7sAskUZTZqLW+B6LqMo/f2EBwuMDNTsE0bC+fIOQxJTk3n8214CMPIFUPTOYtstNvnYUEAovg8NzOAkMzC0xwVOpTgnAvLDXbS2xBIB2GrL+xEOXn7kMV2qXClfntrZ0VehraAC6DC3VVtgLtW4TlO4zgmR2BSKdSVFCkXc5grWYsUjKpNPnIFKNKVoHhjMB6Ne4OLIFqCgbe0w3jjC0klq0s3EVZQrafRuDIzS5XhrHAPJLVGN5QTJ27qoKAl6pntN6GFBy6SQiaVO26iffTvCktLrZsyccySmlyfz3XB/+WmtcmezGzfGBRs8aOsLsBI6NYKUq6QmaJxgDLFnVZgOXVrYNzyha4J0fknXwSTvdHTUfRmb3DwfNmNde+ed98bepH32DvwXnqH3sRj/if/m//D/xl8Dr4Hv4LfC2rgL2vuev/YWvAHyqQHuA==</latexit>
+
+Training a U-Net
+Train Encoder-decoder U-Net architecture using binary cross-entropy
+
+Minimize
+
+1X
+Lbce (x, y; w) = −
+[yni log(ŷi ) + (1 − yi ) log(1 − ŷi )]
+i 1
+P
+
+where
+• ŷ = fw (x),
+• x in an input image,
+• y the corresponding ground truth.
+
+Mosinska et al, CVPR’18.
+
+110
+
+Network Output
+
+Image
+
+BCE Loss
+
+Ground truth
+
+111
+
+Accounting for Topology
+• The yellow road is
+partially hidden by
+trees.
+
+A
+
+• A standard U-Net
+misses the hidden
+portion.
+
+B
+A
+Onur et al., PAMI’21
+
+• We add to the loss
+function used to
+train the network a
+term
+that
+encourages points
+such as A and B to
+be separated.
+• The re-trained UNet now finds the
+complete road.
+
+B
+112
+
+Iterative Refinement
+1
+
+Image
+
+2
+
+Iter 1
+
+Iter 2
+
+3
+
+Iter 3
+
+Ground truth
+
+Use the same network to progressively refine the results
+keeping the number of parameters constant
+113
+
+Delineation Steps
+
+1.Compute a probability map.
+2. Sample and connect the samples.
+3. Assign a weight to the paths.
+4. Retain the best paths.
+
+114
+
+Delineation 2019
+These two steps are performed by the same network
+
+Mosinska et al, PAMI’19.
+
+115
+
+Dual Use U-Net
+Image
+and
+Binary Mask
+
+Tubularity Map
+
+[0.991]
+Path score
+
+116
+
+Streets Of Toronto
+
+— False negatives
+— False positives
+
+117
+
+Dendrites And Axons
+
+118
+
+Typical Annotations
+
+Original Image
+
+“Ground truth” + Mistakes
+
+—> Human annotations are often imprecise.
+
+119
+
+Correcting the Annotations
+
+To account for annotation inaccuracies during training, we jointly train
+the network and adjust the annotations while preserving their topology.
+Oner et al. , arXiv’21
+
+120
+
+Annotations as Network Snakes
+
+N
+
+∑
+i=1
+
+ℒ(D(ci), yi) + R(ci)
+
+{
+
+Θ*, C* = argminΘ,C
+
+Distance between network
+output and annotations.
+
+where
+• The yi are the network outputs;
+• The ci are the annotation vertices;
+• C is the vector obtained by concatenating all the ci;
+• D is a distance transform ;
+• ℒ is the MSE loss;
+• R is a regularization term.
+121
+
+Snake Optimization
+
+122
+
+Improved Results
+
+Annotated image
+
+Vanilla U-Net
+
+Network snakes
+
+123
+
+On the Job
+
+The new job is good, we do of course a lot of Deep Learning, but also some
+good old-school computer vision e.g. registration 😉 So the material
+from Computer Vision class is deﬁnitely helpful and I wouldn't change it to
+another all-Deep Learning class (even in the light of today's Turing Award).
+Best,
+Agata
+
+124
+
+1998 - 2038
+
+ℒ#$%
+!
+
+ℒ&'(
+
+1998
+
+2018
+
+?
+2038
+
+It is difficult to make predictions, especially about the future.
+Sometimes attributed to Niels Bohr.
+
+125
+
+In Short
+• Edge and image information is noisy.
+• Models are required to make sense of it.
+ An appropriate combination of graphbased techniques, machine learning, and
+semi-automated tools is required.
+
+126
+
+

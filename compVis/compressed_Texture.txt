@@ -1,0 +1,608 @@
+Texture
+
+• What is texture?
+• Texture analysis
+• Deep Texture
+
+1
+
+Reminder: Homogeneous or Not?
+
+What is homogeneous in some
+parts of these images are the
+statistical properties, not the
+actual pixel values.
+
+2
+
+Texture-Based Segmentation
+
+?
+Ideally, we would like to:
+• Assign to individual pixels whose texture is similar the
+same values to form a textural image.
+• Evaluate homogeneity both in the original image and
+in the textural one.
+3
+
+Texture-Based Edges
+
+Similarly, we would like to
+be able to find boundaries
+between textures.
+4
+
+What is Texture?
+
+Repetition of a basic pattern:
+• Structural
+• Statistical
+ Non local property, subject to distortions.
+5
+
+Structural Textures
+
+Repetitive Texture Elements (Texels)
+A texel represents the smallest graphical element in a
+two-dimensional texture that creates the impression of
+a textured surface.
+6
+
+Statistical Textures
+
+Homogeneous Statistical Properties
+
+7
+
+Textured vs Smooth
+
+A “featureless” surface can be regarded as the
+most elementary spatial texture:
+• Microstructures define reflectance properties.
+• They may be uniform or smoothly varying.
+ Texture is a scale dependent phenomenon
+
+8
+
+Scale Dependence
+
+At these two different scales, the texture seems very different.
+
+9
+
+Structural vs Statistical
+• Segmenting out texels is difficult or impossible in most real
+images.
+
+What are the fundamental
+texture primitives in this
+image?
+
+• Numeric quantities or statistics that describe a texture can be
+computed from the gray levels or colors alone.
+ The statistical approach is less intuitive, but more effective in
+practice.
+10
+
+Creating Textural Images
+• Because texture is non-local, the texture of individual
+pixels must be estimated using neighborhoods that
+surround them:
+
+• For each pixel, compute a feature vector using either
+an image patch or a set of filters.
+• Run a classification algorithm to assign a texture value
+to each pixel.
+11
+
+Reminder: Mitochondria
+
+•
+•
+
+Compute image statistics for each superpixel.
+Train a classifier to assign a probability to be
+within a mitochondria.
+—> We used the super pixels to compute local
+statistics.
+12
+
+Textural Metrics
+Spectral metrics:
+• Texture is characterized by the properties of its Fourier
+transform.
+
+Statistical Metrics:
+• Texture is as statistical property of the pixels’ intensity and
+color in a region.
+
+Deep Net Metrics:
+• They have now mostly superseded the others.
+• They encompass the earlier concepts.
+
+13
+
+Reminder: Discrete Fourier Transform
+
+F(μ, ν) =
+
+f(x, y) =
+
+1
+
+M−1 N−1
+
+1
+
+M−1 N−1
+
+∑
+M*N ∑
+x=0 y=0
+∑
+M*N ∑
+μ=0 ν=0
+
+f(x, y)e −2iπ(μx/M+νy/N)
+F(μ, ν)e +2iπ(μx/M+νy/N)
+
+The DFT is the discrete equivalent of the 2D Fourier transform:
+• The 2D function f is written as a sum of sinusoids.
+• The DFT of f convolved with g is the product of their DFTs.
+
+14
+
+Spectral Analysis
+Sheep
+
+v
+
+y
+
+Lines in the DFT modulus
+images capture the main
+orientations in the image.
+
+DFT Modulus
+
+x
+Building
+
+u
+DFT Modulus
+
+15
+
+Texture Analysis
+
+Angular bins
+in |DFT| image
+
+Radial bins
+in |DFT| image
+
+Angular and radial bins in the Fourier domain
+capture the directionality and fluctuation speed
+of an image texture, respectively.
+16
+
+Fourier Texture Classification
+F
+o
+r
+e
+s
+t
+
+M
+u
+d
+F
+i
+e
+l
+d
+s
+
+P
+o
+n
+d
+s
+V
+i
+l
+l
+a
+g
+e
+W
+a
+t
+e
+r
+
+• For some types of textures, the Fourier spectra are easily distinguishable.
+• A classifier can be trained to tell them appart.
+• However, one must have the same texture in the whole image patch.
+
+17
+
+Limitations
+• DFT on small patches is subject to severe
+boundary effects.
+• Only applicable if texture is uniform over
+large areas.
+• Results can be improved by using wavelets
+instead, but only up to a point.
+—> More local metrics are required.
+18
+
+Statistical Metrics
+First order gray-level statistics:
+• Statistics of single pixels in terms of histograms.
+• Insensitive to neighborhood relationships.
+Second order gray-level statistics:
+• Statistics of pixel pairs.
+Filter-based measures:
+• Statistics of whole neighborhoods.
+
+19
+
+Simple First Order Measure
+N
+
+Histogram of gradient orientations
+
+θ
+
+The orientation histogram gives a clue to the
+orientation of the underlying plane.
+20
+
+More First Order Measures
+Edge Density and Direction:
+• Edge detection as a first step in texture analysis.
+• The number of edge pixels in a fixed-size region tells us how busy
+that region is.
+• The directions of the edges also help characterize the texture
+
+Edgeness per unit area:
+• { p : gradient_magnitude(p) ≥ threshold}| / N where N is the unit area or
+region.
+
+Edge magnitude and direction histograms:
+• { HG, Ht}
+
+21
+
+Second Order Measures
+d
+
+q
+
+Histogram of the co-occurrence of particular intensity values
+in the image.
+• Specified in terms of geometric relationships between pixel
+pairs:
+• Distance
+• Orientation
+
+• P(i,j,d,θ) Frequency with which a pixel with value j occurs at
+distance d and orientation θ from a pixel with value i.
+22
+
+Simple Example
+1 2 3 1⎤
+1 3 1 1⎥⎥
+If
+0 2 2 1⎥ ,
+⎥
+2 0 3 1⎥
+0 0 0 3⎥⎦
+⎡4 1 1 2⎤
+⎢0 1 2 1 ⎥
+⎥ ,
+H =⎢
+then
+⎢1 2 1 1 ⎥
+⎢
+⎥
+0
+3
+0
+0
+⎣
+⎦
+H (l , m)
+and P(l , m,1,0) =
+.
+20
+⎡0
+⎢2
+⎢
+I = ⎢0
+⎢
+⎢1
+⎢⎣0
+
+23
+
+Co-Occurrence Matrix
+
+No need to distinguish between
+
+P(m, l , Δi, Δj )
+and
+
+P(l , m, Δi, Δj )
+ Co-Occurrence matrix C:
+
+C =H +H
+
+T
+
+24
+
+Second Order Measures
+
+and many more …….
+
+25
+
+Landsat Image
+
+The image is excerpted from Path 41, Row 25 of Landsat 7 ETM+, dated 4 September 1999.
+This is an area in the Rocky Mountain Foothills near Waterton National Park, Alberta. The
+western edge of the image contains steep slopes and deep valleys. To the east is both
+grassland and annual crops, mostly grains. The eastern area is bisected by numerous small
+streams.
+
+26
+
+Full Resolution
+
+Let us consider two areas, one in the hills, the other in the plain.
+27
+
+Using Second Order Measures
+Contrast
+
+Dissimilarity
+
+Homogeneity
+
+ASM
+
+Entropy
+
+Correlation
+
+The various measures within the two areas are sufficiently
+different for a classifier to easily distinguish them.
+28
+
+Classification
+Used to identify eight terrain classes:
+• Old residential
+• New residential
+• Urban
+• Lake
+• Swamp
+• Scrub
+• Wood
+
+29
+
+Parameter Choices
+Using co-occurence matrices requires choosing:
+• window size,
+• direction of offset,
+• offset distance,
+• what channels to use,
+• what measures to use.
+
+How do we choose these parameters?
+• Critical question for all statistical texture methods.
+• Can be addressed using Machine Learning.
+
+30
+
+Filter Based Measures
+
+Represent image textures using the responses
+of a collection of filters.
+• An appropriate filter bank will extract useful
+information such as spots and edges.
+• Traditionally one or two spot filters and several
+oriented bar filters.
+31
+
+Gaussian Filter Derivatives
+
+Gaussian Derivative
+
+x and y derivatives at different scales
+
+These filters respond to horizontal and
+vertical edges.
+32
+
+Horizontal and Vertical Structures
+
+33
+
+Oriented Filters
+
+∂I
+∂I
+∂I
+= cos(θ)
++ sin(θ)
+∂θ
+∂x
+∂y
+
+θ
+34
+
+Directional Gradients
+
+Oriented filters respond to edges in a
+specific direction.
+35
+
+Higher Order Derivatives
+
+Higher-order derivatives of the Gaussian filters can
+be used to compute higher-order image derivatives.
+36
+
+Filter Bank
+
+• Different scales.
+• Different orientations.
+• Derivatives order 0, 1, 2 ..
+
+—> For every image pixel, compute a vector of
+responses to each filter.
+37
+
+Filter Responses: Small Scales
+
+Gaussian filters with a small s. Capture local details.
+38
+
+Filter Responses: Large Scales
+
+Gaussian filters with a large s. Capture larger details.
+39
+
+<latexit sha1_base64="PLnJ2TDHW8VCCypm2vo9Q1cHhYY=">AAACqnicnVHLbtQwFHXCq4TXUJZsLEbAQKdVkg2VEFIFC9ggFcTMFI2nkeM4qTV+RLaDEln5OH6BHX+DMx1EaVlxJUtH59x7fB95zZmxcfwzCK9dv3Hz1s7t6M7de/cfjB7uzo1qNKEzorjSJzk2lDNJZ5ZZTk9qTbHIOV3k63eDvvhGtWFKfrFdTVcCV5KVjGDrqWz0HeW0YtJhzir5so/eZw6JXLXOdKLvJ+20ewHRazSFz95ARJSZrLMWtnAPrrMODhpt68k+RKXGxLWn6V53mvYuhciwSmCPfQr644ov2A6Ohsn/cIwQlcXvlrPROD6INwGvgmQLxmAbx9noByoUaQSVlnBszDKJa7tyWFtGOO0j1BhaY7LGFV16KLGgZuU2q+7hU88UsFTaP2nhhr1Y4bAwfsbcZwpsz8xlbSD/pS0bWx6uHJN1Y6kk5x+VDYdWweFusGCaEss7DzDRzPcKyRn2O7L+upFfQnJ55Ktgnh4kHn9Kx0dvt+vYAY/BEzABCXgFjsAHcAxmgATPg4/BPFiE0/Bz+DVcnqeGwbbmEfgrwuIX3MPMQw==</latexit>
+
+Gabor Filters
+Gabor filters are the products of a Gaussian filter with
+oriented sinusoids. They come in pairs, each consisting
+of a symmetric filter and an anti-symmetric filter:
+
+x2 + y 2
+)
+Gsym (x, y) = cos(kx x + ky y) exp(−
+2
+2σ
+x2 + y 2
+Gasym (x, y) = sin(kx x + ky y) exp(−
+)
+2σ 2
+where kx and ky determine the spatial frequency and the
+orientation of the filter and σ determines the scale.
+ A filter bank is formed by varying the frequency, the scale,
+and the filter orientation
+40
+
+Vertical Derivatives
+
+41
+
+Gabor Responses
+Filters:
+
+Images:
+
+Responses:
+
+42
+
+GABOR FILTER CHARACTERISTICS
+
+• Respond strongly at points in an image where there
+are components that locally have a particular spatial
+frequency and orientation.
+• In theory, by applying a very large number of Gabor
+filters at different scales, orientations and spatial
+frequencies, one can analyze an image into a
+detailed local description.
+• In practice, it is not known how many filters, at what
+scale, frequencies, and orientations, to use. This
+tends to be application dependent.
+43
+
+ML to the Rescue: Texton Boost
+
+Use AdaBoost to perform classification on the output of
+Gabor filters.
+Shotton et al., ECCV’06
+
+44
+
+ML to the Rescue: Texton Forests
+
+• Using Decision Forests to perform classification on the
+output of Gabor filters works better in this case.
+• But what works even better, is ……
+
+Shotton et al., CVPR’08
+
+45
+
+Reminder: ConvNets
+
+46
+
+<latexit sha1_base64="ylTBQ63yF6yila4yx5B5jqA/MG4=">AAACPXicbZDNT9swGMYdGF/hq7DjLtYqJFBRlZQDXJAQu+zYSS0gNSFyXKc1tZ3IfgONovxjXPY/7LYbFw6b0K67zi05jI9Xsvzo97yv7PeJM8ENeN5PZ2Hxw9Lyyuqau76xubXd2Nm9MGmuKevTVKT6KiaGCa5YHzgIdpVpRmQs2GU8+TLzL2+ZNjxVPSgyFkoyUjzhlIBFUaMXDNzA8JEkOBAsgf0Yt3BgchmV01Ovui5VNK1wTYqaFBW+s/6hvUlU8tb08KZVVIHmozEcuEEYNZpe25sXfiv8WjRRXd2o8SMYpjSXTAEVxJiB72UQlkQDp4JVbpAblhE6ISM2sFIRyUxYzrev8J4lQ5yk2h4FeE7/nyiJNKaQse2UBMbmtTeD73mDHJKTsOQqy4Ep+vxQkgsMKZ5FiYdcMwqisIJQze1fMR0TTSjYwF0bgv965bfiotP2j9qdb53m2Xkdxyr6hD6jfeSjY3SGvqIu6iOK7tED+oV+O9+dR+fJ+fPcuuDUMx/Ri3L+/gNW0K4g</latexit>
+
+Reminder: Convolutional Layer
+
+σ b+
+
+ny
+nx X
+X
+
+x=0 y=0
+
+wx,y ai+x,j+y
+
+!
+47
+
+Reminder: Feature Maps
+
+Filters:
+48
+
+Learned Feature Maps
+
+▪ Some of these convolutional filters look very
+Gabor like.
+▪ The network requires a large training set to
+learn an effective filter bank.
+▪ The older techniques still have their place in
+the absence of such training sets.
+49
+
+Reminder: U-Net Architecture
+
+50
+
+Reminder: Potential Interpretation
+A key role of the ConvNet is
+to generate for every output
+pixel a feature vector
+containing the output of all
+the intermediate layers.
+
+51
+
+In Short
+Texture is a key property of objects which is
+• Non local
+• Non trivial to measure
+• Subject to deformations
+➡Hard to characterize formally and best used in conjunction
+with effective Machine Learning techniques.
+➡This seems to be exactly what Convolutional Neural Nets do.
+
+52
+
+

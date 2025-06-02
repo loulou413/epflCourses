@@ -1,0 +1,75 @@
+Neural Radiance Fields and Surfaces
+
+1
+
+Neural Radiance Fields
+
+Multiple views of a complex scene
+Mildenhall et al., ECCV’20
+
+2
+
+Neural Radiance Fields
+
+A. Sampling 5D coordinates---location x, y, z and viewing direction θ, ϕ---along camera rays.
+B. Feeding those locations into an MLP to produce a color and volume density.
+C. Using volume rendering techniques to composite these values into an image.
+D. Optimizing scene representation by minimizing the residual between synthesized and ground truth images.
+
+3
+
+Physically Inspired Volume Rendering
+For a ray r(t) = o + td, the rendered color can be
+computed as
+
+Density
+
+Color
+
+tf
+
+with T(t) = exp( −
+
+∫tn
+
+σ(r(s))ds)
+
+Transparency
+
+4
+
+Neural Rendering
+
+Given a few images of a tractor
+
+5
+
+Thresholding the Density
+
+• Surfaces obtained by thresholding the density
+• Choosing the threshold can be problematic
+6
+
+From NerF to NeuS
+
+Image
+
+NeRF
+
+NeuS
+
+• Volume density is expressed a function of an SDF
+• The reconstructed surfaces are smoother
+
+7
+
+From Interpolation to Reconstruction
+
+Images of a shiny statue
+
+View Interpolation
+
+3D Reconstruction
+8
+
+

@@ -1,0 +1,1169 @@
+Reminder: A Teachable Scheme
+Image(s)
+
+Edge information
+
+Texture information
+
+Shape information
+
+Scene objects
+
+Scene interpretation
+
+Decomposition of the vision process into smaller
+manageable and implementable steps.
+--> Paradigm followed in this course
+--> May not be the one humans use
+1
+
+Shape From X
+
+• One image:
+• Shading
+• Texture
+
+• Two images or more:
+• Stereo
+• Contours
+• Motion
+
+2
+
+Shape From X
+
+• One image:
+• Shading
+• Texture
+
+• Two images or more:
+• Stereo
+• Contours
+• Motion
+
+3
+
+Shape From X
+
+• One image:
+• Shading
+• Texture
+
+• Two images or more:
+• Stereo
+• Contours
+• Motion
+
+4
+
+Shape From X
+
+• One image:
+• Shading
+• Texture
+
+• Two images or more:
+• Stereo
+• Contours
+• Motion
+
+5
+
+Shape From X
+
+• One image:
+• Shading
+• Texture
+
+• Two images or more:
+• Stereo
+• Contours
+• Motion
+
+6
+
+Shading
+
+• Shading models
+• Shape from shading
+• Variational Methods
+• Photometric Stereo
+
+7
+
+Bump Mapping
+
+Simple mesh + 2D bump map = Complex looking object
+8
+
+Lambertian Half-Sphere
+
+Gray level changes are interpreted as changes in
+the direction of the surface normal.
+9
+
+Solving an Inverse Problem
+
+• Shading gives information about surface normals.
+• Recovering the 3D surfaces amounts to solving a
+differential equation.
+Boundary conditions are required to do so.
+
+10
+
+Boundary Conditions
+
+—> The carefully designed contour gives
+us an erroneous perception!
+11
+
+Reminder: Image Formation
+
+• The light source illuminates a 3D surface.
+• The 3D surface reemits some the light.
+• It goes through a lens and forms an image on the image plane.
+12
+
+Reminder: Fundamental Radiometric Equation
+
+Scene Radiance (Rad): Amount of light radiation emitted from
+a surface point (Watt / m2 / Steradian)
+Image Irradiance (Irr): Amount of light incident at the image
+of the surface point. (Watt / m2)
+π d 2 4
+Irr = ( ) cos (α)Rad ,
+4 f
+⇒ I ∝ Rad ,
+
+Image intensity
+
+when the camera is photometrically calibrated.
+
+13
+
+Lambertian Shading Model
+Foreshortening:
+
+L⃗
+
+N⃗
+α da
+dA
+
+Illuminated surface
+
+da = cos(α)dA
+cos(α) = L ⃗ ⋅ N ⃗
+Radiance:
+Rad ∝ albedo P/dA
+P ∝ da
+⇒ Rad ∝ albedo L ⃗ ⋅ N ⃗
+
+• The amount of light radiation P in the cylinder of
+section da in direction L ⃗ is spread over the surface
+area dA.
+• Some light is absorbed (0 < albedo < 1).
+14
+
+Ideal Lambertian Surface
+N⃗
+
+L⃗
+
+I = max(0,albedo L ⃗ ⋅ N )⃗
+No negative light!
+
+Perfectly matte surface: The radiance depends
+only on angle of incidence and not on viewing
+direction. This is known as diffuse reflection.
+15
+
+Estimated Albedo
+
+=
+
+L⃗⋅ N⃗
+
+*
+
+Original image.
+Albedo
+—> The “albedo” image looks much flatter
+than the original one.
+
+16
+
+Diffuse vs Specular
+
+Diffuse reflection
+
+Specularities
+
+Shadow
+
+Real-world surfaces are not strictly Lambertian!
+17
+
+Radiance under Indirect Lighting
+
+• The light source is not visible. Yet there still is light.
+• The light enters through the windows and bounces
+of the walls.
+18
+
+Visualizing Secondary Illumination
+Reflections produce
+indirect lighting.
+
+Unique light source
+assumption doe not
+allow correct albedo
+recovery.
+
+Lambertian
+shading
+
+Lambertian
+albedoes
+
+This is not right!
+
+19
+
+Simplifying Assumptions
+V⃗
+
+N⃗
+
+L⃗
+
+• Accounting for secondary illumination in the computer vision
+context remains an open research problem.
+• We will mostly ignore it in this class and make the following
+assumptions.
+- The illumination sources are distant from the imaged
+surfaces.
+- Secondary illumination is not significant.
+- There are no cast shadows.
+
+20
+
+Ideal Synthetic Case
+
+Goal:
+• Recover the 3D shape of the head from the 2D image.
+Questions:
+1. Given the surface normals, can we recover the surface?
+2. Can we recover the normals?
+21
+
+Monge Surface
+• A Monge surface is defined by z = f(x,y).
+• Not all surfaces can be represented this way.
+
+y
+
+x
+22
+
+Surface Normals
+
+z
+
+=
+
+p
+
+=
+
+q
+
+=
+
+f (x, y)
+δz
+δx
+δz
+δy
+
+[− p,−q,1]
+
+y
+
+T
+
+x
+23
+
+Tangent Vectors
+
+z
+
+=
+
+p
+
+=
+
+q
+
+=
+
+f (x, y)
+δz
+δx
+δz
+δy
+
+[0,1,q]
+
+y
+
+[1,0, p]
+
+x
+24
+
+Shape from Normals
+
+Normals
+
+3D shape
+
+Elevation and normal:
+z = f(x, y)
+
+N=
+
+−p
+1
+−q
+1 + p 2 + q 2 [ 1]
+
+Orthographic projection:
+
+u = sx
+v = sy
+
+25
+
+Re-Parametrization
+Perform a change of variables z = f(u,v) where u and v
+are image coordinates.
+
+v
+
+u
+26
+
+Shape From Normals (1)
+Since u = sx and v = sy, the normal vector N is
+
+nx
+ny =
+nz
+
+1
+δz 2
+δz 2
+1 + δx + δy
+
+δz
+− δx
+δz
+− δy
+
+,
+
+1
+
+ny
+nx
+δz
+δz
+⇒
+= − and
+=−
+,
+δx
+nz
+δy
+nz
+δz
+1 nx
+1 ny
+δz
+and
+,
+=−
+=−
+⇒
+δu
+s nz
+δv
+s nz
+ny
+nx
+δz̄
+δz̄
+= n1 and
+= n2 ,
+=−
+=−
+⇒
+δu
+nz
+δv
+nz
+where z̄ = sz is the scaled distance.
+27
+
+Shape From Normals (2)
+• Let us assume we are given the normal at each pixel (u,v).
+• Let n1(u, v) = − nx(u, v)/nz(u, v) and n2(u, v) = − ny(u, v)/nz(u, v).
+• From the previous slide, we have
+δz̄
+≈ z̄(u + 1,v) − z̄(u, v)
+n1(u, v) =
+δu
+∀u, v
+δz̄
+≈ z̄(u, v + 1) − z̄(u, v)
+n2(u, v) =
+δv
+• We therefore have roughly twice as many equations as we have
+unknowns, the scaled distances z̄(u, v).
+• This can be solved in the least squares sense.
+—> Given the normals at every pixel we can recover the distances up
+to a scale factor.
+But how do we get the normals?
+
+28
+
+Back to Estimating the Normals
+z
+
+=
+
+p
+
+=
+
+q
+
+=
+
+f (u, v)
+δz
+δu
+δz
+δv
+
+[− p,−q,1]
+
+v
+
+T
+
+u
+
+What does the image tell us about them?
+29
+
+Reflectance Map
+In the Lambertian case and for a constant albedo:
+I(u, v) ∝ L ⋅ N ⃗
+T
+
+∝ L ⋅ [−p(u, v), − q(u, v),1]
+∝ Ref(p(u, v), q(u, v))
+
+• The function Ref is known as the reflectance map.
+• For non-Lambertian surfaces it can be more complex.
+
+30
+
+Lambertian Reflectance Map
+
+q
+Terminator.
+
+p
+
+Reflectance map and shaded surface for Lambertian
+surface illuminated in the direction [-1 -0.5 -1].
+31
+
+Earth Seem from the Moon
+•Terminator: The boundary
+between night and day.
+
+Apollo 8, 1968.
+
+32
+
+Lambertian Reflectance Map
+
+Reflectance map and shaded surface for Lambertian
+surface illuminated in the direction [0 0 -1].
+33
+
+Lambertian Reflectance Map
+
+Reflectance map and shaded surface for Lambertian
+surface illuminated in the direction [1 0.5 -1].
+34
+
+Inverse Problem
+Can we determine (p,q) uniquely for each image
+point independently?
+
+I=Ref(p,q)
+
+No because many p and q yield the same Ref(p,q).
+—> Global optimization required.
+
+35
+
+<latexit sha1_base64="qNRitMpbD3PWOOiWTHrch/S8i14=">AAAH1XicfdXLbtNAFIBhh0tTwq2FHWwsAhJCqCQFCTZILSXqTS1Fza2qQzUej51RPLY1HqdNR94hlvB8vAcPwDhJaU5OqaVER/5+j2Nbkd0k5Kmq1X6Xbty8dXuhvHincvfe/QcPl5YftdM4k5S1aBzGsuuSlIU8Yi3FVci6iWREuCHruIONwjtDJlMeR001SlhPkCDiPqdEmV0nSz+d8RpaMi/XFceXhOrpt8dCRezz/GLK8n/jMLc/2tfGw3zmOBPbs9231dll7ctDKidL1dpKbbzZeKhPh6o13Q5OlhfeOF5MM8EiRUOSpsf1WqJ6mkjFacjyipOlLCF0QAJ2bMaICJb29Piic/uF2ePZfizNJ1L2eO/sEZqINB0J15SCqH46b8XOK22yfgWeXfkfeppHSaZYRCcn97PQVrFdPBnb45JRFY7MQKjk5vfbtE/MXVPm+VWcz8xcn2R75lxfEiaJiuUr7RAZCHKWm+sNnNfFdF3Io4vQTP8LUx6YbPx9TSLGibg60U7DPN7irriubuTFfYjYKY2FIJGnHXc9P671poGv100AvQG8gXwT+CbyLeBbyLeBbyPfBb6LfAf4DvIm8CbyFvAW8jbwNvIO8A7yLvAu8iPgR8UDmisIKAhawQXuIqfAKXLPA4GHAt8HgY+CAHiAvA+8j5xzEHAUDIAPkAvgAnkMPEaugCvkGfAM+RD4EPkp8FPkZ8DPkI+Aj5CfAz9H/3KxcRlQEuqN+RXEPgz2UbAHgz0UHMLgEAVNGDQnr5j6/AsFD+3VlfrbldWv76prn6Yvm0XrqfXMemnVrffWmrVlHVgti1p/Sk9K1dLzcqecl7+Xf0zSG6XpMY8tsJV//QU9xd4j</latexit>
+
+Variational Method (1)
+
+Minimize:
+Z Z
+
+2
+
+[I(u, v) − Ref (p, q)] + λ
+
+Data term
+
+"✓
+
+δp
+δu
+
+◆2
+
++
+
+✓
+
+δp
+δv
+
+◆2
+
++
+
+✓
+
+δq
+δu
+
+◆2
+
++
+
+✓
+
+δq
+δv
+
+Smoothness term
+
+◆2 #
+
++µ
+
+
+
+δq
+δp
+−
+δv δu
+
+2
+
+!
+
+dudv
+
+Integrability term
+δz
+δu
+
+δz
+δv
+
+δ2z
+=
+=
+δv
+δu
+δuδv
+
+1. Recover the normals and make them integrable.
+2. Integrate to recover the 3D surface.
+36
+
+Variational Method (2)
+
+Minimize:
+Z Z
+
+
+
+I(u, v) − Ref (
+
+δz δz
+, )
+δu δv
+
+Data term
+
+2
+
+"✓
+◆2 ✓ 2 ◆2 ✓ 2 ◆2 #!
+2
+δ z
+δ z
+δ z
+dudv
++λ
++
++
+δu2
+δuδv
+δv 2
+
+Smoothness term
+
+• Recover the surface directly, which means solving a second
+order differential equation instead of a first order one.
+• Both approaches are valid and require boundary conditions.
+37
+
+Moonscape
+
+Moon image
+
+Depth map
+
+38
+
+Faces from Shading
+
+• Generic Monge surface
+• Low resolution images
+Prados and Faugeras, CVPR’05.
+
+• Deep face model
+• High resolution images
+Bagautdinov et al. , CVPR’18.
+
+39
+
+T-Shirt
+input image
+
+GT
+
+SIRFS
+
+Works because the albedo is constant!
+Barron & Malik, PAMI’15
+
+40
+
+From Variational to Deep
+normal map
+
+NORMAL
+MAP
+STREAM
+
+depth map
+
+decoder
+
+(224 x 224 x 3)
+input image
+
+DEPTH
+MAP
+STREAM
+
+depth map
+
+latent
+representation
+encoder
+
+(224 x 224 x 1)
+
+decoder
+
+(7 x 7 x 256)
+(224 x 224 x 1)
+
+(224 x 224 x 3)
+mesh
+
+MESH
+STREAM
+
+FC
+
+(31 x 31 x 3)
+
+The deep net is trained to:
+• produce both a depth map and a map of normals,
+• ensure they are consistent with each other.
+—> Can be understood as another way to solve the variational problem.
+Bednarik et al. , ECCV’18
+
+41
+
+Improved Results
+input image
+
+GT
+
+OUR
+Deep
+
+SIRFS
+
+The deep net recovers more details ……
+
+42
+
+Training Data
+… but required serious training.
+
+• 3 fixed light sources.
+• 1 mobile one.
+—> Not a yet a generally applicable solution.
+But getting closer. We’ll talk about it
+again next week …..
+43
+
+Reminder: Ambiguities
+
+• Back where we started.
+• Let us look at them more closely.
+44
+
+Bas-Relief Ambiguity
+
+Looks like a normal human head …
+
+… but not when seen from the side.
+
+Why is that?
+45
+
+Bas-Relief Ambiguity
+
+By moving the light source, it is possible to produce
+the same image for different 3D shapes.
+46
+
+<latexit sha1_base64="qNRitMpbD3PWOOiWTHrch/S8i14=">AAAH1XicfdXLbtNAFIBhh0tTwq2FHWwsAhJCqCQFCTZILSXqTS1Fza2qQzUej51RPLY1HqdNR94hlvB8vAcPwDhJaU5OqaVER/5+j2Nbkd0k5Kmq1X6Xbty8dXuhvHincvfe/QcPl5YftdM4k5S1aBzGsuuSlIU8Yi3FVci6iWREuCHruIONwjtDJlMeR001SlhPkCDiPqdEmV0nSz+d8RpaMi/XFceXhOrpt8dCRezz/GLK8n/jMLc/2tfGw3zmOBPbs9231dll7ctDKidL1dpKbbzZeKhPh6o13Q5OlhfeOF5MM8EiRUOSpsf1WqJ6mkjFacjyipOlLCF0QAJ2bMaICJb29Piic/uF2ePZfizNJ1L2eO/sEZqINB0J15SCqH46b8XOK22yfgWeXfkfeppHSaZYRCcn97PQVrFdPBnb45JRFY7MQKjk5vfbtE/MXVPm+VWcz8xcn2R75lxfEiaJiuUr7RAZCHKWm+sNnNfFdF3Io4vQTP8LUx6YbPx9TSLGibg60U7DPN7irriubuTFfYjYKY2FIJGnHXc9P671poGv100AvQG8gXwT+CbyLeBbyLeBbyPfBb6LfAf4DvIm8CbyFvAW8jbwNvIO8A7yLvAu8iPgR8UDmisIKAhawQXuIqfAKXLPA4GHAt8HgY+CAHiAvA+8j5xzEHAUDIAPkAvgAnkMPEaugCvkGfAM+RD4EPkp8FPkZ8DPkI+Aj5CfAz9H/3KxcRlQEuqN+RXEPgz2UbAHgz0UHMLgEAVNGDQnr5j6/AsFD+3VlfrbldWv76prn6Yvm0XrqfXMemnVrffWmrVlHVgti1p/Sk9K1dLzcqecl7+Xf0zSG6XpMY8tsJV//QU9xd4j</latexit>
+
+Bas-Relief Ambiguity Explained (1)
+Ref = N ⋅ L
+For any invertible 3x3 linear transformation A:
+
+(AN) ⋅ (A−T L) = (AN)T (A−T L)
+= NT AT A−T L
+= NT L
+=N⋅L
+• In theory, applying A to the normals and A-1 to the light source would
+not change the image.
+• However, the normals must remain integrable, which means that not all
+transformations of the normals are valid.
+• In particular, for a Monge surface z = f(u,v), we must have
+δz
+δu
+
+δz
+δv
+
+δ2z
+=
+=
+δv
+δu
+δuδv
+
+47
+
+Bas-Relief Ambiguity Explained (2)
+Let us write the integrability constraint in our specific case:
+δz
+δu
+δz
+δv
+
+=
+=
+
+−
+−
+
+n∗
+x
+n∗
+z
+∗
+ny
+n∗
+z
+
+)
+
+⇒
+
+n∗
+δ nx
+∗
+z
+
+δv
+
+=
+
+n∗
+δ ny
+∗
+z
+
+δu
+
+⇒ A restricted to
+
+2
+
+with 4
+
+n∗x
+n∗y
+n∗z
+
+3
+
+2
+
+3
+
+nx
+5 = A 4 ny 5
+nz
+−T
+
+1 0 0
+0 1 0
+μ ν λ
+
+—> The surface f(u, v) can be changed into
+λf(u,v) + µu + νv and still produce the same
+image.
+48
+
+Convex/Concave Ambiguity
+
+It can happen even when the light source is
+known!
+49
+
+Convex/Concave Ambiguity
+
+• All four profiles will produce the same image
+under the illumination shown here.
+• The SfS problem under orthographic projection
+with a distant light-source is ill-posed.
+50
+
+Making the SfS Problem Well-Posed
+• Use perspective projection model;
+• Radiance depends on distance to light source:
+
+Albedo⋅ (N • S)
+I=
+2
+d
+
+!
+N
+!
+S
+
+d
+
+instead of
+
+I = Albedo⋅ (N • S)
+• Light source located at the optical center.
+-> Unique solution but more complex computations.
+Prados and Faugeras, CVPR’05.
+
+51
+
+Endoscopy
+
++
+
+52
+
+Endoscopy 2005
+
+• The problem becomes well-posed but the variational approach
+assumes constant albedo, which is limiting.
+• Can we take advantage of deep learning to overcome this
+problem?
+Prados and Faugeras, CVPR’05.
+
+53
+
+Endoscopy 2023
+
+54
+
+Photometric Stereo
+s2
+
+s1
+
+s3
+b2
+b1
+
+b3
+
+Given multiple images of the same surface
+under different known lighting conditions, can
+we recover the surface shape?
+– Yes! (Woodham, 1978).
+– This gave rise to an early and still practical
+application of computer vision.
+55
+
+Basic Idea
+
+•
+•
+•
+
+Take several images under different
+lighting conditions.
+Infer the normals from the changes in
+illumination.
+Given at least three different lights, there
+are no more ambiguities.
+56
+
+One Single Light Source
+
+Many potential normals for each image point.
+57
+
+Two Light Sources
+
+Still some ambiguities.
+58
+
+Three Light Sources
+
+No more ambiguities even if the albedo is unknown.
+59
+
+Algebraic Formulation
+Lambertian model:
+I =
+Three light sources:
+
+α(L · N) = (L · M)
+Unknown 3 vector that can be estimated by
+solving a 3x3 linear system.
+
+
+
+
+
+I1
+ I2 
+I3
+
+=
+
+N
+
+=
+
+α
+
+=
+
+
+
+
+
+L1
+ L2  M
+L3
+M
+||M||
+N and a can then be inferred from M.
+||M||
+60
+
+Using More Lights
+One can use as many lights as one wants:
+⎡ I1 ⎤
+⎡ L1 ⎤
+⎢ ⎥
+⎢ ⎥
+I = LM, with I = ⎢ : ⎥ and L = ⎢ : ⎥
+⎢⎣In ⎥⎦
+⎢⎣L n ⎥⎦
+⇒ Lt LM = Lt I (Least - squares solution)
+
+—> This is known as an over-constraint problem and, the
+more camera, the more robust to noise the solution is.
+61
+
+Discounting Shadows
+
+• Shadowed pixels for a given light source position do
+not conform to the model.
+• Premultiplying by the intensities reduces their
+contributions because their intensities tend be lower.
+
+⎡I1 0 0 ⎤ ⎡ I1 0 0 ⎤
+⎥ ⎢
+⎥
+⎢
+⎢ 0 ! 0 ⎥I = ⎢ 0 ! 0 ⎥ LM
+⎢⎣ 0 0 In ⎥⎦ ⎢⎣ 0 0 In ⎥⎦
+
+62
+
+Synthetic Sphere Images
+Five different light sources:
+
+Recovered albedo
+
+Recovered surface normals
+
+63
+
+Scanning Michel Angelo’s Pieta
+
+• One camera and five light sources.
+• The positions of the light sources w.r.t. the camera are
+exactly known.
+64
+
+Full 3D Model
+Normals
+
+Shaded surface
+
+Full rendering
+
+• This was done for the whole statue.
+• All the fragments were then “glued” together.
+—> A full 3D model that can be visualized from any viewpoint
+and under any illumination conditions.
+
+65
+
+Specularities
+
+•
+•
+•
+•
+
+At specular points Lambertian assumptions are violated.
+The surface behaves like a mirror.
+This is known as specular reflection.
+Most surfaces are a combination of diffuse and specular reflectors.
+
+66
+
+Lambertian + Specular Reflectance Map
+• The notion of reflectance map still applies but the function Ref
+becomes more complex than in the diffuse case:
+
+Reflectance map for glossy white paint: It is the
+weighted sum of a diffuse and a specular
+component.
+
+67
+
+Important Angles
+
+• Angle of incidence (i): Angle between the
+surface normal and the direction of the incident
+light ray.
+• Angle of emittance (e): Angle between emitted
+light ray and surface normal.
+• Phase angle (g): Angle between incident and
+emitted light ray.
+
+68
+
+Mirror-Like Behavior
+qI
+
+qo
+
+• Specularities occur when i=e and i+e=g.
+• In other words, when the two directions are symmetric with
+respect to the normal.
+—> They can also be used to infer the normals.
+69
+
+Shape from Specularities
+
+•Move the light around and compute its position each time.
+•Find the bright spots and the image and assume they are secularities.
+•Infer the normals at those points.
+Chen et al., CVPR 2006
+
+70
+
+Shape from Specularities
+
+• Excellent precision can be achieved because the secularities are very
+sensitive to the exact normal direction.
+• However, this only works well for shiny, that is, highly specular, objects.
+Chen et al., CVPR 2006
+
+71
+
+Specularities in Short
+
+• Most materials are both diffuse and specular.
+• Specularities are very sensitive to motion.
+• Specularities do not constrain all the degrees of freedom.
+➡They can either be discarded as noise or used to get additional information.
+
+72
+
+Shape-from-Shading in Short
+Traditional Shape-from-Shading requires strong assumptions:
+• Constant or piece-wise constant albedo
+• No interreflections
+• No shadows
+• No specularities
+ In a single image context, it is most useful in conjunction
+with other information sources.
+
+73
+
+

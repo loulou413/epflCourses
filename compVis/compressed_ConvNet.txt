@@ -1,0 +1,1676 @@
+Deep Learning Crash Course
+
+• Single Layer Perceptrons
+• Multiple Layer Perceptrons
+• Convolutional Neural Nets
+1
+
+Binary vs Multi-Class Classification
+
+Logistic Regression
+
+LeNet
+2
+
+Linear Binary Classification
+1
+0.8
+0.6
+0.4
+
+x2
+
+0.2
+0
+-0.2
+-0.4
+-0.6
+-0.8
+-1
+-1
+
+-0.5
+
+0
+
+0.5
+
+x1
+
+1
+
+Decision boundary
+
+Two classes shown as different colors:
+• The label y ∈ {−1,1} or y ∈ {0,1}.
+• The samples with label 1 are called positive samples.
+• The samples with label -1 or 0 are called negative samples.
+3
+
+Signed Distance
+x̃ = [1,x1, x2]
+
+h=0: Point is on the line.
+h>0: Point in the normal’s direction.
+h<0: Point in the other direction.
+
+h
+
+n = [w1, w2]
+
+w̃ = [w0, w1, w2] with w12 + w22 = 1
+
+Notation:
+
+x = [x1, x2]
+x̃ = [1,x1, x2]
+
+Signed distance:
+
+h = w0 + w1x1 + w2 x2
+= w̃ ⋅ x̃
+
+4
+
+Signed Distance in 3D
+w̃ = [w0, w1, w2, w3]
+3
+
+3
+
+x = [x, y, z]
+
+2
+
+1
+
+2
+
+1
+
+y
+
+x3
+
+y
+
+z
+
+x̃ = [1,x, y, z]
+
+0
+
+0
+
+-1
+
+-1
+
+-2
+1
+
+-2
+1
+0.5
+
+1
+0.5
+
+0
+
+0.5
+
+1
+0.5
+
+0
+
+0
+-0.5
+
+y
+x2
+
+-0.5
+-1
+
+-1
+
+0
+-0.5
+
+x
+
+x1
+
+x ∈ R 3, 0 = ax + by + cz + d
+
+x2
+x2
+
+-0.5
+-1
+
+-1
+
+x1
+x1
+
+x̃ ∈ R 4, w̃ ⋅ x̃ = 0
+
+Signed distance h = w̃ ⋅ x̃ if w12 + w22 + w32 = 1.
+5
+
+Signed Distance in N Dimensions
+h=0: Point is on the decision boundary.
+h>0: Point on one side.
+h<0: Point on the other side.
+
+x̃ = [1,x1, …, xN ]
+h
+
+w = [w1, …, wn]
+
+N
+
+w̃ = [w0, w1, …, wn] with
+
+∑
+
+wi2 = 1
+
+i=1
+
+Notation:
+
+x = [x1, …, xn]
+x̃ = [1,x1, …, xn]
+
+Hyperplane:
+
+x ∈ R n, 0 = w̃ ⋅ x̃
+= w0 + w1x1 + …wn xn
+
+Signed distance:
+
+h = w̃ ⋅ x̃
+
+6
+
+Binary Classification in N Dimensions
+
+Hyperplane: x ∈ R N, w̃ ⋅ x̃ = 0, with x̃ = [1 | x].
+Signed distance: w̃ ⋅ x̃, with w̃ = [w0 | w] and | | w | | = 1.
+
+Problem statement: Find w̃ such that
+• for all or most positive samples w̃ ⋅ x̃ > 0,
+• for all or most negative samples w̃ ⋅ x̃ < 0.
+
+7
+
+Logistic Regression
+y(x; w̃) = σ(w̃ ⋅ x̃)
+1
+=
+1 + exp(− w̃ ⋅ x̃)
+s(a)
+
+s(a)
+
+a
+
+Given a training set {(xn, tn)1≤n≤N} minimize
+−
+
+∑
+
+(tn ln y(xn) + (1 − tn)ln(1 − y(xn))
+
+n
+
+with respect to w̃.
+• When the noise is Gaussian, this is the maximum likelihood solution.
+• y(x; w̃) can be interpreted at the probability that x belongs to positive class.
+
+8
+
+<latexit sha1_base64="2et/Ai+PlmJfZmmMgmHZou9y5BU=">AAAG3XicfdRNb9MwGAfwdIwywtsGEhcuFhMTmhBqJiG4IE2MaWzTxpDatVMdIsdxUm9xEjlO2yjykRviygfgCnwfvg1O22l1PbBU6al//zyx3TR+FtNctFp/Gks3lm82b63ctu/cvXf/weraw9M8LTgmHZzGKe/5KCcxTUhHUBGTXsYJYn5Muv7FTu3dIeE5TZO2KDPiMhQlNKQYCTXlrTUeQ59ENKlQTKNkU9oXYOMtgIhHDI29cwAFjQNSQX8kvfPP7avvYwkg7L9izLVhTELRB+CyE+eolBWWAJSeo1IADoNU5HVVeocAkiSYhQDkNBoId3LPf3aZX4NTr2G+4zweKry2/fyyIVR7VGMDzO+z9M7t6ZXTc/BW11svW5MBzMKZFevWbJx4a8u/YZDigpFE4Bjled9pZcJVKxEUx0TasMhJhvAFikhflQliJHeryS8owTM1E4Aw5eqTCDCZnb+iQizPS+arJENikC9aPXmd9QsRvnErmmSFIAme3igsYiBSUD8OIKCcYBGXqkCYU7VWgAeIIyzUQ2Pb8D1Rm+HkSDX+mBGORMo3q9mxSbW5CL6oq/8FaXIZVJVqmZARThlD6rChvyv7LbeC9cL9sNqVcsH3NN8zfF/zfcMPND8wvK152/CO5h3Du5p3De9p3jP8TPMz5YsnhLQEMjr4mvuGY82x4UGgBQIjEIZaIDQCkeaR4QPNB4ZTqgWoEWCaM8NTzVPDhebC8ELzwvCh5kPDR5qPDB9rPja81LyUi/8SdnwVwCiujhc7sCM9cGQEdvTAjqzfcM7i+8wsTrdeOqr+tLW+/W72rluxnlhPreeWY722tq0P1onVsXBDNn40fjZ+Nb3ml+bX5rdpdKkxu+aRpY3m978ozHWx</latexit>
+
+Multi-Class Logistic Regression
+• K linear classifiers of the form y k(x) = σ(wTk x).
+• Assign x to class k if y k(x) > y l(x) ∀l ≠ k .
+
+k = arg max w̃
+x̃
+ykjT(x)
+j
+
+
+
+
+
+
+
+w̃1T
+
+
+
+y1
+ ..   .. 
+ .  =  .  x̃
+T
+yK
+w̃K
+
+• Because the sigmoid function
+is monotonic, the formulation
+is almost unchanged.
+• Only the objective function
+being minimized need to be
+reformulated.
+
+k = arg max yj
+j
+
+Bishop, Chapter 4.3.4
+
+9
+
+<latexit sha1_base64="0yNIG87DBE3Z+apPividyojpQOo=">AAAGU3icfdTRT9NAHMDxA9nEKTr0TV+qxAQVSbto9MEHIhKEBMSEsZF1LNfrtbvQa5vrdWxp+uxf46v+JT74t/jidczobz+kyZZf7vNtu16yemkkMm3bPxcWbyzV6jeXbzVu31m5e6+5ev8kS3LFeJslUaK6Hs14JGLe1kJHvJsqTqUX8Y53vl15Z8RVJpL4WE9S3pc0jEUgGNVmadB87Ni2tT4etF6OB85Z69lZ68W6U81mst5Z9ubrQXPN3rSnh4UHZzaskdlxNFitPXT9hOWSx5pFNMt6jp3qfkGVFiziZcPNM55Sdk5D3jNjTCXP+sX0WUrrqVnxrSBR5hNra7r67xkFlVk2kZ4pJdXDbN6qxausl+vgbb8QcZprHrPLGwV5ZOnEqjbG8oXiTEcTM1CmhPmtFhtSRZk229dwP3DzLIofmOt+SrmiOlHPC5eqUNJxaZ4tdDeq6bpQxH9CM/0vzERosun3NYmcJvLqpHB3ysKtdsDzip2ybDTcmF+wREoa+4Xr7ZQ9uz8LgmkAfRf4LvI94HvI94HvIz8Gfoy8DbyNvAO8g7wLvIv8FPhptUFzBQUFRVfwgHvIGXCG3PdB4KMgCEAQoCAEHiIfAh8iFwIEAgUSuESeAE+Qa+AaeQ48Rz4CPkJ+AfwC+Rj4GPkE+AT9S+Th34DRqDicv4I8gMEBCrZhsF3dw7xNnfl3Jx5OWpuOmT+/Wtt6P3uvLpNH5AlZJw55Q7bIR3JE2oSRL+Qr+Ua+137UftUX60uX6eLC7JwHBBz1ld+CWkME</latexit>
+
+Non Separable Distribution
+
+Positive: 100(x2 − x21 )2 + (1 − x1 )2 < 0.5
+Negative: Otherwise
+
+y(x; w̃) must be a non-linear function.
+
+• Logistic regression can handle a few outliers but not a complex nonlinear boundary.
+• How can we learn a function y such that y(x; w̃) is close to 1 for
+positive samples and close to 0 or -1 for negative ones?
+
+—> Use LOTS of hyperplanes.
+
+10
+
+Reformulating Logistic Regression
+y(x) = σ(w ⋅ x + b)
+xi
+
+wi
+
+T
+
+b
+
+x = [x1, x2, …, xn]
+
+T
+
+w = [w1, w2, …, wn]
+
+σ:
+
+11
+
+Repeating the Process
+
+x1
+x2
+
+w11
+
+h1
+
+w12
+
+b1
+
+w13
+
+h2
+
+w14
+
+x3
+
+⋮
+⋮
+
+x4
+
+hH
+
+h1 = σ(w1 ⋅ x + b1)
+T
+w1 = [w11, w12, w13, w14]
+h2 = σ(w2 ⋅ x + b2)
+T
+w2 = [w21, w22, w23, w24]
+
+⋮
+⋮
+
+hH = σ(wH ⋅ x + bH )
+wH = [wH1, wH2, wH3, wH4]
+
+T
+
+12
+
+<latexit sha1_base64="08ILUlJggO+IlJgrBh17bUVjEr0=">AAAHY3icddTdahNBFAfwTbVNTf1oq3ciDBalooSkCgpFaC2laUtLpUnTkglhZnY2GbKzG3Zn89F1L/UdfQDvfQRn00g9OXYg4WR+/7MnZLPDB76KTaXys7Bw7/7iUnH5QWnl4aPHT1bX1i/iMImEbIjQD6NLzmLpq0A2jDK+vBxEkmnuyybv7+XeHMooVmFQN5OBbGvWDZSnBDN2q7P6m/IeIa8/ExqrrmablDcJ5WPy1r7zN4Ruk3eE0hLVPBynI2V6JCN5ZtriS8+07EfZVUHKoohNslTkPupUbde02MoLQoduaOK/ezVCZeDOOgiNVLdn2rdjWOASktn50yl3juE3Qzgawe8asE3Kpc7qRqVcmS6Ci+qs2HBm66yzttiibigSLQMjfBbHrWplYNr24kYJX2YlmsRywESfdWXLlgHTMm6n01uTkVd2xyVeGNlXYMh099+OlOk4nmhuk5qZXjxv+eb/rJUY71M7VcEgMTIQN4O8xCcmJPl9Jq6KpDD+xBZMRMp+VyJ6LGLC2H9DiQZyJEKt7U+dUr6btSrtlOZDuJfuZtmc7wPfR34A/AB5DXgN+SHwQ+THwI+RHwE/Ql4HXkfeAN5A3gTeRH4J/BL5FfAr5Aw4Q86Bc+QCuEDuuiDgooDngYCHAl3gXeQ94D3kSoGAQoE+8D5yDVwjD4AHyEPgIXID3CBPgCfIh8CHyEfAR8jHwMfIJ8AnyK+BX1uHAb13GxDMT/fmr6BPYeAUBU5g4AQFzmHgHAXqMJA/iPY4rs4fvri42CpX35e3vn7Y2PkyO5iXnefOS2fTqTofnR2n5pw5DUcULgrfCt8LP5Z+FVeK68VnN9GFwqznqQNW8cUfpGSmXw==</latexit>
+
+Repeating the Process
+
+x1
+x2
+
+x3
+x4
+
+h1
+w1 b1
+
+h2
+w2 b2
+
+⋮
+⋮
+
+hH
+
+h = σ(Wx + b) ,
+
+
+w1
+ w2 
+
+
+with W =  . 
+ .. 
+wH
+
+
+
+b1
+ b2
+
+and b =  .
+ ..
+
+bH
+
+
+
+
+
+ .
+
+
+wH bH
+13
+
+<latexit sha1_base64="JYdrdnPS3LDIc+b3OeYxUnimm7c=">AAAEuXicfZNbb9MwFIC9LcAol3XwyEtExbQNVCV9AYSQJsokXjqG1K6d6qqyXbcxi51gO7RRlL/IO/+DVxBuF7S5HjtSoqPzfT6+yTiNmdJB8HNjc8u7c/fe9v3ag4ePHu/Ud5+cqSSThPZIEidygJGiMRO0p5mO6SCVFHEc0z6+aC95/zuViiWiq/OUjjiaCTZlBGlTGtcjiOmMiYJ+E0hKlB+WNYijvfd7ULEZR+NwH+L+OPQhXvgvzR+PwwMfQiPlV1JrJbUMjiqpdVCDVEyutR3XG0EzWIXvJmGVNEAVp+PdrbdwkpCMU6FJjJQahkGqRwWSmpGYmnVmiqaIXKAZHZpUIE7VqFgdSem/MJWJP02k+YT2V9XrIwrElco5NiZHOlLrbFm8iQ0zPX0zKphIM00FuZxomsW+Tvzl+foTJinRcW4SRCQza/VJhCQi2txCDX6kZi+SdkzfzymVSCfysIBImmNclGZvM/hqmd0mMvFPNNn/RHMxRlv9b1H4SuE3KwU8Lgu4PAGMi+OyrNWgoHOScI7MzZobL4fBqBKmRd8INh9YfODwc4ufO7xr8a67AGwJ2GkQWTxyuLa4dvjc4nOHLyy+cHhu8dzZAD+5EgiKi5P1DrxjCx1HaNtCezmHCfPYwvWn5SZnrWYYNMMvrcbRh+rZbYNn4DnYByF4DY7AJ3AKeoCAH+AX+A3+eO885EXe10t1c6Ma8xRY4am/nxufkA==</latexit>
+
+Multi-Layer Perceptron
+
+h
+y
+
+=
+=
+
+σ1 (W1 x + b1 )
+σ2 (W2 h + b2 )
+
+• The process can be repeated several times to create a vector h.
+
+14
+
+<latexit sha1_base64="JYdrdnPS3LDIc+b3OeYxUnimm7c=">AAAEuXicfZNbb9MwFIC9LcAol3XwyEtExbQNVCV9AYSQJsokXjqG1K6d6qqyXbcxi51gO7RRlL/IO/+DVxBuF7S5HjtSoqPzfT6+yTiNmdJB8HNjc8u7c/fe9v3ag4ePHu/Ud5+cqSSThPZIEidygJGiMRO0p5mO6SCVFHEc0z6+aC95/zuViiWiq/OUjjiaCTZlBGlTGtcjiOmMiYJ+E0hKlB+WNYijvfd7ULEZR+NwH+L+OPQhXvgvzR+PwwMfQiPlV1JrJbUMjiqpdVCDVEyutR3XG0EzWIXvJmGVNEAVp+PdrbdwkpCMU6FJjJQahkGqRwWSmpGYmnVmiqaIXKAZHZpUIE7VqFgdSem/MJWJP02k+YT2V9XrIwrElco5NiZHOlLrbFm8iQ0zPX0zKphIM00FuZxomsW+Tvzl+foTJinRcW4SRCQza/VJhCQi2txCDX6kZi+SdkzfzymVSCfysIBImmNclGZvM/hqmd0mMvFPNNn/RHMxRlv9b1H4SuE3KwU8Lgu4PAGMi+OyrNWgoHOScI7MzZobL4fBqBKmRd8INh9YfODwc4ufO7xr8a67AGwJ2GkQWTxyuLa4dvjc4nOHLyy+cHhu8dzZAD+5EgiKi5P1DrxjCx1HaNtCezmHCfPYwvWn5SZnrWYYNMMvrcbRh+rZbYNn4DnYByF4DY7AJ3AKeoCAH+AX+A3+eO885EXe10t1c6Ma8xRY4am/nxufkA==</latexit>
+
+Multi-Layer Perceptron
+
+h
+y
+
+=
+=
+
+σ1 (W1 x + b1 )
+σ2 (W2 h + b2 )
+
+• The process can be repeated several times to create a vector h.
+• It can then be done again to produce an output y.
+—> This output is a differentiable function of the weights.
+15
+
+<latexit sha1_base64="JYdrdnPS3LDIc+b3OeYxUnimm7c=">AAAEuXicfZNbb9MwFIC9LcAol3XwyEtExbQNVCV9AYSQJsokXjqG1K6d6qqyXbcxi51gO7RRlL/IO/+DVxBuF7S5HjtSoqPzfT6+yTiNmdJB8HNjc8u7c/fe9v3ag4ePHu/Ud5+cqSSThPZIEidygJGiMRO0p5mO6SCVFHEc0z6+aC95/zuViiWiq/OUjjiaCTZlBGlTGtcjiOmMiYJ+E0hKlB+WNYijvfd7ULEZR+NwH+L+OPQhXvgvzR+PwwMfQiPlV1JrJbUMjiqpdVCDVEyutR3XG0EzWIXvJmGVNEAVp+PdrbdwkpCMU6FJjJQahkGqRwWSmpGYmnVmiqaIXKAZHZpUIE7VqFgdSem/MJWJP02k+YT2V9XrIwrElco5NiZHOlLrbFm8iQ0zPX0zKphIM00FuZxomsW+Tvzl+foTJinRcW4SRCQza/VJhCQi2txCDX6kZi+SdkzfzymVSCfysIBImmNclGZvM/hqmd0mMvFPNNn/RHMxRlv9b1H4SuE3KwU8Lgu4PAGMi+OyrNWgoHOScI7MzZobL4fBqBKmRd8INh9YfODwc4ufO7xr8a67AGwJ2GkQWTxyuLa4dvjc4nOHLyy+cHhu8dzZAD+5EgiKi5P1DrxjCx1HaNtCezmHCfPYwvWn5SZnrWYYNMMvrcbRh+rZbYNn4DnYByF4DY7AJ3AKeoCAH+AX+A3+eO885EXe10t1c6Ma8xRY4am/nxufkA==</latexit>
+
+ReLU
+
+h
+y
+
+=
+=
+
+σ1 (W1 x + b1 )
+σ2 (W2 h + b2 )
+
+σ(x) = max(0,x)
+• Each node defines a hyperplane.
+• The resulting function is piecewise linear affine and continuous.
+16
+
+<latexit sha1_base64="I5XXvAs94w+2UAVNojP+k1+WdXc=">AAAE0HicfZPdbtMwFMfTLUAJXx1I3HATUTG1g1XJbjYhIU2USdx0DNSunepqclyntRY7mePQRFaEuOUxeCveBqfLPtwUjpTo+Pz+59jHR/aigMTCcf7UNjbNe/cf1B9ajx4/efqssfX8NA4TjvAAhUHIRx6McUAYHggiAjyKOIbUC/DQu+gWfPgd85iErC+yCE8onDHiEwSFCp03fgMPzwiT+JJBzmG2k1uAemEqYzKj73MbXCZwaoNiBVtpe/vDNvA5RNLNpfsW4DRq7aZtJQNlmoBsfpO2Jm+ZkrZ3b1KvI7fFLIDZ9M6BzhtNp+Msza46buk0jdJOzrc2X4JpiBKKmUABjOOx60RiIiEXBAVYbZDEOILoAs7wWLkMUhxP5PIyc/uNikxtP+TqY8JeRu9mSEjjOKOeUlIo5vEqK4Lr2DgR/sFEEhYlAjN0tZGfBLYI7WIy9pRwjESQKQciTtRZbTSH6tKEmp8FPmHVC8c9VfdLhDkUId+RAHJ1wWmuepuBd4X3PyFh10Ll/UuoRqZky/9aiQRHamhFe54nj/LcsgDDCxRSCtXYgDfMx86kFPhyqAQ6H2l8VOFnGj+r8L7G+9UDeJrAqxSYa3xe4ULjosIXGl9UeKrxtMIzjWeVBujxrQDBQB6vVqA9XdCrCLq6oFvsoUy9JHf13VSd072O63Tcr3vNw4/lm6obr4zXRstwjX3j0PhsnBgDA9XqtU5tv3ZgfjNT84f580q6UStzXhiamb/+Atlwpp8=</latexit>
+sha1_base64="b7LKBTY3efqkN27GBv0NJLIWaZw=">AAAEknicfZPdbtMwFIC9LcAIfx0gbriJqJj2g6qkNyAkpEGZxAUdQ2rXTnVV2a7bWIud4Di0UZQX5A14C27hCqcLYq4HlhId+ft87OMj4yRiqfL97xubW86Nm7e2b7t37t67/6Cx8/AsjTNJaJ/EUSyHGKU0YoL2FVMRHSaSIo4jOsAXnYoPvlKZslj0VJ7QMUdzwWaMIKWnJo0pxHTOREG/CCQlyg9KF+Jw980uTNmcoz2IB5PAg3jpHeo/ngT7HoRayU2lrWFYK+19F1IxvZJy0mj6LX81PDsI6qAJ6nE62dl6AqcxyTgVikQoTUeBn6hxgaRiJKL6jFlKE0Qu0JyOdCgQp+m4WF1H6T3XM1NvFkv9CeWtZq+uKBBP05xjbXKkwnSdVZPXsVGmZq/GBRNJpqgglxvNsshTsVfdrTdlkhIV5TpARDJ9Vo+ESCKidAdc+J7qWiTt6ryfEiqRiuVBAZHUl7gsdW1z+KKK/icy8UfU0b9E3Ratrf7XKgU8LgtYlYdxcVyWrgsFXZCYc6TbpttZjvxxLcyKgRZMPjT40OLnBj+3eM/gPfsA2BCwlSA0eGhxZXBl8YXBFxZfGnxp8dzguVUAP/krEBQVJ+sZeNcUupbQMYVOtYce+iUF6+/GDs7arcBvBZ/bzaN39ZvaBk/BM7AHAvASHIEP4BT0AQHfwA/wE/xyHjuvnbdO51Ld3KjXPALGcD7+BkB4j7M=</latexit>
+
+Sigmoid and Tanh
+
+h
+y
+
+=
+=
+
+σ(W1 x + b1 )
+σ(W2 h + b2 )
+
+sigm:
+
+σ(x)
+
+=
+
+tanh:
+
+σ(x)
+
+=
+
+1
+1 + exp(−x)
+exp(x) − exp(−x)
+exp(x) + exp(−x)
+
+• Each node defines a hyperplane.
+• The resulting function is continuously differentiable.
+17
+
+Binary Case
+
+h = σ(W1xn + b1)
+y = σ(w2h + b2)
+In this case w2 is vector.
+
+18
+
+<latexit sha1_base64="c9uyoXi1AnZYxmVOrY9xOu2qxxo=">AAAG3HicfdTLbtNAFIDhaaGhhFsLSzYWFRJCVZSkSLCsKFVpq5SiJk1KHKLxeOyM4rGt8bhJannHDrFD7OBJeBHehrEbBCen1FKio/l+XyXbiQOR6Hr919LyjZsrlVurt6t37t67/2Bt/eFpEqWK8Q6Lgkj1HJrwQIS8o4UOeC9WnEon4F1nvFN495yrRERhW89iPpDUD4UnGNVm6YPtTIbNTWfYrA7XNuq1erlZeGjMhw0y346H6ys/bTdiqeShZgFNkn6jHutBRpUWLOB51U4THlM2pj7vmzGkkieDrLzk3HpqVlzLi5T5hdoqV//dI6MySWbSMaWkepQsWrF4lfVT7b0aZCKMU81DdnkiLw0sHVnF/VuuUJzpYGYGypQw12qxEVWUafOUqvYbbu5F8ZY57ruYK6oj9TyzqfIlnebm3nx7s5iuC0X4JzTT/8JE+CYr/69JZJnIq5PM3s0zu3gCjpPt5nm1aod8wiIpaehmtrOb9+uDeeCVAfQ94HvI94HvIz8Efoj8APgB8jbwNvIO8A7yLvAu8h7wHvIz4GfFA1woKCgoOoID3EHOgDPkrgsCFwWeBwIPBT5wH/kI+Ai5ECAQKBgDHyOXwCXyCHiEXAPXyFPgKfJz4OfIJ8AnyKfAp8hnwGfIL4BfoLdQ7vwNGA2yncUjyCMYHKGgBYMWCk5gcIKCNgyKV6343jcWv+54OG3WGlu15vsXG9uv51/+VfKYPCHPSIO8JNvkLTkmHcJISL6S7+RH5WPlU+Vz5ctlurw03+cRAVvl229Q4374</latexit>
+sha1_base64="uixRkzLfIY3w5m559xi4cwf8S3I=">AAAHEHicfdTdbtMwFMBxb7AyytcGl9xYTKDxoaktSHAB0sSYxjY2Bmtpp7pUtuu0VuOkSpy1XZSX4BF4Ci6QEHeIO7jjbXC6Ijg7Y5FaHfn3T9pYSsTA17EtlX7NzJ47P1e4MH+xeOnylavXFhavv4vDJJKqJkM/jBqCx8rXgapZbX3VGESKG+Gruuiv5V4/VFGsw6BqxwPVMrwbaE9Lbt1Se+EpEz16hz6jzIhwlL5Vr5JsmTJRb5fd9+guZazIxPg4EcN25X2V5qfcp6JdaS8slVZKk4PioTwdlsj02Gsvzn1mnVAmRgVW+jyOm+XSwLZSHlktfZUVWRKrAZd93lVNNwbcqLiVTm4zo7fdSod6YeQ+gaWT1X/PSLmJ47ERrjTc9uKTli+eZs3Eek9aqQ4GiVWBPP4hL/GpDWm+Z7SjIyWtP3YDl5F2/5XKHo+4tG5ni+yFcvcSqR133dcDFXEbRvdSxqOu4aPM3VuXPcins0Id/And9L8w1l2XTb7PSMwkMacnKVvPUpbvgBDpepYViyxQQxkaw4NOysR61iy1poE3CaBvAN9Avgl8E/k28G3kW8C3kFeBV5HXgNeQ14HXkTeAN5AfAD/IN/BEwUHB0RUEcIFcApfIOx0QdFDgeSDwUNAF3kXeA95DrjUINAr6wPvIDXCDPAQeIrfALfIEeIL8EPgh8iHwIfIR8BHyMfAx8iPgR+gpNGt/A8n9dO3kFcwuDHZRsAODHRTsw2AfBVUY5I9a0b3vyyff7nh4V1kpP1ypvHm0tPp8+uafJzfJLbJMyuQxWSUvyR6pEUk+km/kB/lZ+FD4VPhS+Hqczs5Mz7lBwFH4/htllo/9</latexit>
+sha1_base64="ECg0K4OrQLL/9huZofw8+RzLJOk=">AAAG3XicfdRva9NAHMDx23R1xn+bPvRJsAgiUtop6MNhLXMbnZO1a0dTyuVySY/mknC5rO1CHvpMfCY+0zfiG/HdeOkq+utvLtBw3Oeba3KQuEkoUl2v/1pbv3Fzo3Jr87Z15+69+w+2th+epnGmGO+yOIxV36UpD0XEu1rokPcTxal0Q95zJ83Se+dcpSKOOnqe8KGkQSR8wag2UwPbcXujhjnPrNFWtV6rLw4bDxrLQZUsj+PR9sZPx4tZJnmkWUjTdNCoJ3qYU6UFC3lhOVnKE8omNOADM4yo5OkwX9xzYT81M57tx8r8Im0vZv+9IqcyTefSNaWkepyuWjl5lQ0y7b8Z5iJKMs0jdvlHfhbaOrbLDbA9oTjT4dwMKFPC3KvNxlRRps02Wc47bp5F8bZZ90PCFdWxep47VAWSzgrzbIHzohxdF4roT2hG/wtTEZhscb4mkYtEXp3kTqvInXIHXDdvFYVlORGfslhKGnm547aKQX24DPxFAH0P+B7yfeD7yA+BHyI/AH6AvAO8g7wLvIu8B7yHvA+8j/wM+Fm5gSsFBQVFK7jAXeQMOEPueSDwUOD7IPBREAAPkI+Bj5ELAQKBggnwCXIJXCKPgcfINXCNPAOeIT8Hfo58CnyKfAZ8hnwOfI78AvgFegtl82/AaJg3V1eQRzA4QkEbBm0UnMDgBAUdGJSvWvm9b6x+3fHgdKfWeFnb+fiquvt2+eXfJI/JE/KMNMhrskvek2PSJYzE5Cv5Tn5URpVPlc+VL5fp+trymkcEHJVvvwHWon84</latexit>
+sha1_base64="GBk/xbeik5hDCuhKrtuPSWUlw+A=">AAAG1nicfdRda9NQGMDxs+nqjG+bXnoTLIKIlHQKejmsZW6jc7J27WjKODk5SQ/NScLJSV8W4p14J97ph/GL+G1Msoo+feYCLQ/n988rJE4ciERb1q+19Rs3N2q3Nm8bd+7eu/9ga/vhaRKlivEei4JIDRya8ECEvKeFDvggVpxKJ+B9Z9IqvT/lKhFR2NWLmI8k9UPhCUZ1uWQ7c+N8q241rGoz8dBcDnWy3I7Ptzd+2m7EUslDzQKaJMOmFetRRpUWLOC5YacJjymbUJ8PizGkkiejrLrY3HxarLimF6niF2qzWv13j4zKJFlIpygl1eNk1crFq2yYau/NKBNhnGoesssTeWlg6sgs79x0heJMB4tioEyJ4lpNNqaKMl08H8N+x4t7UbxTHPdDzBXVkXqe2VT5ks7z4t58+0U5XReK8E9YTP8LE+EXWfV/TSKrRF6dZHY7z+zyCThO1s5zw7BDPmORlDR0M9tp50NrtAy8KoC+B3wP+T7wfeSHwA+RHwA/QN4F3kXeA95D3gfeRz4APkB+BvysfIArBQUFRUdwgDvIGXCG3HVB4KLA80DgocAH7iMfAx8jFwIEAgUT4BPkErhEHgGPkGvgGnkKPEU+BT5FPgM+Qz4HPke+AL5AfgH8Ar2FsvU3YDTIWqtHkEcwOEJBBwYdFJzA4AQFXRiUr1r5vW+uft3xcLrTaL5s7Hx8Vd99u/zyb5LH5Al5RprkNdkl78kx6RFGxuQr+U5+1Aa1T7XPtS+X6fracp9HBGy1b78Bcvt9DQ==</latexit>
+sha1_base64="PJMmg9Ec1XMGKYMbYPHhuOc+WOI=">AAAG1nicfdRda9NQGMDxs+nirG+bXnoTLIKIlHQKejmsZW6jc7J27WjKODk5SQ/NScLJSV8W4p14J97ph/GL+G1Msoo+feYCLQ/n988rJE4ciERb1q+19Rs3N4xbm7drd+7eu/9ga/vhaRKlivEei4JIDRya8ECEvKeFDvggVpxKJ+B9Z9IqvT/lKhFR2NWLmI8k9UPhCUZ1uWQ749r5Vt1qWNVm4qG5HOpkuR2fb2/8tN2IpZKHmgU0SYZNK9ajjCotWMDzmp0mPKZsQn0+LMaQSp6Msupic/NpseKaXqSKX6jNavXfPTIqk2QhnaKUVI+TVSsXr7Jhqr03o0yEcap5yC5P5KWBqSOzvHPTFYozHSyKgTIlims12ZgqynTxfGr2O17ci+Kd4rgfYq6ojtTzzKbKl3SeF/fm2y/K6bpQhH/CYvpfmAi/yKr/axJZJfLqJLPbeWaXT8Bxsnae12p2yGcskpKGbmY77XxojZaBVwXQ94DvId8Hvo/8EPgh8gPgB8i7wLvIe8B7yPvA+8gHwAfIz4CflQ9wpaCgoOgIDnAHOQPOkLsuCFwUeB4IPBT4wH3kY+Bj5EKAQKBgAnyCXAKXyCPgEXINXCNPgafIp8CnyGfAZ8jnwOfIF8AXyC+AX6C3ULb+BowGWWv1CPIIBkco6MCgg4ITGJygoAuD8lUrv/fN1a87Hk53Gs2XjZ2Pr+q7b5df/k3ymDwhz0iTvCa75D05Jj3CyJh8Jd/JD2NgfDI+G18u0/W15T6PCNiMb78BC/t8/Q==</latexit>
+
+ReLu Behavior
+>0
+<0
+
+w2 , b2
+
+>0
+
+x
+
+W1 x
+
+h
+
+h = ReLu(W1 x)
+T
+y = w2 h + b2
+
+19
+
+Binary Case
+• Let the training set be {(xn, tn)1≤n≤N} where tn ∈ {0,1} is the class
+label and let us consider a neural net with a 1D output.
+• We write
+
+yn = σ(w2(σ(W1xn + b1)) + b2) ∈ [0,1] .
+• We want to minimize the binary cross entropy
+1 N
+En(W1, w2, b1, b2) ,
+E(W1, w2, b1, b2) =
+N∑
+n=1
+
+En(W1, w2, b1, b2) = − (tn ln(yn) + (1 − tn)ln(1 − yn)) ,
+with respect to the coefficients of W1, w2, b1, and b2.
+• E can be minimized using a gradient-based technique.
+20
+
+Multi-Class Case
+
+h = σ(W1xn + b1)
+y = σ(W2h + b2)
+In this case W2 is a matrix.
+
+21
+
+Multi-Class Case
+Let the training set be {(xn, [tn1, …, tnK ])1≤n≤N} where tnk ∈ {0,1} is the
+probability that sample xn belongs to class k.
+• We write
+
+yn = σ(W2(σ(W1xn + b1)) + b2) ∈ R K
+exp(yn[k])
+k
+pn =
+∑j exp(yn[ j])
+• We minimize the cross entropy
+1 N
+E(W1, W2, b1, b2) =
+En(W1, W2, b1, b2) ,
+N∑
+n=1
+
+En(W1, W2, b1, b2) = −
+
+∑
+
+tnk ln(pnk) ,
+
+with respect to the coefficients of W1, W2, b1, and b2.
+
+22
+
+<latexit sha1_base64="0yNIG87DBE3Z+apPividyojpQOo=">AAAGU3icfdTRT9NAHMDxA9nEKTr0TV+qxAQVSbto9MEHIhKEBMSEsZF1LNfrtbvQa5vrdWxp+uxf46v+JT74t/jidczobz+kyZZf7vNtu16yemkkMm3bPxcWbyzV6jeXbzVu31m5e6+5ev8kS3LFeJslUaK6Hs14JGLe1kJHvJsqTqUX8Y53vl15Z8RVJpL4WE9S3pc0jEUgGNVmadB87Ni2tT4etF6OB85Z69lZ68W6U81mst5Z9ubrQXPN3rSnh4UHZzaskdlxNFitPXT9hOWSx5pFNMt6jp3qfkGVFiziZcPNM55Sdk5D3jNjTCXP+sX0WUrrqVnxrSBR5hNra7r67xkFlVk2kZ4pJdXDbN6qxausl+vgbb8QcZprHrPLGwV5ZOnEqjbG8oXiTEcTM1CmhPmtFhtSRZk229dwP3DzLIofmOt+SrmiOlHPC5eqUNJxaZ4tdDeq6bpQxH9CM/0vzERosun3NYmcJvLqpHB3ysKtdsDzip2ybDTcmF+wREoa+4Xr7ZQ9uz8LgmkAfRf4LvI94HvI94HvIz8Gfoy8DbyNvAO8g7wLvIv8FPhptUFzBQUFRVfwgHvIGXCG3PdB4KMgCEAQoCAEHiIfAh8iFwIEAgUSuESeAE+Qa+AaeQ48Rz4CPkJ+AfwC+Rj4GPkE+AT9S+Th34DRqDicv4I8gMEBCrZhsF3dw7xNnfl3Jx5OWpuOmT+/Wtt6P3uvLpNH5AlZJw55Q7bIR3JE2oSRL+Qr+Ua+137UftUX60uX6eLC7JwHBBz1ld+CWkME</latexit>
+
+Non-Linear Binary Classification
+
+Positive: 100(x2 − x21 )2 + (1 − x1 )2 < 0.5
+Negative: Otherwise
+
+y(x; w̃) is now a non-linear function
+implemented by the network.
+
+Problem statement: Find w̃ such that
+• for all or most positive samples y(x̃; w̃) > 0.0,
+• for all or most negative samples y(x̃; w̃) < 0.0.
+
+23
+
+Non-Linear Regression
+
+xk
+
+xi
+
+z = f(x)
+
+xj
+
+= 100(x2 − x12)2 + (1 − x1)2
+
+Problem statement: Given ({x1, z1}, …, {xn, zn}), minimize
+
+∑
+
+(zi − f (xi, w̃)2)
+
+i
+
+w.r.t. w̃.
+
+24
+
+Classification / Regression
+
+Positive: f(x) < 0.5
+Negative: Otherwise
+
+y(x; w̃) is now a non-linear function
+implemented by the network.
+
+Classification can be understood as finding w̃
+such that
+
+y(x; w̃) ≈ f(x)
+25
+
+<latexit sha1_base64="2FyPlVW/Jt8J3ZyTiXFCplkB7bc=">AAAGxXicfZTbbtMwGIDTwcoIh21wBxdYTKDuoKnpDdwgTYxpbNLGkNa1U11FtuOk1uIkOE7bEEU8BE/Ho3CHkwUN12OWHP36v8+/T4pxErJUdru/Wkv37i+3H6w8tB89fvJ0dW392UUaZ4LQPonDWAwxSmnIItqXTIZ0mAiKOA7pAF/tV3wwpSJlcXQu84SOOQoi5jOCpEq5az8hpgGLCvotQkKgfKu0v4O34IPqfme+k28CCG0AmhTEM7cHYMoCjjoQD1wHABhSX45AU6cuUhakBHM1EuQA0shrsgAKFkzkGGyrghBj19kE29jt2bVzswJ3baO7260bMAOnCTaspp2568svoBeTjNNIkhCl6cjpJnKsppWMhLS0YZbSBJErFNCRCiPEaTou6tMrwRuV8YAfC9UjCersvyMKxNM051iZHMlJusiq5G1slEn//bhgUZJJGpHrifwsBDIG1VUAjwlKZJirABHB1FoBmSCBiFQXZsNPVO1F0BNV90tCBZKx2CogEurs56XaWwB3qugukUV/RRX9T1S3qbT6e4fCa4XfrhTwoCxgdQIYFwdladswojMSc47UzUJ8UI6640bwa0Hnhxo/NPiRxo8MfqzxY4Ofa/zc4H2N9w0+0PjA4EONDw1+qfHL6oAWDKQZyKiANY4NTjRODO55muAZgu9rgm8IgcYDg080PjE4Y5rADIFrnBs81nhscKlxafBM45nBpxqfGnym8ZnB5xqfGzzXeG78Jfz0RiAoLE4XK/ATXTgxhH1d2K/mUK+ps/h2msFFb9dR8dfext7H5l1dsV5ar62O5VjvrD3rs3Vm9S1i/W69anVam+3DNm/L9vRaXWo1Y55bWmv/+AP5gGpv</latexit>
+
+Approximating a Surface
+x,y
+W1,b1
+
+Linear 2 -> n
+tanh
+
+w2,b2
+
+Linear n -> 1
+
+z
+z
+
+=
+=
+
+f (x, y)
+w2 σ(W1
+
+
+
+x
+y
+
++ b1 ) + b 2
+
+Given ({x1, z1}, …, {xn, zn}), minimize
+
+z = f(x)
+= 100(x2 − x12)2 + (1 − x1)2
+
+∑
+
+(zi − f (xi))2
+
+i
+
+with respect to W1, w2, b1, b2 .
+
+26
+
+Interpolating a Surface
+
+z = 100(x2 − x12)2 + (1 − x1)2
+
+3-node hidden layer
+27
+
+Interpolating a Surface
+
+z = 100(x2 − x12)2 + (1 − x1)2
+
+4-node hidden layer
+28
+
+Adding more Nodes
+
+2 nodes -> loss 3.02e-01
+
+z = 100(x2 − x12)2 + (1 − x1)2
+
+3 nodes -> loss 2.08e-02
+
+4 nodes -> loss 8.27e-03
+
+29
+
+Adding more Nodes
+
+2 nodes -> loss 2.61e-01
+
+z = sin(x)sin(y)
+
+3 nodes -> loss 2.51e-04
+
+4 nodes -> loss 3.07e-07
+
+30
+
+More Complex Surface
+
+I = f (x, y)
+31
+
+More Complex Surface
+
+I = f (x, y)
+
+50 nodes -> loss 3.65e-01
+
+100 nodes -> loss 2.50e-01
+
+125 nodes -> loss 2.40e-01
+
+300 nodes -> loss 1.92e-01
+
+32
+
+Universal Approximation Theorem
+
+A feedforward network with a linear output layer and at least one hidden
+layer with any 'squashing' activation function (e.g. logistic sigmoid) can
+approximate any Borel measurable function (from one finite-dimensional
+space to another) with any desired nonzero error.
+Any continuous function on a closed and bounded set of Rn is Borelmeasurable.
+—> In theory, any reasonable function can be approximated by a onehidden layer network as long as it is continuous.
+
+[Hornik et al, 1989; Cybenko, 1989]
+
+33
+
+In Practice
+
+• It may take an exponentially large number of parameters for a good approximation.
+• The optimization problem becomes increasingly difficult.
+—> The one hidden layer perceptron may not converge to the best solution!
+
+34
+
+MNIST
+
+• The network takes as input 28x28 images represented as 784D
+vectors.
+• The output is a 10D vector giving the probability of the image
+representing any of the 10 digits.
+• There are 50’000 training pairs of images and the
+corresponding label, 10’000 validation pairs, and 5’000 testing
+pairs.
+35
+
+MNIST Results
+nIn =784
+nOut = 10
+20 < hidden layer size < 120
+
+• MLPs have many parameters.
+• This has long been a major problem.
+—> Was eventually solved by using GPUs.
+SVM: 98.6
+
+Knn: 96.8
+
+• Around 2005, SVMs were often felt to
+be superior to neural nets.
+• This is no longer the case ….
+
+36
+
+<latexit sha1_base64="v90tLmSKWdnTIyOZ+BvO0AuG8xM=">AAAE+nicfZPdbtMwFIDTrbBRftbBJTcWFdU2UJVUQsAFMFEmcdMxpHbtVFeR7bqttdgJtksbhbwMdxO3vAxvg5MWdW7GjtT06Hzf8a+Mo4Ap7bp/Slvb5Tt3d3bvVe4/ePhor7r/+FyFM0lol4RBKPsYKRowQbua6YD2I0kRxwHt4ctWxnvfqVQsFB0dR3TI0USwMSNIm5JfvYKYTphI6DeBpETxUVqBeOp79Xd1qNiEI987gLjnewDihfm+MP/Y9w4BhLnYXIvNXGyCvLz0mrlXBzAYhVqB+rIrBlmsG0XeKPJGsZpBHFYgFaNr6/KrNbfh5gGKibdKas4qzvz97bdwFJIZp0KTACk18NxIDxMkNSMBNRudKRohcokmdGBSgThVwyQ/0xQ8N5URGIfS/IQGefV6R4K4UjHHxuRIT9Umy4o3scFMj98MEyaimaaCLCcazwKgQ5BdEBgxSYkOYpMgIplZKyBTJBHR5hor8BM1e5G0bcb9ElGJdCiPEoikOchFavY2gS+z7DaRiX+iyf4nmqsxWv69ReG5wm9WEniSJjA7AYyTkzStVKCgcxJyjszNmjtPB+5wJYyTnhFs3rd4v8AvLH5R4B2Ld4oLwJaACwNMLT4tcG1xXeBzi88LfGHxRYHHFo8LG+Cna4GgIDndHIG3baFdEFq20MrmMGEem7f5tIrJebPhuQ3va7N2/HH17Hadp84z58DxnNfOsfPZOXO6DintlV6V3pc+lH+Uf5avyr+W6lZp1fPEsaL8+y+/crE5</latexit>
+
+Deep Learning
+h1
+h2
+y
+
+=
+
+σ1 (W1 x1 + b1 )
+
+=
+...
+=
+
+σ2 (W2 h2 + b2 )
+σn (Wn hn + bn )
+
+▪ The descriptive power of the net increases with the number of
+layers.
+Y
+
+▪ In the case of a 1D signal, it is roughly proportional to Wn
+n
+where wn is the width of layer n.
+
+Telgarsky, JMLR’16
+
+37
+
+<latexit sha1_base64="6IW+/V6iDdeydZ5cQbaP/X1nm9w=">AAAHa3icfZRPT9swFMBTNijr/sG4bTtYQwwGCLW9bJdJaAwxkGBMtLSsLpXtOKlFnFSOQ1tFOe66fb59iH2A3eakRdurGZYSPb3fzy95jmM6CESsq9Wfpbl79+cXyosPKg8fPX7ydGn52XkcJYrxJouCSLUpiXkgQt7UQge8PVCcSBrwFr3ay3nrmqtYRGFDjwe8K4kfCk8wok2qt/QbU+6LMCWB8MPNrIJpH71+j7Akow1MWwjTEdoyd7pdfWOyNBqhFA2F7qMM5dyoAfd0B6GbQkqRcYZSluWpYa922UAYF2E9D3no3jhYCb+vu5OyKSKhWxSldxelvVpekPbqtxfDlTHKR94FHa7nzzQ9bSG6jiqTCZNWe0ur1Z1qMZAd1KbBqjMdp73l+a/YjVgieahZQOK4U6sOdNe8gBYs4GbtkpgPCLsiPu+YMCSSx920+EYZWjMZF3mRMleoUZH9d0ZKZByPJTWmJLofz7I8eRvrJNp7101FOEg0D9nkQV4SIB2h/IMjVyjOdDA2AWFKmHdFrE8UYdpsiwr+yE0vih+bup8HXBEdqc0UE+WbHZCZ3ny8nUd3iSK8EU30PzE2i56lxf0ORRaKvF1J8X6W4nwFKE33s6xSwSEfskhKs3VSTPezTrU7FbxCgPwA8AOLHwJ+aPEjwI8s3gC8YfEm4E2LtwBvWbwNeNviF4Bf5As0YxBgEKsCBZxanAHOLO66QHAtwfOA4FmCD7hv8T7gfYsLAQRhCRJwafEI8MjiGnBt8QTwxOLXgF9bfAj40OIjwEcWHwM+tv4SufdXYCRI92YryBMonFjCMRSOLeEMCmeW0ICC+VXMaVybPXvt4Ly+UzPxl/rq7ofpubzovHBeORtOzXnr7DqfnFOn6bBSr/St9L30Y+FXeaX8vPxyos6VpnNWHDDKa38Ag2enqQ==</latexit>
+sha1_base64="ij6qX2TyYZGahzDHZARqzbU3oT0=">AAAGzXicfZTdbtMwFIC9wcoIfx1ccmMxISFAU9MbuEGaGNPYpP2gtWtHXCrHcVJrcRI5ztoqhFuei8fgCbiFN8DNOo1Tj1lKcnS+zyfxiWw/i0WuW62fS8u3bq807qzede7df/DwUXPt8UmeForxLkvjVPV9mvNYJLyrhY55P1OcSj/mPf9sa8Z751zlIk06eprxgaRRIkLBqDapYdMjnjN6h0nMQ+1h4vNIJCVVik4rXLLKZMZD90vHPCf4FfZdTAiuk+2rZBsTngSXs4gS0UgPHDIYNtdbG616YDtw58E6mo+j4drKZxKkrJA80Symee65rUwPTGUtWMwrhxQ5zyg7oxH3TJhQyfNBWXehws9NJsBhqsyVaFxn/51RUpnnU+kbU1I9yhfZLHkd8wodvh2UIskKzRN28aKwiLFO8aylOBCKMx1PTUCZEuZbMRtRRZk2jXfIB27Wovi+qXuYcUV1ql6WhKpI0kll1haR17PoJlEkl6KJ/ifmIjJafb9BkbUir1dKsl2VZNYB3y+3q8pxSMLHLJWSmh9M/O3Kaw3mQlgLkO8AvmPxXcB3Lb4H+J7FO4B3LN4FvGvxHuA9i/cB71v8FPDTWYMWDAoMalXwAfctzgBnFg8CIASWEIZACC0hAjyy+AjwkcWFAIKwBAm4tHgKeGpxDbi2eAF4YfFzwM8tPgZ8bPEJ4BOLTwGfWrtEbl0JjMbl1mIFeQCFA0vYh8K+JRxD4dgSOlAwW8Wcxu7i2WsHJ+0N18Sf2uub7+fn8ip6ip6hF8hFb9Am+oiOUBcx9AP9Qr/Rn8Zho2h8bXy7UJeX5nOeIDAa3/8Cl8t1LA==</latexit>
+sha1_base64="plrZIkatMgoVL3l0oPOUODEOI10=">AAAGvnicfdTdbtMwGIBhb7Aywl8Hh5xYTEgI0JT2BE6QJsY0NrExtHbtqEPluE5qLU4qx1lbRbkprgYO4Upwu07w9RuL1Nby88ZtXCXhKFG59f2fK6u3bq/V7qzf9e7df/DwUX3j8WmeFUbItsiSzHRDnstEpbJtlU1kd2Qk12EiO+H5zsw7F9LkKktbdjqSgeZxqiIluHVT/fon1vOG7yhLZGR7lIUyVmnJjeHTipaioj5j1E2P+81vLfc5oa9o2KRMpoOrihkVD23gscDr1zf9LX9+UDxoLAabZHEc9zfWvrJBJgotUysSnue9hj+ygVvaKpHIymNFLkdcnPNY9tww5VrmQTm/7Io+dzMDGmXGvVJL57P/nlFynedTHbpSczvMl202eZ31Chu9DUqVjgorU3H5RVGRUJvR2R7SgTJS2GTqBlwY5X4rFUNuuLBupz32QbprMfLQrft5JA23mXlZMm5izSeVu7aYvZ6NbgpVehW60f/CXMUum7/fkOh5oq9PSrZblWy2A2FY7laV57FUjkWmNXf/MAt3q54fLIJoHkDfA76HfB/4PvID4AfIW8BbyNvA28g7wDvIu8C7yM+An802aKngoOBohRB4iFwAF8gHAxAMUBBFIIhQEAOPkQ+BD5ErBQKFAg1cI8+AZ8gtcIu8AF4gvwB+gXwMfIx8AnyCfAp8iu4SvfM3EDwpd5ZX0EcwOELBIQwOUXACgxMUtGDgbhX3NG4sP3vx4LS51XDjL83N7feL5/I6eUqekRekQd6QbfKRHJM2EeQ7+UF+kd+17VpU07XsMl1dWZzzhICjNvkDKglv5Q==</latexit>
+sha1_base64="Cane/h9iOq/9AHUZ3tbUPm2T1ak=">AAAGvnicfdTdbtMwGIBhb7Ayyt8Gh5xYTEgI0JTsBE6QJsY0NrExtHbtqEvlOE5qLU4ix1lbRbkprgYO4Upwu07w9RuL1Nby88ZtXCVBnqjCet7PpeVbt1cad1bvNu/df/Dw0dr649MiK42QbZElmekGvJCJSmXbKpvIbm4k10EiO8H5ztQ7F9IUKktbdpLLvuZxqiIluHVTg7VPrNccvqMskZHtURbIWKUVN4ZPalqJmrqp0cD/1nKfY/qKBj5jlHqUyTS8yphR8dD2m6w/WNvwNr3ZQfHAnw82yPw4HqyvfGVhJkotUysSXhQ938tt361slUhk3WRlIXMuznkse26Yci2LfjW77Jo+dzMhjTLjXqmls9l/z6i4LoqJDlypuR0WizadvM56pY3e9iuV5qWVqbj8oqhMqM3odA9pqIwUNpm4ARdGud9KxZAbLqzb6Sb7IN21GHno1v2cS8NtZl5WjJtY83Htri1mr6ejm0KVXoVu9L+wULHLZu83JHqW6OuTiu3WFZvuQBBUu3XdbLJUjkSmNXd/MAt2657XnwfRLIC+B3wP+T7wfeQHwA+Qt4C3kLeBt5F3gHeQd4F3kZ8BP5tu0ELBQcHRCgHwALkALpCHIQhCFEQRCCIUxMBj5EPgQ+RKgUChQAPXyDPgGXIL3CIvgZfIL4BfIB8BHyEfAx8jnwCfoLtE7/wNBE+qncUV9BEMjlBwCINDFJzA4AQFLRi4W8U9jf3FZy8enG5t+m78ZWtj+/38ubxKnpJn5AXxyRuyTT6SY9ImgnwnP8gv8rux3YgaupFdpstL83OeEHA0xn8An4pv+Q==</latexit>
+sha1_base64="0SuXCMGg0E2JL/OYg2vr0v1GonM=">AAAGr3icfdRNb9MwGMBxb7AywlsHRy4RExJCaEp3gcukiTGNTdoYWrt21GE4jpNai5PIcbpWUT4Nn4YrnPg2OF0nePqMRWpk+feP27hKgjyRhfG830vLd+6utO6t3ncePHz0+El77elpkZWaix7PkkwPAlaIRKaiZ6RJxCDXgqkgEf3gYqfx/ljoQmZp10xz4SsWpzKSnBk7dd7eokNntOXSRERm6NJAxDKtmNZsWrsVr13PpbQ5iTS8nqZaxiPjO9R3ztvr3oY3O1w86MwH62R+HJ+vrXyhYcZLJVLDE1YUw46XG98ubSRPRO3QshA54xcsFkM7TJkShV/N7rN2X9qZ0I0ybT+pcWez/15RMVUUUxXYUjEzKhatmbzJhqWJ3vmVTPPSiJRffVFUJq7J3GbT3FBqwU0ytQPGtbS/1eUjphk3dmsd+kHYe9Hi0K77KReamUy/rijTsWKT2t5bTN80o9tCmV6HdvS/sJCxzWbnWxI1S9TNSUV364o2OxAE1W5dOw5NxSXPlGL2H6bBbj30/HkQzQLoe8D3kO8D30d+APwAeRd4F3kPeA95H3gf+QD4APkZ8LNmgxYKBgqGVgiAB8g5cI48DEEQoiCKQBChIAYeIx8BHyGXEgQSBQq4Qp4Bz5Ab4AZ5CbxEPgY+Rn4J/BL5BPgE+RT4FD0laudvwFlS7SyuoI5gcISCQxgcouAEBico6MLAPir2bdxZfPfiwenmRseOP2+ub7+fv5dXyXPygrwiHfKWbJOP5Jj0CCffyQ/yk/xqdVr91tfWt6t0eWl+zTMCjpb8A3g1arI=</latexit>
+sha1_base64="2JXUN9pTXy+Z3Kvtk9kHKkUto/8=">AAAGiHicfdTva9NAGMDx23R11l+dgm98czgEURmJCNMXwlgdc4PNydq1s6nlcrmkx3JJuFz6g5h/xrf6D/nfeO0q+vSZC7R9uM83aXPQ+Fksc+M4v1ZWb9xcq91av12/c/fe/QeNjYdneVpoLto8jVPd9VkuYpmItpEmFt1MC6b8WHT8i+bMOyOhc5kmLTPNRF+xKJGh5MzYpUHjMfX88cD92rKfE/qS+gOXvqfOoLHpbDnzg+LBXQybZHGcDDbWvnhBygslEsNjluc918lMv2TaSB6Lqu4VucgYv2CR6NkxYUrk/XJ+AxV9ZlcCGqbavhJD56v/nlEyledT5dtSMTPMl222eJX1ChO+7ZcyyQojEn75RWERU5PS2W7QQGrBTTy1A+Na2t9K+ZBpxo3ds7r3Qdh70eLIXvdTJjQzqX5RekxHik0qe2+R92o2XRfK5E9op/+FuYxsNn+/JlHzRF2dlN5eVXqzHfD9cq+q6nUvEWOeKsWSoPT8varn9BdBOA+g7wPfR34A/AD5IfBD5C3gLeRt4G3kHeAd5F3gXeTnwM9nG7RUMFAwdAUfuI+cA+fIgwAEAQrCEAQhCiLgEfIh8CFyKUEgUaCAK+Qp8BS5AW6QF8AL5CPgI+Rj4GPkE+AT5FPgU/QvUc2/AWdx2Vy+gjqGwTEKjmBwhIJTGJyioAUD+1exT2N3+dmLh7PXW66dP7/Z3NldPJfXyRPylDwnLtkmO+QjOSFtwsk38p38ID9r9ZpT2669u0xXVxbnPCLgqO3+BuF/WiQ=</latexit>
+sha1_base64="Vw5JzYuktNXT2Bazou8Hi8EaWNM=">AAAGiHicfdTva9NAGMDx23R1xl+dgm98czgEURlpEaYvhLE55gabk7VrZ9OVy+WSHssl4XJZW2L+Gd/qP+R/47Wr6NNnLtD24T7fpM1B42exzI3r/lpavnV7pXZn9a5z7/6Dh4/qa49P87TQXLR5Gqe667NcxDIRbSNNLLqZFkz5sej4FztT71wKncs0aZlJJvqKRYkMJWfGLg3qT6nnjwbN85b9HNPX1B806QfqDurr7oY7OygeGvNhncyP48HaylcvSHmhRGJ4zPK813Az0y+ZNpLHonK8IhcZ4xcsEj07JkyJvF/ObqCiL+xKQMNU21di6Gz13zNKpvJ8onxbKmaG+aJNF6+zXmHCd/1SJllhRMKvvigsYmpSOt0NGkgtuIkndmBcS/tbKR8yzbixe+Z4H4W9Fy0O7XU/Z0Izk+pXpcd0pNi4svcWeW+m002hTP6EdvpfmMvIZrP3GxI1S9T1SentVqU33QHfL3erynG8RIx4qhRLgtLzd6ue258H4SyAvgd8D/k+8H3kB8APkLeAt5C3gbeRd4B3kHeBd5GfAT+bbtBCwUDB0BV84D5yDpwjDwIQBCgIQxCEKIiAR8iHwIfIpQSBRIECrpCnwFPkBrhBXgAvkF8Cv0Q+Aj5CPgY+Rj4BPkH/ErXzN+AsLncWr6COYHCEgkMYHKLgBAYnKGjBwP5V7NO4sfjsxcNpc6Nh5y9v17e258/lVfKMPCcvSYNski3yiRyTNuHkG/lOfpCfNafm1jZr76/S5aX5OU8IOGrbvwHtrVom</latexit>
+
+One Layer: Two Hyperplanes
+h = max(Wx + b, 0) with W =
+
+
+
+w1T
+w2T
+
+and b =
+
+
+
+b1
+b2
+
+y = w0T h + b0
+
+-
+
++
+-
+
+h=
+
+
+
+h=
+
+
+
+0
+w2T x + b2
+
+0
+0
+T x
+w1
+
+1
++b
+
+h=
+
+
+
+=
+
+0
+
+w1T x + b1
+0
+
+h=
+wT
+2 x
++
+
+b2
+
+
+=
+
++
+
+w1T x + b1
+w2T x + b2
+0
+
+38
+
+<latexit sha1_base64="O3KmgULAGJGaI78dmBn6aEKeLs0=">AAAHyXicfdXbbtMwGMDxdBw6ymmDS4RkMUF30tSOC7hB2hjVTtoYWk9TXSbbdVqrcVISZ20X5YpX4OV4Fa5wuk7s6zdmqZGV3z9p4rQKH3gqMqXS79zcvfsPHubnHxUeP3n67PnC4ot6FMShkDUReEHY5CySnvJlzSjjyeYglExzTzZ4fyfzxoUMIxX4VTMeyLZmXV+5SjBjd50v/KJcdpWfME91/dW0QHmP9qIBEzIpa50S8u4ToZqNlilvEMpHZM1u+c1kvbRCKM0OLN6Mi7brXdXFaTIm2cgaPiwWv1fJ5Jg1wotFUqDS71xfxfnCUmmjNBkET8rTyZIzHSfniw9f004gYi19IzwWRa1yaWDaCQuNEp60txVH0l5xn3Vly059pmXUTibLl5K3dk+HuEFoP74hk703j0iYjqKx5rbUzPSiWct23mat2Lgf24nyB7GRvrj6Ijf2iAlI9ixIR4VSGG9sJ0yEyl4rET0WMmHsEyvQL9LeSyiP7Hm/DmTITBCuJpSFXbvEqb23Ll3PZneFyr8O7ex/YWQXPU0m2zsSPUn07UlCK2lCsxXgPKmkaaFAfTkUgdbMPlbKt9NWqT0N3GTbBtArwCvId4HvIt8Dvod8H/g+8kPgh8gPgB8grwKvIq8BryGvA68jbwBvIG8CbyI/A36WPaCZgoGCoTNw4By5AC6Qdzog6KDAdUHgoqALvIu8B7yHXCkQKBT0gfeRa+AaeQA8QG6AG+Qx8Bj5BfAL5EPgQ+Qj4CPkY+Bj5JfAL9G/XO/8CwTzkp3ZM+hjGByj4AgGRyg4hcEpCqowqE5+6vaFUp59feBJfXOj/H5j89vm0tbn6atl3nnlvHGWnbLzwdly9pwTp+YI50+O5FZyq/nD/I/8KH95lc7lpse8dMDI//wL8yXNWg==</latexit>
+sha1_base64="ij6qX2TyYZGahzDHZARqzbU3oT0=">AAAGzXicfZTdbtMwFIC9wcoIfx1ccmMxISFAU9MbuEGaGNPYpP2gtWtHXCrHcVJrcRI5ztoqhFuei8fgCbiFN8DNOo1Tj1lKcnS+zyfxiWw/i0WuW62fS8u3bq807qzede7df/DwUXPt8UmeForxLkvjVPV9mvNYJLyrhY55P1OcSj/mPf9sa8Z751zlIk06eprxgaRRIkLBqDapYdMjnjN6h0nMQ+1h4vNIJCVVik4rXLLKZMZD90vHPCf4FfZdTAiuk+2rZBsTngSXs4gS0UgPHDIYNtdbG616YDtw58E6mo+j4drKZxKkrJA80Symee65rUwPTGUtWMwrhxQ5zyg7oxH3TJhQyfNBWXehws9NJsBhqsyVaFxn/51RUpnnU+kbU1I9yhfZLHkd8wodvh2UIskKzRN28aKwiLFO8aylOBCKMx1PTUCZEuZbMRtRRZk2jXfIB27Wovi+qXuYcUV1ql6WhKpI0kll1haR17PoJlEkl6KJ/ifmIjJafb9BkbUir1dKsl2VZNYB3y+3q8pxSMLHLJWSmh9M/O3Kaw3mQlgLkO8AvmPxXcB3Lb4H+J7FO4B3LN4FvGvxHuA9i/cB71v8FPDTWYMWDAoMalXwAfctzgBnFg8CIASWEIZACC0hAjyy+AjwkcWFAIKwBAm4tHgKeGpxDbi2eAF4YfFzwM8tPgZ8bPEJ4BOLTwGfWrtEbl0JjMbl1mIFeQCFA0vYh8K+JRxD4dgSOlAwW8Wcxu7i2WsHJ+0N18Sf2uub7+fn8ip6ip6hF8hFb9Am+oiOUBcx9AP9Qr/Rn8Zho2h8bXy7UJeX5nOeIDAa3/8Cl8t1LA==</latexit>
+sha1_base64="plrZIkatMgoVL3l0oPOUODEOI10=">AAAGvnicfdTdbtMwGIBhb7Aywl8Hh5xYTEgI0JT2BE6QJsY0NrExtHbtqEPluE5qLU4qx1lbRbkprgYO4Upwu07w9RuL1Nby88ZtXCXhKFG59f2fK6u3bq/V7qzf9e7df/DwUX3j8WmeFUbItsiSzHRDnstEpbJtlU1kd2Qk12EiO+H5zsw7F9LkKktbdjqSgeZxqiIluHVT/fon1vOG7yhLZGR7lIUyVmnJjeHTipaioj5j1E2P+81vLfc5oa9o2KRMpoOrihkVD23gscDr1zf9LX9+UDxoLAabZHEc9zfWvrJBJgotUysSnue9hj+ygVvaKpHIymNFLkdcnPNY9tww5VrmQTm/7Io+dzMDGmXGvVJL57P/nlFynedTHbpSczvMl202eZ31Chu9DUqVjgorU3H5RVGRUJvR2R7SgTJS2GTqBlwY5X4rFUNuuLBupz32QbprMfLQrft5JA23mXlZMm5izSeVu7aYvZ6NbgpVehW60f/CXMUum7/fkOh5oq9PSrZblWy2A2FY7laV57FUjkWmNXf/MAt3q54fLIJoHkDfA76HfB/4PvID4AfIW8BbyNvA28g7wDvIu8C7yM+An802aKngoOBohRB4iFwAF8gHAxAMUBBFIIhQEAOPkQ+BD5ErBQKFAg1cI8+AZ8gtcIu8AF4gvwB+gXwMfIx8AnyCfAp8iu4SvfM3EDwpd5ZX0EcwOELBIQwOUXACgxMUtGDgbhX3NG4sP3vx4LS51XDjL83N7feL5/I6eUqekRekQd6QbfKRHJM2EeQ7+UF+kd+17VpU07XsMl1dWZzzhICjNvkDKglv5Q==</latexit>
+sha1_base64="Cane/h9iOq/9AHUZ3tbUPm2T1ak=">AAAGvnicfdTdbtMwGIBhb7Ayyt8Gh5xYTEgI0JTsBE6QJsY0NrExtHbtqEvlOE5qLU4ix1lbRbkprgYO4Upwu07w9RuL1Nby88ZtXCVBnqjCet7PpeVbt1cad1bvNu/df/Dw0dr649MiK42QbZElmekGvJCJSmXbKpvIbm4k10EiO8H5ztQ7F9IUKktbdpLLvuZxqiIluHVTg7VPrNccvqMskZHtURbIWKUVN4ZPalqJmrqp0cD/1nKfY/qKBj5jlHqUyTS8yphR8dD2m6w/WNvwNr3ZQfHAnw82yPw4HqyvfGVhJkotUysSXhQ938tt361slUhk3WRlIXMuznkse26Yci2LfjW77Jo+dzMhjTLjXqmls9l/z6i4LoqJDlypuR0WizadvM56pY3e9iuV5qWVqbj8oqhMqM3odA9pqIwUNpm4ARdGud9KxZAbLqzb6Sb7IN21GHno1v2cS8NtZl5WjJtY83Htri1mr6ejm0KVXoVu9L+wULHLZu83JHqW6OuTiu3WFZvuQBBUu3XdbLJUjkSmNXd/MAt2657XnwfRLIC+B3wP+T7wfeQHwA+Qt4C3kLeBt5F3gHeQd4F3kZ8BP5tu0ELBQcHRCgHwALkALpCHIQhCFEQRCCIUxMBj5EPgQ+RKgUChQAPXyDPgGXIL3CIvgZfIL4BfIB8BHyEfAx8jnwCfoLtE7/wNBE+qncUV9BEMjlBwCINDFJzA4AQFLRi4W8U9jf3FZy8enG5t+m78ZWtj+/38ubxKnpJn5AXxyRuyTT6SY9ImgnwnP8gv8rux3YgaupFdpstL83OeEHA0xn8An4pv+Q==</latexit>
+sha1_base64="0SuXCMGg0E2JL/OYg2vr0v1GonM=">AAAGr3icfdRNb9MwGMBxb7AywlsHRy4RExJCaEp3gcukiTGNTdoYWrt21GE4jpNai5PIcbpWUT4Nn4YrnPg2OF0nePqMRWpk+feP27hKgjyRhfG830vLd+6utO6t3ncePHz0+El77elpkZWaix7PkkwPAlaIRKaiZ6RJxCDXgqkgEf3gYqfx/ljoQmZp10xz4SsWpzKSnBk7dd7eokNntOXSRERm6NJAxDKtmNZsWrsVr13PpbQ5iTS8nqZaxiPjO9R3ztvr3oY3O1w86MwH62R+HJ+vrXyhYcZLJVLDE1YUw46XG98ubSRPRO3QshA54xcsFkM7TJkShV/N7rN2X9qZ0I0ybT+pcWez/15RMVUUUxXYUjEzKhatmbzJhqWJ3vmVTPPSiJRffVFUJq7J3GbT3FBqwU0ytQPGtbS/1eUjphk3dmsd+kHYe9Hi0K77KReamUy/rijTsWKT2t5bTN80o9tCmV6HdvS/sJCxzWbnWxI1S9TNSUV364o2OxAE1W5dOw5NxSXPlGL2H6bBbj30/HkQzQLoe8D3kO8D30d+APwAeRd4F3kPeA95H3gf+QD4APkZ8LNmgxYKBgqGVgiAB8g5cI48DEEQoiCKQBChIAYeIx8BHyGXEgQSBQq4Qp4Bz5Ab4AZ5CbxEPgY+Rn4J/BL5BPgE+RT4FD0laudvwFlS7SyuoI5gcISCQxgcouAEBico6MLAPir2bdxZfPfiwenmRseOP2+ub7+fv5dXyXPygrwiHfKWbJOP5Jj0CCffyQ/yk/xqdVr91tfWt6t0eWl+zTMCjpb8A3g1arI=</latexit>
+sha1_base64="2JXUN9pTXy+Z3Kvtk9kHKkUto/8=">AAAGiHicfdTva9NAGMDx23R11l+dgm98czgEURmJCNMXwlgdc4PNydq1s6nlcrmkx3JJuFz6g5h/xrf6D/nfeO0q+vSZC7R9uM83aXPQ+Fksc+M4v1ZWb9xcq91av12/c/fe/QeNjYdneVpoLto8jVPd9VkuYpmItpEmFt1MC6b8WHT8i+bMOyOhc5kmLTPNRF+xKJGh5MzYpUHjMfX88cD92rKfE/qS+gOXvqfOoLHpbDnzg+LBXQybZHGcDDbWvnhBygslEsNjluc918lMv2TaSB6Lqu4VucgYv2CR6NkxYUrk/XJ+AxV9ZlcCGqbavhJD56v/nlEyledT5dtSMTPMl222eJX1ChO+7ZcyyQojEn75RWERU5PS2W7QQGrBTTy1A+Na2t9K+ZBpxo3ds7r3Qdh70eLIXvdTJjQzqX5RekxHik0qe2+R92o2XRfK5E9op/+FuYxsNn+/JlHzRF2dlN5eVXqzHfD9cq+q6nUvEWOeKsWSoPT8varn9BdBOA+g7wPfR34A/AD5IfBD5C3gLeRt4G3kHeAd5F3gXeTnwM9nG7RUMFAwdAUfuI+cA+fIgwAEAQrCEAQhCiLgEfIh8CFyKUEgUaCAK+Qp8BS5AW6QF8AL5CPgI+Rj4GPkE+AT5FPgU/QvUc2/AWdx2Vy+gjqGwTEKjmBwhIJTGJyioAUD+1exT2N3+dmLh7PXW66dP7/Z3NldPJfXyRPylDwnLtkmO+QjOSFtwsk38p38ID9r9ZpT2669u0xXVxbnPCLgqO3+BuF/WiQ=</latexit>
+sha1_base64="Vw5JzYuktNXT2Bazou8Hi8EaWNM=">AAAGiHicfdTva9NAGMDx23R1xl+dgm98czgEURlpEaYvhLE55gabk7VrZ9OVy+WSHssl4XJZW2L+Gd/qP+R/47Wr6NNnLtD24T7fpM1B42exzI3r/lpavnV7pXZn9a5z7/6Dh4/qa49P87TQXLR5Gqe667NcxDIRbSNNLLqZFkz5sej4FztT71wKncs0aZlJJvqKRYkMJWfGLg3qT6nnjwbN85b9HNPX1B806QfqDurr7oY7OygeGvNhncyP48HaylcvSHmhRGJ4zPK813Az0y+ZNpLHonK8IhcZ4xcsEj07JkyJvF/ObqCiL+xKQMNU21di6Gz13zNKpvJ8onxbKmaG+aJNF6+zXmHCd/1SJllhRMKvvigsYmpSOt0NGkgtuIkndmBcS/tbKR8yzbixe+Z4H4W9Fy0O7XU/Z0Izk+pXpcd0pNi4svcWeW+m002hTP6EdvpfmMvIZrP3GxI1S9T1SentVqU33QHfL3erynG8RIx4qhRLgtLzd6ue258H4SyAvgd8D/k+8H3kB8APkLeAt5C3gbeRd4B3kHeBd5GfAT+bbtBCwUDB0BV84D5yDpwjDwIQBCgIQxCEKIiAR8iHwIfIpQSBRIECrpCnwFPkBrhBXgAvkF8Cv0Q+Aj5CPgY+Rj4BPkH/ErXzN+AsLncWr6COYHCEgkMYHKLgBAYnKGjBwP5V7NO4sfjsxcNpc6Nh5y9v17e258/lVfKMPCcvSYNski3yiRyTNuHkG/lOfpCfNafm1jZr76/S5aX5OU8IOGrbvwHtrVom</latexit>
+
+Two Layers: Two Hyperplanes
+h = max(Wx + b , 0)
+h0 = max(W0 h + b0 , 0)
+y = w00T h0 + b00
+
+-
+
++
+-
+
+h=
+
+
+
+h=
+
+
+
+0
+w2T x + b2
+
+0
+0
+T x
+w1
+
+1
++b
+
+h=
+
+
+
+=
+
+0
+
+w1T x + b1
+0
+
+h=
+wT
+2 x
++
+
+b2
+
+
+=
+
++
+
+w1T x + b1
+w2T x + b2
+0
+
+39
+
+Graphical Interpretation
+
+Hyperplanes at
+every level of
+the network
+split the space.
+
+40
+
+Graphical Interpretation
+
+Hyperplanes at
+every level of
+the network
+split the space.
+
+41
+
+Graphical Interpretation
+
+The splits are
+combined by
+the hierarchical
+nature of the
+tree.
+
+42
+
+Graphical Interpretation
+
+The splits are
+combined due to
+the sequential
+nature of the
+network.
+
+43
+
+Multi Layer Perceptrons
+The function learned by an MLP using the ReLU, Sigmoid, or
+Tanh operators is:
+• piecewise affine or smooth;
+• continuous because it is a composition of continuous
+functions.
+Each region created by a layer is split into smaller regions:
+• Their boundaries are correlated in a complex way.
+• Their descriptive power is larger than shallow networks for
+the same number of parameters.
+44
+
+Second Layer for Approximation
+
+I = f (x, y)
+
+1 Layer: 125 nodes -> loss 2.40e-01 2 Layers: 20 nodes -> loss 8.31e-02
+
+501 weights in both cases
+
+45
+
+Adding a Third Layer
+
+I = f (x, y)
+
+2 Layers: 20 nodes -> loss 8.31e-02 3 Layers: 14 nodes -> loss 7.55e-02
+501 weights
+
+477 weights
+
+46
+
+Adding a Third Layer
+
+I = f (x, y)
+
+3 Layers: 15 nodes -> loss 5.93e-02 3 Layers: 19 nodes -> loss 4.38e-02
+541 weights
+
+837 weights
+
+47
+
+Multi Layer Perceptrons
+Linear 2 -> n
+Linear 2 -> n
+
+tanh
+
+tanh
+
+Linear n -> n
+
+Linear n -> 1
+
+tanh
+
+Linear 2 -> n
+tanh
+Linear n -> n
+tanh
+Linear n -> n
+tanh
+
+Linear n -> 1
+
+Linear n -> 1
+
+• Adding layers tends to deliver
+better convergence properties.
+• In current practice, deeper is
+usually better.
+
+48
+
+MLP to ResNet
+Linear 2 -> n
+
+x
+Linear 2 -> n
+
+tanh
+Linear n -> n
+
+Block n -> n
+
+Linear n -> n
+
+s
+
+tanh
+Linear n -> n
+
+Block n -> n
+
+Linear n -> n
+
+tanh
+Linear n -> 1
+
+Linear n -> 1
+
+x+l2(σ(l1(x))
+Further improvements in the convergence
+properties have been obtained by adding a
+bypass, which allows the final layers to only
+compute residuals.
+49
+
+Improving the Network
+
+Linear 10 -> 1
+
+Linear 10 -> 10
+
+tanh
+
+Linear 10 -> 10
+
+Linear 20 -> 10
+
+MLP 10/20/10/10 Interpolation:
+581 weights, loss 5.30e-2.
+tanh
+
+Linear 10 -> 20
+
+tanh
+
+MLP 10/20/10 Interpolation:
+471 weights, loss 6.43e-02.
+
+Linear 2 -> 10
+
+Original 51x51 image:
+2601 gray level values.
+
+50
+
+Digital Images
+
+• A MxN image can be represented as an MN vector, in which case
+neighborhood relationships are lost.
+• By contrast, treating it as a 2D array preserves neighborhood
+relationships.
+
+51
+
+Image Specificities
+x
+
+• In a typical image, the values of neighboring pixels
+tend to be more highly correlated than those of
+distant ones.
+• An image filter should be translation invariant.
+—> These two properties can be exploited to
+drastically reduce the number of weights required by
+CNNs using so-called convolutional layers.
+52
+
+Fully Connected Layers
+
+▪ The descriptive power of the net increases with the
+number of layers.
+▪ In the
+Y case of a 1D signal, it is roughly proportional
+to Wn where Wn represents the width of a layer.
+n
+
+53
+
+<latexit sha1_base64="ylTBQ63yF6yila4yx5B5jqA/MG4=">AAACPXicbZDNT9swGMYdGF/hq7DjLtYqJFBRlZQDXJAQu+zYSS0gNSFyXKc1tZ3IfgONovxjXPY/7LYbFw6b0K67zi05jI9Xsvzo97yv7PeJM8ENeN5PZ2Hxw9Lyyuqau76xubXd2Nm9MGmuKevTVKT6KiaGCa5YHzgIdpVpRmQs2GU8+TLzL2+ZNjxVPSgyFkoyUjzhlIBFUaMXDNzA8JEkOBAsgf0Yt3BgchmV01Ovui5VNK1wTYqaFBW+s/6hvUlU8tb08KZVVIHmozEcuEEYNZpe25sXfiv8WjRRXd2o8SMYpjSXTAEVxJiB72UQlkQDp4JVbpAblhE6ISM2sFIRyUxYzrev8J4lQ5yk2h4FeE7/nyiJNKaQse2UBMbmtTeD73mDHJKTsOQqy4Ep+vxQkgsMKZ5FiYdcMwqisIJQze1fMR0TTSjYwF0bgv965bfiotP2j9qdb53m2Xkdxyr6hD6jfeSjY3SGvqIu6iOK7tED+oV+O9+dR+fJ+fPcuuDUMx/Ri3L+/gNW0K4g</latexit>
+
+Convolutional Layer
+
+σ b+
+
+ny
+nx X
+X
+
+x=0 y=0
+
+wx,y ai+x,j+y
+
+!
+54
+
+Feature Maps
+
+Filters:
+55
+
+Filters
+
+Derivatives
+
+Learned filters
+56
+
+Pooling Layer
+
+• Reduces the number of inputs by replacing all
+activations in a neighborhood by a single one.
+• Can be thought as asking if a particular feature
+is present in that neighborhood while ignoring
+the exact location.
+57
+
+Adding the Pooling Layers
+
+The output size is reduced by the pooling layers.
+58
+
+Adding a Fully Connected Layer
+
+• Each neutron in the final fully connected layer is
+connected to all neurons in the preceding one.
+• Deep architecture with many parameters to learn but
+still far fewer than an equivalent multilayer perceptron.
+59
+
+LeNet (1989-1999)
+
+60
+
+Lenet Results
+LN5: 99.05
+SVM: 98.6
+
+Knn: 96.8
+
+61
+
+AlexNet (2012)
+
+Task: Image classification
+Training images: Large Scale Visual Recognition Challenge 2010
+Training time: 2 weeks on 2 GPUs
+Major Breakthrough: Training large networks
+has now been shown to be practical!!
+Krizhevsky, NIPS’12
+
+62
+
+AlexNet Results
+
+• At the 2012 ImageNet Large Scale
+Visual Recognition Challenge,
+AlexNet achieved a top-5 error of
+15.3%, more than 10.8% lower
+than the runner up.
+• Since 2015, networks outperform
+humans on this task.
+
+63
+
+Feature Maps
+
+First convolutional layer
+
+Second convolutional layer
+
+• Some of the convolutional masks are very similar to oriented
+Gaussian or Gabor filters.
+• The trained neural nets compute oriented derivatives, which the
+brain is also believed to do.
+64
+
+Filter Banks
+
+Derivatives of order
+0, 1, and 2.
+
+Learned
+
+65
+
+Bigger and Deeper
+
+VGG19, 3 weeks of training.
+
+GoogleLeNet.
+
+“It was demonstrated that the representation depth is beneﬁcial for the classiﬁcation accuracy, and
+that state-of-the-art performance on the ImageNet challenge dataset can be achieved using a
+conventional ConvNet architecture.”
+Simonyan & Zisserman, ICLR’15
+
+66
+
+Deeper and Deeper
+x
+Conv Layer
+
+s
+Conv Layer
+
+x+l2(s(l1(x))
+
+Resnet
+He et al. , CVPR’16
+
+67
+
+Without Max Pooling
+28
+
+I
+
+28
+
+conv + relu
+
+12
+
+12
+
+20
+conv + relu
+
+4
+
+4
+
+20
+
+Accuracy
+
+Train Test
+
+Conv 5x5, stride 1 99.58 98.77
+Max pool 2x3
+Conv 5x5, stride 2 99.42 98.31
+Conv 5x5, stride 1 99.38 98.57
+Conv 3x3, stride 2
+
+320
+fc + relu
+50
+10
+
+fc + relu
+
+Max pooling can be replaced by Gaussian convolutions
+with stride > 1 .
+Springenberg et al., ICLR’15
+
+68
+
+Image Classification Taxonomy
+1989 —2016
+LeNet5
+(LeCun et al., 1989)
+
+LSTM
+(Hochreiter and Schmidhuber, 1997)
+
+Bigger + GPU
+Deep hierarchical CNN
+(Ciresan et al., 2012)
+Bigger + ReLU + dropout
+No recurrence
+
+Fully convolutional
+
+AlexNet
+(Krizhevsky et al., 2012)
+MLPConv
+
+Bigger + small filters
+Overfeat
+(Sermanet et al., 2013)
+Highway Net
+(Srivastava et al., 2015)
+
+Net in Net
+(Lin et al., 2013)
+
+VGG
+(Simonyan and Zisserman, 2014)
+
+Inception modules
+GoogLeNet
+(Szegedy et al., 2015)
+
+No gating
+
+ResNet
+(He et al., 2015)
+
+Wider
+
+Batch Normalization
+BN-Inception
+(Ioffe and Szegedy, 2015)
+
+Dense pass-through Aggregated channels
+Wide ResNet
+ResNeXt
+Inception-ResNet
+DenseNet
+(Zagoruyko and Komodakis, 2016) (Huang et al., 2016) (Xie et al., 2016) (Szegedy et al., 2016)
+
+69
+
+ResNet to U-Net
+Image
+
+x
+
+Downsampling
+
+Conv Layer
+
+Tubularity Map
+
+Upsampling
+Skip connection
+
+s
+Conv Layer
+
+Skip connection
+
+x+l2(σ(l1(x))
+
+ResNet block
+
+U-Net
+
+—> Add skip connection to produce an output
+of the same size as the input.
+Ronneberger, MICCAI’15
+
+70
+
+<latexit sha1_base64="y6uVcXpeee8E8ZCbyyhOx0GC6pw=">AAADSHicbVJNb9QwEE1SPkr4auHIZcQWaSva1aYcAKFKFVw4gFQkllZaL5HjTDZWEzuyHdpg5e9x4caN/8CFAyBuONnVClpGsvNm5o3yPDNJVXBtxuOvfrB26fKVq+vXwus3bt66vbF5552WtWI4YbKQ6jihGgsucGK4KfC4UkjLpMCj5ORFlz/6gEpzKd6apsJZSeeCZ5xR40Lxph8TIblIURh4zQUv+UcMyTQkZSLPLMl1RRna3UesbFt4FduEYTu0JMngrN3pv9C08Ax6eNpuwz7sAskUZTZqLW+B6LqMo/f2EBwuMDNTsE0bC+fIOQxJTk3n8214CMPIFUPTOYtstNvnYUEAovg8NzOAkMzC0xwVOpTgnAvLDXbS2xBIB2GrL+xEOXn7kMV2qXClfntrZ0VehraAC6DC3VVtgLtW4TlO4zgmR2BSKdSVFCkXc5grWYsUjKpNPnIFKNKVoHhjMB6Ne4OLIFqCgbe0w3jjC0klq0s3EVZQrafRuDIzS5XhrHAPJLVGN5QTJ27qoKAl6pntN6GFBy6SQiaVO26iffTvCktLrZsyccySmlyfz3XB/+WmtcmezGzfGBRs8aOsLsBI6NYKUq6QmaJxgDLFnVZgOXVrYNzyha4J0fknXwSTvdHTUfRmb3DwfNmNde+ed98bepH32DvwXnqH3sRj/if/m//D/xl8Dr4Hv4LfC2rgL2vuev/YWvAHyqQHuA==</latexit>
+
+Training a U-Net
+Train Encoder-decoder U-Net architecture using binary cross-entropy
+
+Minimize
+
+1X
+Lbce (x, y; w) = −
+[yni log(ŷi ) + (1 − yi ) log(1 − ŷi )]
+i 1
+P
+
+where
+• ŷ = fw (x),
+• x in an input image,
+• y the corresponding ground truth.
+
+Mosinska et al, CVPR’18.
+
+71
+
+Network Output
+
+Image
+
+BCE Loss
+
+Ground truth
+
+• Good start but not the end of the story.
+• We will discuss this again during the delineation lecture.
+72
+
+Streets Of Toronto
+
+— False negatives
+— False positives
+
+73
+
+Transformers
+
+• Break up the images into square patches.
+• Transform each path into a feature vector.
+• Feed to a transformer architecture.
+Tolstikhin et al. , ArXiv’21
+
+74
+
+Self Attention
+
+Given X = [x1, …, xI]:
+- a[xi, xj] is the attention that xi gives to xj . It
+measures the influence of one on the other.
+- It can be computed for all I and j using far fewer
+weights that in a fully connected layer.
+—> Provides context.
+75
+
+Transformer Layer
+
+X ← X + Sa(X)
+X ← LayerNorm(X)
+xi ← xi + mlp[xi] ∀i
+X ← LayerNorm(X)
+76
+
+U-NET + Transformers
+
+• A CNN operates at low-resolution and produces a feature vector.
+• A transform operates on that feature vector.
+• The upsampling is similar to that of U-Net
+—> Best of both worlds?
+Chen et al., ArXiv’21
+
+77
+
+Regression
+
+Input
+
+min
+
+Wl ,Bl
+
+Output
+
+X
+
+||F(xi , W1 , . . . , WL , b1 , . . . , bL ) − yi ||2
+
+i
+
+using
+• stochastic gradient descent on mini-batches,
+• dropout,
+• hard example mining,
+• ………..
+78
+
+Monocular Pose Estimation
+
+Tekin et al. , ICCV’17
+
+79
+
+Multiple People
+
+Rhodin et al. , CVPR’19
+
+80
+
+People and their Clothes
+
+• Regress the body pose.
+• Drape the garments on the body.
+• Enforce consistency.
+
+Input
+
+Ours (raw)
+
+Ours (post ref.)
+
+De Luigi, CVPR’23
+
+81
+
+Crowd Counting
+
+EPFL at lunchtime: The colors denote crowd density.
+Liu et al. , CVPR’22
+
+82
+
+Brains vs Neural Networks
+
+• Neural networks are said to “bio-inspired”.
+• An excellent marketing argument but how
+true is it?
+
+83
+
+Monkey Cortex
+
+Pink: Feed forward.
+Cyan: Feed back.
+Yellow: Horizontal
+Lamme and Roelfsema, Trends in Neuroscience’00
+
+84
+
+Human Visual Cortex
+
+Dorsal pathway
+
+Ventral pathway
+
+85
+
+Recognize And Classify: Animal /No Animal
+
+• Subjects must raise their hand if they see
+an animal:
+• 60 images
+• 1 image per second
+
+•  Measure their reaction time.
+
+Simon Thorpe, Nature, 1996
+
+86
+
+87
+
+Reminder: Recurrent Pathways
+
+“Shape stimuli are optimally reinforcing each other when separated in time by ∼60 ms,
+suggesting an underlying recurrent circuit with a time constant (feedforward + feedback)
+of 60 ms.”
+Drewes et al. , Journal of Neuroscience, 2016
+
+88
+
+Adversarial Images
+
+Szegedy et al. 2013
+
+89
+
+Brains vs Neural Networks
+• Neural networks are said to “bio-inspired”.
+• An excellent marketing argument but how
+true is it?
+Not that good:
+• Much feedback is involved in biological systems.
+• We don’t need large databases to learn.
+• We are not as susceptible to adversarial examples.
+Neural nets are powerful but not the final answer!
+90
+
+XKCD’s View On The Matter
+
+https://xkcd.com/
+
+91
+
+Deep Nets in Short
+
+• Deep Neural Networks can handle huge training
+databases.
+• When the objective function can be minimized, the
+results are outstanding.
+• There are failure cases and performance is hard to
+predict.
+—> Many questions are still open and there is much
+theoretical work left to do.
+
+92
+
+Alpha Go
+
+• Uses Deep Nets to find the most
+promising locations to focus on.
+• Performs Tree based search when
+possible.
+• Relies on reinforcement learning and
+other ML techniques to train.
+—> Beat the world champion in 2017.
+
+93
+
+

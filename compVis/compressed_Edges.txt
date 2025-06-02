@@ -1,0 +1,1850 @@
+Image Formation (Cont’d)
+&
+Edge Detection
+P. Fua
+(Taught by M. Salzmann)
+IC-CVLab
+EPFL
+
+1
+
+Reminder: Image Formation
+
+Projection from surfaces to 2-D sensor.
+• Where: Geometry
+• How bright: Radiometry
+• Stored how: Sensing
+2
+
+Reminder: Pinhole Camera Model
+In pixels
+
+xc
+u ∝ xi = f
+zc
+yc
+v ∝ yi = f
+zc
+In meters
+
+!Reformulate it as a linear operation using
+homogeneous coordinates.
+
+3
+
+Reminder: Projection in Homogeneous Coordinates
+Projection Matrix
+2D projection
+
+3D point
+
+x = PX
+1000
+P = K 0 1 0 0 Rt
+[0 0 1 0]
+αu s pu
+with K = 0 αv pv
+0 0 1
+Intrinsics
+
+, Rt =
+
+R T
+, and RT R = I .
+[ 0 1]
+Extrinsics
+
+Hartley, Chap 6.
+
+4
+
+Reminder: Camera Calibration
+Internal Parameters:
+• Horizontal and vertical scaling (2)
+• Principal points (2)
+• Skew of the axis (1)
+External Parameters:
+• Rotations (3)
+• Translations (3)
+!There are 11 free parameters to estimate. This is
+known as calibrating the camera.
+5
+
+Reminder: Thin Lens
+
+aperture
+
+iris diaphragm
+Image Plane
+
+• Diameter d=2a of the lens that is exposed to light.
+• The image plane is not located exactly where the rays meet.
+• The greater a, the more blur there will be.
+6
+
+Reminder: Distortions
+
+The lens is not exactly a “thin lens:”
+• Different wave lengths are refracted differently,
+• Barrel Distortion.
+7
+
+Undistorting
+
+Once the image is undistorted, the camera projection
+can be formulated as a projective transform.
+!
+
+The pinhole camera model applies.
+8
+
+Fundamental Radiometric Equation
+
+Scene Radiance (Rad) : Amount of light radiation emitted
+from a surface point (Watt / m2 / Steradian).
+Image Irradiance (Irr): Amount of light incident at the
+image of the surface point (Watt / m2).
+π d 2 4
+Irr = ( ) cos (α)Rad ,
+4 f
+⇒ Irr ∝ Rad for small values of α .
+9
+
+Vignetting
+
+Images can get darker towards their edges because some
+of the light does not go through all the lenses.
+10
+
+De Vignetting
+
+—> As for geometric undistortion, undo vignetting to create an
+image that an ideal camera would have produced.
+Zheng et al., CVPR’08
+11
+
+Sensor Array
+•
+
+Photons free up electrons that
+are then captured by a potential
+well.
+
+•
+
+Charges are transferred row by
+row wise to a register.
+
+•
+
+Pixel values are read from the
+register.
+
+12
+
+Sensing
+
+Conversion of the “optical image” into an “electrical image”:
+
+! Quantization in
+• Time
+• Space
+
+13
+
+Sensors
+
+CCD
+
+CMOS
+
+•Charged Coupling Devices (CCD): Made through a special manufacturing process that
+allows the conversion from light to signal to take place in the chip without distortion.
+•Complimentary Metal Oxide Semiconductor (CMOS): Easier to produce and similar
+quality. Now used in most cameras except when quantum efficient pixels are needed,
+e.g. for astronomy.
+
+14
+
+In Short
+• Camera geometry can be modeled in terms
+of the pinhole camera model, which is
+linear in projective space.
+• Image radiance is roughly proportional to
+surface radiance and the two can be used
+interchangeably for our purposes.
+
+15
+
+Edge Detection
+
+•
+•
+•
+
+What’s an edge
+Image gradients
+Edge operators
+
+16
+
+Line Drawings
+
+▪ Edges seem fundamental to human perception.
+▪ They form a compressed version of the image.
+
+17
+
+From Edges To Cats
+
+Deep-Learning based generative model.
+
+Demo
+
+https://affinelayer.com/pixsrv/
+
+18
+
+Maps and Overlays
+
+19
+
+Corridor
+
+20
+
+Corridor
+
+21
+
+Edges and Regions
+
+Edges:
+• Boundary between bland image regions.
+Regions:
+• Homogenous areas between edges.
+
+!
+
+Edge/Region Duality.
+
+22
+
+Discontinuities
+B
+A
+
+C
+
+D
+
+• A. Depth discontinuity: Abrupt depth change in the world
+• B. Surface normal discontinuity: Change in surface
+orientation
+• C. Illumination discontinuity: Shadows, lighting changes
+• D. Reflectance discontinuity: Surface properties, markings
+
+!
+
+Sharply different Gray levels on both sides
+
+23
+
+REALITY
+
+24
+
+More Reality
+
+Very noisy signals
+! Prior knowledge is required!!
+
+25
+
+Optional: Illusory Contours
+
+• No closed contour, but we still perceived an edge.
+• This will not be further discussed in this class.
+
+26
+
+Ideal Step Edge
+Rapid change in image => High local gradient
+f(x) = step edge
+
+1st Derivative f’(x)
+
+maximum
+
+2nd Derivative f’’(x)
+
+zero crossing
+
+27
+
+Edge Properties
+Original
+Orientation
+
+Magnitude
+Contrast
+
+28
+
+Edge Descriptors
+
+• Edge Normal:
+• Unit vector in the direction of maximum intensity change
+
+• Edge Direction:
+• Unit vector perpendicular to the edge normal
+
+• Edge position or center
+• Image location at which edge is located
+
+• Edge Strength
+• Speed of intensity variation across the edge.
+
+29
+
+Images as 3-D Surfaces
+
+30
+
+Geometric Interpretation
+
+Since I(x,y) is not a continuous function:
+1.Locally fit a smooth surface.
+2.Compute its derivatives.
+
+31
+
+Image Gradient
+The gradient of an image
+⎡ δ I δI ⎤
+∇I = ⎢ , ⎥
+⎣δx δy ⎦
+points in the direction of most rapid change in
+intensity.
+⎡ δI ⎤
+∇I = ⎢ ,0⎥
+⎣δx ⎦
+
+⎡ δ I δI ⎤
+∇I = ⎢ , ⎥
+⎣δx δy ⎦
+⎡ δI ⎤
+∇I = ⎢0, ⎥
+⎣ δy ⎦
+
+32
+
+Magnitude And Orientation
+⎛ ∂I ∂I ⎞
+⎜⎜ , ⎟⎟
+⎝ ∂x ∂y ⎠
+
+2
+
+∂I
+∂I
+Measure of contrast : G =
++
+∂x
+∂y
+
+2
+
+∂I ∂I
+Edge orientation : θ = arctan( , )
+∂y ∂x
+
+33
+
+Gradient Images
+
+I
+
+∂I
+∂x
+
+∂I
+∂y
+
+∂I 2 ∂I 2
++
+∂x
+∂y
+
+The gradient magnitude is unaffected by orientation ….
+
+34
+
+Real Images
+
+… but not directly usable in most real-world images.
+
+35
+
+Edge Operators
+•
+•
+•
+•
+
+Difference Operators
+Convolution Operators
+Trained Detectors
+Deep Nets
+
+36
+
+Gradient Methods
+F(x)
+
+Edge = Sharp variation
+
+x
+F’(x)
+Large first derivative
+x
+
+37
+
+1D Finite Differences
+In one dimension:
+
+x − dx x x + dx
+
+df
+f ( x + dx) − f ( x) f ( x + dx) − f ( x − dx)
+≈
+≈
+dx
+dx
+2dx
+d2 f
+f ( x + dx) − 2 f ( x) + f ( x − dx)
+≈
+2
+dx
+dx 2
+
+38
+
+Coding 1D Finite Differences
+Line stored as an array:
+
+p
+
+• for i in range(n-1):
+q[i]=(p[i+1]-p[i])
+
+• for i in range(1,n-1):
+q[i]=(p[i+1]-p[i-1])/2
+
+• q=(p[2:]-p[:-2])/2
+
+39
+
+2D Finite Differences
+
+∂f
+f ( x + dx, y ) − f ( x, y ) f ( x + dx, y ) − f ( x − dx, y )
+≈
+≈
+∂x
+dx
+2dx
+∂f
+f ( x, y + dy ) − f ( x, y ) f ( x, y + dy ) − f ( x, y − dy )
+≈
+≈
+∂y
+dy
+2dy
+
+40
+
+Coding 2D Finite Differences
+p
+Python
+Image stored as a 2D array:
+• dx = p[1:,:]-p[:-1,:]
+• dy = p[:,1:]-p[:,:-1]
+
+• dx = (p[2:,:]-p[:-2,:])/2
+• dy = (p[:,2:]-p[:,:-2])/2
+
+C
+Image stored in raster format:
+{
+int i;
+for(i=0;i<xdim;i++){
+dx[i] = p[i+1]
+-p[i];
+dy[i] = p[i+xdim]-p[i];
+}
+}
+• Only 1D array accesses
+• No multiplications
+—> Can be exploited to increase speed.
+
+41
+
+Noise in 1D
+Consider a single row or column of the image:
+
+42
+
+Fourier Interpretation
+
+Function
+
+Fourier Transform
+
+df
+dx (x)
+δf
+δx (x, y)
+δf
+δy (x, y)
+
+uF (u)
+uF (u, v)
+vF (u, v)
+
+! Differentiating emphasizes high frequencies
+and therefore noise!
+
+43
+
+f(x) = x2 sin(1/x)
+
+f
+
+F
+
+df
+dx
+
+uF
+
+Original function
++
+Noise
+
+Fourier transform
+
+44
+
+Noise in 2D
+Ideal step edge
+
+Step edge + noise
+
+Increasing noise level
+
+As the amount of noise increases, the derivatives stop being
+meaningful.
+45
+
+Removing Noise
+Problem:
+• High frequencies and differentiation do not
+mix well.
+Solution:
+• Suppress high frequencies by
+• using the Discrete Fourier Transform.
+
+46
+
+Discrete Fourier Transform
+F(μ, ν) =
+
+f(x, y) =
+
+1
+
+M−1 N−1
+
+1
+
+M−1 N−1
+
+∑
+M*N ∑
+x=0 y=0
+∑
+M*N ∑
+μ=0 ν=0
+
+f(x, y)e −2iπ(μx/M+νy/N)
+F(μ, ν)e +2iπ(μx/M+νy/N)
+
+The DFT is the discrete equivalent of the 2D Fourier transform:
+• The 2D function f is written as a sum of sinusoids.
+• The DFT of f convolved with g is the product of their DFTs.
+
+47
+
+Fourier Basis Element
+
+Real part of
+
+e +2iπ(ux+vy)
+where
+• u 2 + v 2 represents the frequency,
+• atan(v, u) represents the orientation.
+
+48
+
+Fourier Basis Element
+
+Real part of
+
+e +2iπ(ux+vy)
+where
+• u 2 + v 2 is larger than before.
+
+49
+
+Fourier Basis Element
+
+Real part of
+
+e +2iπ(ux+vy)
+where
+• u 2 + v 2 is larger still.
+
+50
+
+Truncated Inverse DFT
+F(μ, ν) =
+
+f(x, y) =
+
+f(x, y) =
+
+1
+
+M−1 N−1
+
+1
+
+M−1 N−1
+
+∑
+M*N ∑
+x=0 y=0
+∑
+M*N ∑
+μ=0 ν=0
+
+1
+
+∑2
+M * N μ 2+ν
+<T
+
+f(x, y)e −2iπ(μx/M+νy/N)
+F(μ, ν)e +2iπ(μx/M+νy/N)
+
+F(μ, ν)e +2iπ(μx/M+νy/N)
+T is a hand-specified threshold.
+
+• The sinusoids corresponding to μ 2 + ν 2 ≥ T depict high frequencies.
+• Removing them amounts to removing high-frequencies.
+
+51
+
+Smoothing by Truncating the IDFT
+
+Rotated stripes:
+• Dominant diagonal structures
+• Discretization produces additional harmonics
+—> Removing higher frequencies and reconstructing
+yields a smoothed image.
+
+52
+
+Removing Noise
+Problem:
+• High frequencies and differentiation do not mix well.
+Solution:
+• Suppress high frequencies by
+• using the Discrete Fourier Transform,
+• convolving with a low-pass filter.
+
+53
+
+1D Convolution
+
+g ∗ f (t) =
+
+Z
+
+g(t − τ )f (τ )dτ
+τ
+
+54
+
+Smooth Before Differentiating
+f
+g
+g* f
+
+∂
+(g * f )
+∂x
+
+55
+
+Simultaneously Smooth and Differentiate
+
+f
+
+∂g
+∂x
+∂
+∂g
+(g * f ) = * f
+∂x
+∂x
+--> Faster because dg/dx can be precomputed.
+
+56
+
+Discrete 1D Convolution
+Input
+
+1
+
+4
+
+-1
+
+0
+
+2
+
+-2
+
+1
+
+3
+
+3
+
+1
+
+W
+Mask
+
+1
+
+2
+
+0
+
+-1
+
+w
+
+F. Fleuret. EE-559 – Deep learning
+
+57
+
+Discrete 1D Convolution
+Input
+
+1
+
+4
+
+-1
+
+0
+
+2
+
+-2
+
+1
+
+3
+
+3
+
+1
+
+W
+
+1
+
+2
+
+0
+
+-1
+
+w
+
+Output
+
+9
+
+W −w+ 1
+
+F. Fleuret. EE-559 – Deep learning
+
+58
+
+Discrete 1D Convolution
+Input
+
+1
+
+4
+
+-1
+
+0
+
+2
+
+-2
+
+1
+
+3
+
+3
+
+1
+
+W
+
+1
+
+2
+
+0
+
+-1
+
+w
+
+Output
+
+9
+
+0
+
+W −w+ 1
+
+F. Fleuret. EE-559 – Deep learning
+
+59
+
+Discrete 1D Convolution
+Input
+
+1
+
+4
+
+-1
+
+0
+
+2
+
+-2
+
+1
+
+3
+
+3
+
+1
+
+W
+
+1
+
+2
+
+0
+
+-1
+
+w
+
+Output
+
+9
+
+0
+
+1
+
+W −w+ 1
+
+F. Fleuret. EE-559 – Deep learning
+
+60
+
+Discrete 1D Convolution
+Input
+
+1
+
+4
+
+-1
+
+0
+
+2
+
+-2
+
+1
+
+3
+
+3
+
+1
+
+W
+
+1
+
+2
+
+0
+
+-1
+
+w
+
+Output
+
+9
+
+0
+
+1
+
+3
+
+W −w+ 1
+
+F. Fleuret. EE-559 – Deep learning
+
+61
+
+Discrete 1D Convolution
+Input
+
+1
+
+4
+
+-1
+
+0
+
+2
+
+-2
+
+1
+
+3
+
+3
+
+1
+
+W
+
+1
+
+2
+
+0
+
+-1
+
+w
+
+Output
+
+9
+
+0
+
+1
+
+3
+
+-5
+
+W −w+ 1
+
+F. Fleuret. EE-559 – Deep learning
+
+62
+
+Discrete 1D Convolution
+Input
+
+1
+
+4
+
+-1
+
+0
+
+2
+
+-2
+
+1
+
+3
+
+2
+
+0
+
+3
+
+1
+
+W
+
+1
+
+-1
+
+w
+
+Output
+
+9
+
+0
+
+1
+
+3
+
+-5
+
+-3
+
+W −w+ 1
+
+F. Fleuret. EE-559 – Deep learning
+
+63
+
+5 / 14
+
+Discrete 1D Convolution
+Input
+
+1
+
+4
+
+-1
+
+0
+
+2
+
+-2
+
+1
+
+3
+
+3
+
+1
+
+2
+
+0
+
+1
+
+W
+
+-1
+
+w
+
+Output
+
+9
+
+0
+
+1
+
+3
+
+-5
+
+-3
+
+6
+
+W −w+ 1
+
+F. Fleuret. EE-559 – Deep learning
+
+64
+
+Discrete 1D Convolution
+Input
+
+f
+
+1
+
+4
+
+-1
+
+0
+
+2
+
+-2
+
+1
+
+3
+
+3
+
+1
+
+W
+Mask
+
+1
+
+m
+
+2
+
+0
+
+-1
+
+w
+Output
+
+m*f
+
+9
+
+0
+
+1
+
+3
+
+-5
+
+-3
+
+6
+
+W −w+ 1
+
+w
+
+m * f(x) =
+
+∑
+i=0
+
+m(i)f(x − i)
+
+65
+
+Discrete 2D Convolution
+Input image: f
+
+Convolved image: m**f
+
+Convolution mask m, also known as a kernel.
+w w
+m11 … m1w
+m(i, j)f(x − i, y − j)
+m * *f(x, y) =
+… … …
+∑∑
+[mw1 … mww]
+i=0 j=0
+
+66
+
+Differentiation As Convolution
+f ( x + dx, y ) − f ( x, y )
+∂f
+[− 1,1]→ ≈
+dx
+∂x
+f ( x + dx, y ) − f ( x − dx, y )
+∂f
+[− 0.5,0,0.5]→ ≈
+∂x
+2dx
+⎡− 1⎤
+f ( x, y + dy ) − f ( x, y )
+∂f
+⎢ 1 ⎥ → ∂y ≈
+dy
+⎣ ⎦
+⎡− 0.5⎤
+⎢ 0 ⎥ → ∂f ≈ f ( x, y + dy ) − f ( x, y − dy )
+⎢
+⎥
+∂y
+2dy
+⎢⎣ 0.5 ⎥⎦
+
+! Use wider masks to add some smoothing
+
+67
+
+Smoothing and Differentiating
+
+Compute the difference of averages on either
+side of the central pixel.
+
+68
+
+3X3 Masks
+x derivative
+
+⎡− 1 0 1⎤
+⎡− 1 − 1 − 1⎤
+⎢− 1 0 1⎥ and ⎢ 0 0 0 ⎥
+⎥
+⎢
+⎥
+⎢
+⎢⎣− 1 0 1⎥⎦
+⎢⎣ 1 1 1 ⎥⎦
+Prewitt operator
+
+y derivative
+
+⎡ − 1 0 1⎤
+⎡− 1 − 2 − 1⎤
+⎢− 2 0 2⎥ and ⎢ 0
+⎥
+0
+0
+⎥
+⎢
+⎥
+⎢
+⎢⎣ − 1 0 1 ⎥⎦
+⎢⎣ 1
+2
+1 ⎥⎦
+Sobel operator
+
+69
+
+Prewitt Example
+
+Santa Fe Mission
+
+Gradient Image
+
+70
+
+Sobel Example
+
+71
+
+Gaussian Smoothing
+
+• More principled way to eliminate high frequency
+noise.
+• Is fast because the kernel is
+• small,
+• separable.
+
+72
+
+Gaussian Functions
+
+σ =1
+
+σ =2
+
+1
+2
+2
+2
+g 2 ( x, y ) =
+exp(−( x + y ) / 2σ )
+2
+2πσ
+• The integral is always 1.0
+• The larger σ, the broader the Gaussian is.
+• As σ approaches 0, the Gaussian approximates a Dirac function.
+
+73
+
+DFT of a Gaussian
+
+• The DFT of a Gaussian is
+a Gaussian.
+• It has finite support.
+• Its width is inversely
+proportional to that of the
+original Gaussian.
+
+74
+
+Gaussians as Low-Pass Filters
+
+• The Fourier transform of a convolution is the product of their Fourier
+transforms: ℱ(g * f ) = ℱ(g)ℱ( f ).
+• If g is a Gaussian, so is ℱ(g).
+• Furthermore if g is broad, the support of ℱ(g) is small.
+• So is the support of ℱ(g * f ).
+• There are no more high-frequencies in g * f.
+—> Convolving with a Gaussian suppresses the high frequencies.
+
+75
+
+Gaussian Smoothed Images
+Blur σ =1
+σ =1
+
+σ =2
+
+Blur σ =2
+
+Blur σ =4
+
+σ =4
+
+Original image
+
+Blurred image
+
+76
+
+Scale Space
+
+Increasing scale (σ) removes high frequencies (details) but never
+adds artifacts.
+
+77
+
+Separability
+1
+g1 ( x) =
+exp(− x 2 / σ 2 )
+πσ
+g 2 ( x, y ) = g1 ( x) g1 ( y )
+
+∫ ∫ g (u, v) f ( x − u, y − v)dudv = ∫ g (u )(∫ g (v) f ( x − u, y − v)dv)du
+= ∫ g (v)( ∫ g (u ) f ( x − u , y − v)du )dv
+u v
+
+2
+
+u
+
+v
+
+1
+
+1
+
+v
+
+u
+
+1
+
+1
+
+—> 2D convolutions are never required. Smoothing can be
+achieved by successive 1D convolutions, which is faster.
+
+78
+
+Continuous Gaussian Derivatives
+
+=
+
+x
+
+• Image derivatives computed by convolving
+with the derivative of a Gaussian:
+∂
+'
+(
+,
+)
+(
+,
+)
+g
+u
+v
+f
+x
+u
+y
+v
+dudv
+g
+−
+−
+=
+2
+1 (u )( ∫ g1 (v ) f ( x − u , y − v ) dv ) du
+∫
+∫
+∫
+u
+v
+u
+v
+∂x
+∂
+'
+(
+,
+)
+(
+,
+)
+g
+u
+v
+f
+x
+u
+y
+v
+dudv
+g
+−
+−
+=
+2
+1 (v )( ∫ g1 (u ) f ( x − u , y − v ) du ) dv
+∫
+∫
+∫
+v
+u
+∂y
+
+79
+
+Discrete Gaussian Derivatives
+
+*
+g
+Sigma=1:
+
+*
+
+g’
+
+g : 0.000070 0.010332 0.207532 0.564131 0.207532 0.010332 0.000070
+g’: 0.000418 0.041330 0.415065 0.000000 -0.415065 -0.041330 -0.000418
+
+Sigma=2:
+g : 0.005167 0.029735 0.103784 0.219712 0.282115 0.219712 0.103784 0.029735 0.005167
+g’: 0.010334 0.044602 0.103784 0.109856 0.000000 -0.109856 -0.103784 -0.044602 -0.010334
+
+—> Only requires 1D convolutions with relatively small masks.
+
+80
+
+Increasing Sigma
+Gradient Images
+
+Input Images
+σ=1
+
+No Noise
+
+σ=2
+
+σ=4
+Noise Added
+
+No Noise Noise Added
+—> Larger sigma values improve
+robustness but degrade precision.
+
+81
+
+Derivative Images
+
+I
+
+∂I
+∂x
+
+∂I
+∂y
+
+∂I 2 ∂I 2
++
+∂x
+∂y
+
+82
+
+Derivative Images
+
+I
+
+∂I
+∂x
+
+∂I
+∂y
+
+∂I 2 ∂I 2
++
+∂x
+∂y
+
+83
+
+Gradient-Based Tracking
+
+• Maximize edge-strength along projection of the 3—D
+wireframe.
+
+84
+
+Gradient Maximization
+
+85
+
+Real-Time Tracking
+
+86
+
+Canny Edge Detector
+I
+
+∂I 2 ∂I 2
++
+∂x
+∂y
+
+Thinned gradient image
+
+87
+
+Canny Edge Detector
+
+Convolution
+•
+•
+
+Gradient strength
+Gradient direction
+
+Thresholding
+Non Maxima Suppression
+Hysteresis Thresholding
+
+88
+
+Non-Maxima Suppression
+
+Check if pixel is local maximum along gradient direction,
+which requires checking interpolated pixels p and r.
+
+89
+
+Hysteresis Thresholding
+
+• Algorithm takes two thresholds: high & low
+• A pixel with edge strength above high threshold is an edge.
+• Any pixel with edge strength below low threshold is not.
+• Any pixel above the low threshold and next to an edge is
+an edge.
+• Iteratively label edges
+• Edges grow out from ‘strong edges’
+• Iterate until no change in image.
+
+90
+
+Canny Results
+
+σ=1, T2=255, T1=1
+
+‘Y’ or ‘T’ junction
+problem with
+Canny operator
+
+91
+
+Canny Results
+
+σ=1, T2=255, T1=220
+
+σ=1, T2=128, T1=1
+
+σ=2, T2=128, T1=1
+
+Heath et al., PAMI’97
+
+92
+
+Scale Space Revisited
+
+Increasing scale (σ) removes details but never adds new ones:
+• Edge position may shift.
+• Two edges may merge.
+• An edge may not split into two.
+
+93
+
+Multiple Scales
+
+σ =1
+
+σ =2
+
+σ =4
+
+!Choosing the right scale is a difficult semantic
+problem.
+
+94
+
+Scale vs Threshold
+
+Fine scale
+High threshold
+Coarse scale
+High threshold
+Coarse scale
+Low threshold
+
+95
+
+Industrial Application
+
+In industrial environments where the Canny parameters can be properly
+adjusted:
+• It is fast.
+• Does not require training data.
+Lim et al. , Advanced Robotics 2019.
+
+96
+
+Visual Servoing
+
+—> A useful tool in our toolbox.
+Drummond and Cipolla, PAMI’02
+
+97
+
+Tracking a Rocket
+
+Given an initial pose estimate:
+• Find the occluding contours.
+• Find closest edge points in the normal direction.
+• Re-estimate pose to minimize sum of square distances.
+• Iterate until convergence.
+
+Image gradient
+
+Occluding contour
+
+98
+
+Visual Servoing
+
+99
+
+Space Cleaning
+
+Capturing and deorbiting
+a dead satellite.
+
+• A more sophisticated version of this old algorithm will
+blast off in 2025!
+• ESA does not yet trust neural nets for such a mission.
+
+https://clearspace.today/
+
+100
+
+Limitations of the Canny Algorithm
+
+There is no ideal value of σ!
+
+101
+
+Steep Smooth Shading
+
+• Rapidly varying gray levels.
+• Large gradients.
+
+! Shading can produce spurious edges.
+
+102
+
+Texture Boundaries
+
+• Not all image contours are characterized by
+strong contrast.
+• Sometimes, textural changes are just as
+significant.
+
+103
+
+Different Boundary Types
+Non-boundaries
+
+Boundaries
+
+Intensity
+Brightness
+Color
+Texture
+
+Martin et al. , PAMI’04
+
+104
+
+Training Database
+
+1000 images with 5 to 10 segmentations each.
+
+105
+
+Machine Learning
+Image
+
+Optimized Cues
+Brightness
+
+Boundary Strength
+Cue Combination
+
+Color
+
+Model
+
+Texture
+
+Benchmark
+Human Segmentations
+
+Learn the probability of being a boundary
+pixel on the basis of a set of features.
+
+106
+
+Comparative Results
+Image
+
+Canny
+
+2MM
+
+BG+CG+TG
+
+Human
+
+Martin et al. , PAMI’04
+
+107
+
+Classification vs Regression
+
+Yes!
+Sironi, et al. PAMI’15
+
+108
+
+Deep Learning
+
+Xie and Tu, ICCV’15
+
+109
+
+Deep Learning Vs Canny
+
+110
+
+Deeper Learning
+
+Liu et al. , CVPR’17
+
+111
+
+Convolutional Neural Network
+
+▪ Succession of convolutional and pooling layers.
+▪ Fully connected layers at the end.
+—> Will be discussed in more detail in the next lecture.
+
+112
+
+A Partial Explanation?
+
+First and second layer features of a Convolutional Neural Net:
+▪ They can be understood as performing multiscale filtering.
+▪ The weights and thresholds are chosen by the optimization
+procedure.
+
+113
+
+50 Years Of Edge Detection
+• Convolution operators respond
+to steep smooth shading.
+• Parametric matchers tend to
+reject non ideal edges.
+• Arbitrary thresholds and scale
+sizes are required.
+• Learning-based methods need
+exhaustive databases.
+• There still is work to go from
+contours to objects.
+
+Canny, PAMI’86 —> Sironi et al. PAMI’15
+
+Sironi et al. PAMI’15 —> Liu et al. , CVPR’17
+
+Let us talk about deep networks.
+
+114
+
+

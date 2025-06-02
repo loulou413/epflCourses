@@ -1,0 +1,1014 @@
+Image Formation
+P. Fua
+(Taught by M. Salzmann)
+IC-CVLab
+EPFL
+
+1
+
+Reminder: Computer Vision
+Goal: Inferring the properties of the world from
+one or more images
+• Photographs
+• Video Sequences
+• Medical images
+• Microscopy data
+! Image Understanding
+
+2
+
+Reminder: Challenges
+Vision involves dealing with:
+• Noisy images
+• Many-to-one mapping
+• Aperture problem
+! Requires:
+• Assumptions about the world
+• Statistical and physics-based models
+• Training data
+True image understanding seems to require a great deal of
+thinking. We are not quite there yet.
+
+3
+
+Reminder: Historical Perspective
+• 1960s: Beginnings in artificial intelligence, image processing and
+pattern recognition.
+• 1970s: Foundational work on image formation.
+• 1980s: Vision as applied mathematics, geometry, multi-scale
+analysis, control theory, optimization.
+• 1990s: Physics-based models, Probabilistic reasoning.
+• 2000s: Machine learning.
+• 2010s: Deep Learning.
+• 2020s: ?????
+--> Improved understanding and successful applications in graphics,
+mapping, biometrics, and others but still far from human performance.
+
+4
+
+Reminder: A Teachable Scheme
+Image(s)
+
+Edge information
+
+Texture information
+
+Shape information
+
+Scene objects
+
+Scene interpretation
+
+Decomposition of the vision process into smaller
+manageable and implementable steps.
+--> Paradigm followed in this course
+--> May not be the one humans use
+
+5
+
+Reminder: Human Vision
+It Works!!
+-->Proof of existence.
+• The image formation process is well understood
+• The image understanding one remains mysterious
+
+6
+
+Reminder: Pathways To The Brain
+
+Retina
+
+Optic Nerve
+
+Lateral Geniculate
+Nucleus (LGN)
+
+Visual Cortex
+
+7
+
+Reminder: Image Formation
+
+An inverted image forms on the retina.
+
+8
+
+Reminder: Retina
+
+9
+
+Rel. sensitivity
+
+Reminder: Scotopic vs Photopic
+
+wavelength (nm)
+
+Low luminance (< 1 cd/m2):
+High luminance (> 100 cd/m2):
+• 120 million rods with peak
+• 7 million cones per retina.
+spectral response around
+• Primarily located in the fovea.
+510 nm.
+• Primarily located outside the • Three types of cones (S, M, L)
+with peak spectral response at
+fovea.
+different nm.
+• Ratio L:M:S ≅ 40:20:1
+
+10
+
+Rel. sensitivity
+
+Reminder: Scotopic vs Photopic
+
+wavelength (nm)
+
+Question: How was this data collected?
+Answer (from S. Süsstrunk):
+Psychophysical experiments with color-blind subjects
+https://www.sciencedirect.com/science/article/pii/
+S0042698900000213
+
+11
+
+Reminder: Sensitivity to Different Wavelengths
+
+Question: What do S, M, L stand for?
+Answer: Short, Medium, Long wavelengths
+
+12
+
+Reminder: Visual Cortex
+V7
+V3A
+LGN
+
+V5/MT
+
+V3
+V2
+V1
+
+V8
+
+VP
+V4
+
+Logothetis, Scientific American’99
+
+13
+
+Reminder: Human vs Computer Vision
+The camera replaces the eye:
+
+• Eye lens
+
+-> Camera optics
+
+• Cones and rods -> Sensor array
+• Ganglion cells
+
+-> Filter banks
+
+The computer replaces the brain:
+But how?
+
+14
+
+Image Formation
+Light source
+properties
+
+Sensor characteristics
+
+Surface
+Exposure shape
+
+Optics
+
+Surface reflectance
+properties
+
+15
+
+Analog Images
+
+An image can be understood as a 2D light intensity function f(x,y)
+where:
+• x and y are spatial coordinates
+• f(x, y) is proportional to the brightness or gray value of the
+image at that point.
+!
+
+Cannot be stored as such on a digital computer.
+
+16
+
+Digital Images
+
+A digitized image is one in which:
+• Spatial and grayscale values have been made
+discrete.
+• Intensities measured across a regularly spaced grid
+in x and y directions are sampled to
+• 8 bits (256 values) per point for grayscale,
+• 3x8 bits per point for color images.
+
+They are stored as two-dimensional arrays of gray-level
+values. The array elements are called pixels and
+identified by their x, y coordinates.
+17
+
+Grayscale Images
+
+18
+
+Color Images
+
+A color image is often represented by three
+8-bit images, one for red, one for green, and
+one for blue.
+
+19
+
+Image Formation
+
+Projection from surfaces to 2-D sensor.
+• Where: Geometry
+• How bright: Radiometry
+• Stored how: Sensing
+20
+
+Pinhole Camera Model
+
+Idealized model of the perspective projection:
+• All rays go through a hole and form a pencil of lines.
+• The hole acts as a ray selector that allows an inverted
+image to form.
+21
+
+Escher’s Belvedere
+
+M. C. Escher
+
+Impossible
+
+Possible
+
+Done
+
+http://www.cs.technion.ac.il/~gershon/
+
+22
+
+Magnet Like Slopes
+
+Impossible Slopes by Kokichi Sugihara
+http://www.isc.meiji.ac.jp/~kokichis/Welcomee.html
+
+23
+
+Virtual Image
+
+• The real image forms on the image plane and is inverted.
+• Let us consider a virtual plane in front of the camera.
+• On this plane, we have a virtual non-inverted image.
+—> It is simpler to reason in terms of that virtual image.
+24
+
+Camera Geometry
+
+Pinhole geometry without image reversal
+Pinhole = Center of Projection
+Virtual image
+
+From now on, we will use this formalism.
+
+25
+
+Coordinate Systems
+Yc
+Zw
+
+Zc
+X
+Xcc
+
+Yii
+
+<<
+Xii
+
+Yw
+Xw
+
+26
+
+Camera Coordinate System
+
+• The center of the projection coincides with
+the origin of the world.
+• The camera axis (optical axis) is aligned
+with the world’s z-axis.
+• To avoid image inversion, the image plane
+is in front of the center of projection.
+
+27
+
+1D Image
+
+xf
+
+xc
+=
+f
+zc
+
+xc
+⇒ xi = xf = f
+zc
+
+28
+
+2D Image
+
+xc,yc,zc
+
+xc
+xi = f
+zc
+yc
+yi = f
+zc
+
+We dropped the distinction between (xf,yf ) and (xi,yi).
+
+29
+
+Distant Objects Appear Smaller
+
+The green and red objects are of the
+same size but the red one is farther
+and therefore its projection smaller.
+
+Because the car at the back has the same
+size in projection, we perceive it as being
+larger.
+
+30
+
+Projected Parallel Lines Meet
+
+• Their intersection is referred to as the vanishing point.
+• There is one per set of parallel 3D lines with the same
+direction vector.
+31
+
+Vanishing Points
+
+• The projections of parallel lines all meet at one point,
+called the vanishing point.
+• As the focal length increases, the vanishing point moves
+towards infinity.
+32
+
+Leaning Towers
+
+The two images are the same!
+
+33
+
+Leaning Towers Explained?
+
+There are two different vanishing points. Hence, the two towers
+are not perceived as being parallel.
+
+34
+
+Road Following
+
+The vanishing point can be computed and used to direct an
+autonomous car.
+Rasmussen et al. , BMVC’04
+
+35
+
+Effect of Focal Length on Faces
+
+• Professional portrait: From 85 to 100.
+• Typical phone camera: From 24 to 35.
+
+36
+
+Projection is Non Linear
+In pixels
+
+xc
+u ∝ xi = f
+zc
+yc
+v ∝ yi = f
+zc
+In meters
+
+!Reformulate it as a linear operation using
+homogeneous coordinates.
+
+37
+
+Homogeneous Coordinates
+• Homogeneous representation of 2D point:
+
+• Homogeneous representation of 3D point:
+
+• Scale invariance:
+X and lX represent the same point, same for x and lx.
+38
+
+Simple Projection Matrix
+2D point expressed in
+projective coordinates.
+Let us write:
+
+3D point expressed in
+projective coordinates.
+• [x, y, z]Trepresents
+Xc
+x
+Xi = = f
+z
+Zc
+Yc
+y
+Yi = = f
+z
+Zc
+• Therefore [x, y, z]T is the
+projection of [Xc, Yc, Zc,1]T.
+
+—> We have expressed the projection of a 3D point
+as the multiplication of its projective coordinates by
+a projection matrix.
+
+39
+
+Intrinsic And Extrinsic Parameters
+
+•
+
+Camera may not be at the origin, looking
+down the z-axis
+!
+
+•
+
+Extrinsic parameters
+
+One unit in image coordinates may not be
+the same as one unit in world coordinates
+!
+
+Intrinsic parameters
+40
+
+Complete Linear Camera Model
+2D point expressed in
+projective coordinates
+and in pixels.
+
+3D point expressed in
+projective coordinates
+using the world
+coordinate system.
+
+41
+
+Matrix of Extrinsic Parameters
+It converts world coordinates into camera coordinates:
+Yc
+Zw
+
+Zc
+Xc
+
+Yw
+Xw
+
+!Rotations and translations also expressed in terms
+of matrix multiplications in projective space.
+42
+
+Matrix of Intrinsic Parameters
+It converts image coordinates into pixels:
+
+u
+
+=
+
+Xi + pu = f X/Z + pu
+
+v
+
+=
+
+K
+
+=
+
+Yi + pv = f Y /Z + pv
+
+
+f 0 pu
+ 0 f pv 
+0 0
+1
+
+<latexit sha1_base64="VCKi0XCkJcpbd39difRszKiyCcM=">AAAC2HicbVJNb9QwEHVSPkr4WuDIZcQuCIG0JHsBDkhVuSBxKRLbbomjyPE6u1ZtJ9jOSqs0hx6g6pWfxo1/wU/AyYaqtIw00ps388aesbNScGPD8Jfnb127fuPm9q3g9p279+4PHjzcN0WlKZvSQhR6lhHDBFdsarkVbFZqRmQm2EF29L7NH6yYNrxQn+26ZIkkC8VzTol1VDr4jTO24KpmXxXRmqxfNEEFz+Cd81nK4SWUaeWiHGavvkAfYhys+prDvmYFeGlKQlkdSdl0gsO/ApfD8UTKJMCS2GWW1x+bXo4Fy20M/R0sySpBdFNTShsY5SNXETofuUNHrskm6GhHrc6p1iPATM3PWwDWfLG0CQQdfWG6dDAMx2FncBVEPRii3vbSwU88L2glmbJUEGPiKCxtUhNtORWsCXBlmJv8iCxY7KAikpmk7l6mgaeOmUNeaOfKQsdeVNREGrOWmatsd2Mu51ryf7m4svmbpOaqrCxTdHNQXgmwBbTPDHOuGbVi7QChmru7Al0STah1n6FdQnR55KtgOhm/HYefJsOd3X4b2+gxeoKeowi9RjvoA9pDU0S9fe/Y++Z992P/xD/1zzalvtdrHqF/zP/xB6QO1Qk=</latexit>
+
+Principal point: p
+
+43
+
+Matrix of Intrinsic Parameters
+It converts image coordinates into pixels:
+
+u
+
+=
+
+αu Xi + pu = αu X/Z + pu
+
+v
+
+=
+
+K
+
+=
+
+αv Yi + pv = αv Y /Z + pv
+
+
+αu
+0
+pu
+ 0
+α v pv 
+0
+0
+1
+
+<latexit sha1_base64="7S3+g0bJNvS8DLeehmwhXICgowQ=">AAADDHicbVJNj9MwEHXC1xK+unDkMqIFIZC6SS/sHlZawQWJyyJRthBHleM6jbW2E2ynUhXlD3Dhr3DhAIgrP4Ab/wanTaG7y0ijvLx5M568OC0FNzYMf3v+pctXrl7buR7cuHnr9p3e7t23pqg0ZWNaiEJPUmKY4IqNLbeCTUrNiEwFO0lPX7T1kwXThhfqjV2WLJFkrnjGKbGOmu56fZyyOVc1+6CI1mT5pAkqeASHLjERZU6mFUymHJ5C6dAhbLF776GjMQ4WZ5sW8K5rWgDOTUkoqyMpG6f5p9gMcBIcj6RMAiyJzdOsftVsxgmW2Ri6JS1JK0F0U1NKGxhsVhk4YehyULbYDYP16+akwbrmnq4UduLICZma/Z0JWPN5bhMIVvSWH8G01w+H4SrgIog60EddHE97v/CsoJVkylJBjImjsLRJTbTlVLAmwJVhzpJTMmexg4pIZpJ69TcbeOiYGWSFdqksrNjtjppIY5YydcrWLXO+1pL/q8WVzfaTmquyskzR9UFZJcAW0F4NmHHNqBVLBwjV3O0KNCeaUOsuUGtCdP6TL4LxaHgwDF+P+kfPOzd20H30AD1GEXqGjtBLdIzGiHofvc/eV++b/8n/4n/3f6ylvtf13ENnwv/5By7g6Is=</latexit>
+
+The pixels are not necessarily square, must
+account for different scaling in x and y.
+
+44
+
+Matrix of Intrinsic Parameters
+It converts image coordinates into pixels:
+
+K
+
+=
+
+
+
+αu
+ 0
+0
+
+s
+αv
+0
+
+
+
+pu
+pv 
+1
+
+<latexit sha1_base64="l0B1Q5kWGxjhoFfSQjpju2jrxIw=">AAACkHicbVFNb9NAEF2bAiVACfTYy6oJCHGI7AqJ9lAo5YLopZUIrRRb0XgzTlZdr93dcaXI8v/h93Dj37CbWKhfI4327XtvP2Ymq5S0FEV/g/DRxuMnTzef9Z6/eLn1qv/6zS9b1kbgWJSqNBcZWFRS45gkKbyoDEKRKTzPLr95/fwajZWl/knLCtMC5lrmUgA5atr/nWQ4l7rBKw3GwPJD20sKoEWWNyctf8cPXSYKc5rwzkmQ1QpM2wghWj5MQFULmNZDZ7Quh5XHPEk4j/y206+Ha82tTvKKz9gZUc/+38kTI+cLSnlvRd/4VG/aH0SjaBX8Pog7MGBdnE77f5JZKeoCNQkF1k7iqKK0AUNSKHRl1hYrEJcwx4mDGgq0abPqaMvfOmbG89K41MRX7M0TDRTWLovMOX237F3Nkw9pk5ry/bSRuqoJtVg/lNeKU8n9ePhMGhSklg6AMNL9lYsFGBDkhuibEN8t+T4Y740ORtHZ3uDouOvGJtthu+w9i9kndsS+s1M2ZiLYCj4Gh8HncDs8CL+EX9fWMOjObLNbEf74Bx2OwAc=</latexit>
+
+• s encodes the non-orthogonality of the u and
+v directions. It is very close to zero in modern
+cameras.
+45
+
+Putting it All Together
+Projection Matrix
+2D projection
+
+3D point
+
+x = PX
+1000
+P = K 0 1 0 0 Rt
+[0 0 1 0]
+αu s pu
+with K = 0 αv pv
+0 0 1
+Intrinsics
+
+, Rt =
+
+R T
+, and RT R = I .
+[ 0 1]
+Extrinsics
+
+Hartley, Chap 6.
+
+46
+
+Another Way to Write the Projection Matrix
+Projection Matrix
+2D projection
+
+3D point
+
+x = PX
+p11 p12 p13 p14
+P = p21 p22 p23 p24
+p31 p32 p33 1
+
+• In projective geometry, l x = x. Therefore the matrix P can
+always be rescaled so that its last element is one.
+• The 3x4 matrix P has 11 degrees of freedom.
+
+Hartley, Chap 6.
+
+47
+
+Camera Calibration
+Internal Parameters:
+• Horizontal and vertical scaling (2)
+• Principal points (2)
+• Skew of the axis (1)
+External Parameters:
+• Rotations (3)
+• Translations (3)
+!There are 11 free parameters to estimate. This is
+known as calibrating the camera.
+48
+
+Calibration Grid
+
+xi = PXi
+
+One way to calibrate: Take a picture of a calibration grid.
+49
+
+Estimating the Camera Parameters
+• Number of measurements required:
+• 11 degrees of freedom.
+• 2 constraints per correspondence.
+
+• Direct linear transform:
+• Minimal solution for 6 correspondences
+• Over-constrained solutions by imposing
+
+For all i, xi = PXi, with
+• Non linear optimization.
+
+Hartley, Chap 7.
+
+50
+
+Martian Calibration
+
+51
+
+Limitations of the Pinhole Model
+
+Idealization because the hole cannot be infinitely small
+• Image would be infinitely dim
+• Diffraction effects
+! Use a lens to overcome this problem.
+52
+
+Imaging With a Lens
+P: point emitting light in
+all directions.
+
+Image plane
+
+An ideal lens performs the same projection as
+a pinhole but gathers much more light!
+53
+
+Thin Lens Properties
+
+optical axis
+
+Image plane
+
+• An incident ray that passes through the center of the lens will in
+effect continue in the direction it had when it entered the lens.
+• Any incident ray traveling parallel to the optical axis, will refract
+and travel through the focal point on the opposite side of the lens.
+• Any incident ray traveling through the focal point on the way to the
+lens will be refracted and travel parallel to the principal axis.
+• All rays emanating from P and entering the lens will converge at
+P’.
+
+54
+
+Camera Obscura
+
+• Used by painters since the Renaissance to
+produce perspective projections.
+• Direct ancestors to the first film cameras.
+
+Optional
+
+55
+
+Durer 1471-1528
+
+• He clearly knew all about the perspective
+transform!
+
+Optional
+
+56
+
+Shifting Perspective
+
+China, 8th century:
+•The focal point moves from one part
+of the image to the other.
+•The characters are always seen at
+eye-level as the picture is unrolled.
+•
+
+Optional
+
+57
+
+Thin Lens Equation
+
+X
+! Lens with focal distance f equivalent to pinhole
+camera with similar focal distance but larger
+aperture.
+58
+
+Aperture
+
+aperture
+
+iris diaphragm
+Image Plane
+
+• Diameter d=2a of the lens that is exposed to light.
+• The image plane is not located exactly where the rays meet.
+• The greater a, the more blur there will be.
+59
+
+Blur Circle
+
+The size of the blur circle is proportional to the aperture.
+60
+
+Depth of Field
+
+•
+•
+
+Range of object distances (d-d’) over which the
+image is sufficiently well focused.
+Range for which blur circle is less than the
+resolution of the sensor.
+
+Small focal length —> Large depth of field.
+61
+
+Proof
+Sensor Plane
+In Focus
+Out -ofPoint
+Focus Point
+blur circle
+
+aperture
+
+(circle of confusion)
+
+• Simple geometry:
+a
+rb = | s − s′|
+s′
+
+f
+f
+s′ − s =
+(d − d′)
+d − f d′ − f
+
+• Thin lens equation:
+1
+df
+1 1
++ = ⇒s=
+d s
+f
+d−f
+1
+1
+1
+d′f
++ = ⇒ s′ =
+d′ s′
+f
+d′ − f
+
+af 2
+rb =
+s′
+
+Large f and a —> Large rb.
+
+(d − d′)
+(d − f )(d′ − f )
+
+62
+
+Changing the Focal Length
+
+• Wide field of view
+• (small f)
+Wide field of view (small f):
+Large depth of field.
+
+Narrow field of view (large f):
+Small depth of field.
+
+af 2
+rb ∝
+s′
+Small f —> Small rb
+
+63
+
+Changing Aperture
+
+f/11
+
+f/2.8
+
+1/30sec
+
+Small aperture, long exposure:
+Large depth of field.
+
+1/500sec
+
+Large aperture, short exposure:
+Small depth of field.
+
+af 2
+rb ∝
+s′
+Small a —> Small rb
+
+64
+
+Distortions
+
+The lens is not exactly a “thin lens:”
+• Different wave lengths are refracted differently,
+• Barrel Distortion.
+65
+
+Chromatic Aberration
+
+Different wavelengths are refracted differently.
+66
+
+Radial Lens Distortion
+rd
+ru
+
+No Distortion
+
+Barrel Distortion
+
+Pincushion Distortion
+
+The distortion is a function of radial distance to the image center:
+
+ru = rd(1 + k1r 2 + k2r 4 + …)
+• rd: Observed distance of the projected point to the center.
+• ru: Distance of the point to the center in an image without
+distortions.
+67
+
+Lens Systems
+
+Aberrations can be minimized by aligning several
+lenses with well chosen
+• Shapes,
+• Refraction indices.
+
+68
+
+Undistorting
+
+Real image
+
+Synthetic image
+
+—> Create the synthetic image a sense without distortion would
+have produced.
+69
+
+Undistorting
+
+Once the image is undistorted, the camera projection
+can be formulated as a projective transform.
+!
+
+The pinhole camera model applies.
+70
+
+Fundamental Radiometric Equation
+
+Scene Radiance (Rad) : Amount of light radiation emitted
+from a surface point (Watt / m2 / Steradian).
+Image Irradiance (Irr): Amount of light incident at the
+image of the surface point (Watt / m2).
+π d 2 4
+Irr = ( ) cos (α)Rad ,
+4 f
+⇒ Irr ∝ Rad for small values of α .
+71
+
+Vignetting
+
+Images can get darker towards their edges because some
+of the light does not go through all the lenses.
+72
+
+De Vignetting
+
+—> As for geometric undistortion, undo vignetting to create an
+image that an ideal camera would have produced.
+Zheng et al., CVPR’08
+73
+
+Sensor Array
+•
+
+Photons free up electrons that
+are then captured by a potential
+well.
+
+•
+
+Charges are transferred row by
+row wise to a register.
+
+•
+
+Pixel values are read from the
+register.
+
+74
+
+Sensing
+
+Conversion of the “optical image” into an “electrical image”:
+
+! Quantization in
+• Time
+• Space
+
+75
+
+Sensors
+
+CCD
+
+CMOS
+
+•Charged Coupling Devices (CCD): Made through a special manufacturing process that
+allows the conversion from light to signal to take place in the chip without distortion.
+•Complimentary Metal Oxide Semiconductor (CMOS): Easier to produce and similar
+quality. Now used in most cameras except when quantum efficient pixels are needed,
+e.g. for astronomy.
+
+76
+
+In Short
+• Camera geometry can be modeled in terms
+of the pinhole camera model, which is
+linear in projective space.
+• Image radiance is roughly proportional to
+surface radiance and the two can be used
+interchangeably for our purposes.
+
+77
+
+

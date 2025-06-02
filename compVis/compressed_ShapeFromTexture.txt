@@ -1,0 +1,331 @@
+Shape from X
+
+• One image:
+• Shading
+• Texture
+
+• Two images or more:
+• Stereo
+• Contours
+• Motion
+
+1
+
+Shape From X
+
+• One image:
+• Shading
+• Texture
+
+• Two images or more:
+• Stereo
+• Contours
+• Motion
+
+2
+
+Shape From Texture
+
+Recover surface orientation or surface shape from
+image texture:
+• Assume texture ‘looks the same’ at different points
+on the surface.
+• This means that the deformation of the texture is
+due to the surface curvature.
+3
+
+Structural Shape Recovery
+
+Basic hypothesis: Texture
+resides on the surface and has
+no thickness.
+—> Computation under:
+• Perspective projection
+• Paraperspective projection
+• Orthographic projection
+4
+
+Reminder: Perspective Projection
+
+Pinhole geometry without image
+
+x
+u= f
+z
+y
+v= f
+z
+
+5
+
+Perspective Distortion
+
+The perspective projection distortion of the texture
+• depends on both depth and surface orientation,
+• is anisotropic.
+6
+
+Foreshortening
+
+Depth vs Orientation:
+• Infinitesimal vector [Δx,Δy,Δz] at location [x,y,z]. The
+image of this vector is
+
+y
+f
+x
+[Δx − Δz , Δy − Δz ]
+z
+z
+z
+• Two special cases:
+• Δz=0 :
+The object is scaled
+• Δx=Δy=0 :
+The object is foreshortened
+7
+
+Reminder: Orthographic Projection
+
+u = sx
+v = sy
+
+Special case of perspective projection:
+• Large f
+• Objects close to the optical axis
+Parallel lines mapped into parallel lines.
+8
+
+Orthographic Projection
+
+9
+
+Tilt And Slant
+
+10
+
+Orthographic Projection
+• Tilt: Derived from the
+image direction in which
+the surface element
+undergoes maximum
+compression.
+• Slant: Derived from the
+extent of this compression.
+11
+
+Cheetah
+
+A.M. Low, Phd Thesis, 2006
+
+12
+
+Perpendicular Lines
+
+• Orthographic projections of squares that
+are rotated with respect to each other in a
+plane inclined at ω=60° to the image plane.
+∥p1 /l1 × p2 /l2∥
+cos(ω)
+=
+2
+1 + cos2(ω)
+13
+
+Parapespective Projection
+
+Generalization of the orthographic projection:
+• Object dimensions small wrt distance to the
+center of projection.
+ Parallel projection followed by scaling
+14
+
+Parapespective Projection
+
+• For planar texels:
+
+Unknown surface normal.
+
+2
+
+Projected Area.
+
+f
+A'= − 3 n •[ x 0 y 0 z 0]A
+z0
+
+True Area.
+
+15
+
+Parapespective Projection
+Texels:
+• Image regions being brighter or
+darker than their surroundings.
+• Assumed to have the same area
+in space.
+
+
+Given enough texels, it
+becomes possible to estimate
+the normal.
+
+16
+
+Texture Gradient
+
+17
+
+<latexit sha1_base64="Bj1VvCh7Hey93msHA/JT3KlF6H4=">AAAIIHicfdXdbtMwFAfwdHx0lK8N7uAmYmJCqJqagQQ3SBuj2pc2BmvXTnWpHMdJrSZOlDjruixX8CQ8DXeIS3gIngE37QSnZyxSqxP//rbjOFHsyBeJqtV+luauXb9xszx/q3L7zt179xcWHxwlYRoz3mShH8ZtmybcF5I3lVA+b0cxp4Ht85Y92Bh764THiQhlQ40i3g2oJ4UrGFW6qbfwm0SJMIktzWUSxWGkQn1im4RUClh+YxKfu6qjW7knZEbjmI7yjDGWm2nPMpfNk+Lf0l101AlVos9mC21pTxZhOQlz6UzHMk0SC6+vup9UMa2evZi2Op3Z7lnVyTBVW/eG4Y/jEz1OOJysQfdzY8qyi1XlGTm/qMl5XuktLNVWasVh4sKaFkvG9DjoLd58RJyQpQGXivk0STpWLVJdfe1KMJ/nFZImPKJsQD3e0aWkAU+6WbExuflUtzimG8b6J5VZtP7bI6NBkowCWycDqvrJrI0bL7NOqtzX3UzIKFVcsslEbuqbevvGu2w6IuZM+SNdUBYLfa0m61N9Z5R+FirkHddrifmeHvd9xGOqwvh5RmjsBfQ012vzSHVcXRUU8iKoq/8FE+HpWPF/RSQoIsHlkYzU9SaO74BtZ/U8r1SI5EMWBgHVjxCx1/NOrTsNuNm6DkCvA68j3wS+iXwL+BbybeDbyHeB7yLfAb6DvAG8gbwJvIm8BbyFvA28jfwY+PF4A2YSFCQoGsEGbiNnwBlyxwEBBwVcFwRcFPCAe8j7wPvIhQABgQID4APkAfAAuQQukYfAQ+QKuEKeAk+RnwA/QT4EPkR+CvwU+Qj4CPkZ8DP0lgcbfwOM+tnG7AjBPgzso8AeDOyhwCEMHKJAAwb0q6i/JtbstwMXR6sr1ouV1Q8vl9beTr8r88Zj44nxzLCMV8aasWUcGE2DlRqls9Ln0pfy1/K38vfyj0l0rjTt89AAR/nXH5Z48s8=</latexit>
+
+Statistical Shape Recovery
+Mesure texture density as opposed to
+texel area, that is, the number of textural
+primitives per unit surface.
+Assuming the texture to be homogeneous,
+we have:
+
+ψn / b
+
+
+u1
+ψ =  ...
+un
+
+Unknown surface normal.
+
+t
+
+1
+... 
+1
+
+v1
+...
+vn
+
+b = [b1 , . . . , bn ]
+ψn
+)n=
+kψnk
+
+t
+Image coordinates.
+Function of density.
+
+18
+
+Machine Learning
+
+Input Image
+
+Superpixels
+
+Train a regressor to predict depth —> Noisy predictions
+
+19
+
+Markov Random Field (MRF)
+Graph with vertices and edges
+
+Assign values to the nodes to minimize
+E(Y) = ∑ϕ(yi ) + ∑ψ(yi , yj )
+i
+
+(i, j )
+
+unary
+
+pairwise
+
+—> Enforces consistency
+
+20
+
+Deep Learning with MRF
+
+Liu et al., PAMI 2016
+
+21
+
+Enforcing Task Consistency
+Depth
+
+Image
+
+Normals
+• A network can be trained to predict multiple things.
+• Forcing consistency across tasks increases robustness.
+Zamir et al. , CVPR’20
+
+22
+
+A Very Diverse Training Database Helps
+
+Eftekhar et al. , ICCV’21 vs Chen et al. , CVPR’20
+
+23
+
+.. and so does a Transformer Architecture
+
+Ranftl et al, ICCV’21
+
+24
+
+Using Transformers
+
+• Pros: Good at modeling long range relationships.
+• Cons: Flattening the patches looses some amount of information.
+Ranftl et al. , CVPR’21
+
+25
+
+Optional: Illusory Shape Distorsion
+
+People seem to be sensitive to orientation fields
+in the cases of both texture and shading.
+Flemming et al. PNAS’10
+
+26
+
+Optional: Shape from Smear
+Hypothesis: If orientation and scale fields are the key
+source of information for 3D shape perception, it should be
+possible to induce a vivid sense of 3D shape by creating 2D
+patterns with appropriate scale and orientation fields.
+Test: Use a technique known as Line Integral Convolution to
+smear the texture along specific orientations and scale
+appropriately.
+
+Flemming et al. PNAS’10
+
+27
+
+Optional: Scaling and Smearing
+
+Scaling:
+
+Smearing:
+
+28
+
+Optional: Inconsistent Stimulus
+
+The orientation field cannot be integrated
+➢ No depth perception.
+➢ Do we integrate in our heads?
+➢ Is this what the deep nets learn to do?
+29
+
+Strengths and Limitations
+
+Strengths:
+• Emulates an important human ability.
+Limitations:
+• Requires regular texture.
+• Involves very strong assumptions.
+• Deep learning can be used to weaken them.
+
+30
+
+

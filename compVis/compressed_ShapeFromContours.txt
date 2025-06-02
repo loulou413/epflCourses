@@ -1,0 +1,578 @@
+Shape from X
+
+• One image:
+• Texture
+• Shading
+
+• Two images or more:
+• Stereo
+• Contours
+• Motion
+
+1
+
+Edge-Based Stereo
+
+Matching edges yields stereo information but
+• Potential ambiguities
+• Edge detection is unreliable
+2
+
+EARLY STEREO APPROACH
+
+Original segments
+
+Matched segments
+
+• Pro:
+▪ Little computational power required.
+• Con:
+▪ Very ambiguous.
+• Partial remedy:
+▪ Use three or more images to disambiguate.
+Medioni & Nevatia, CVGIP’85
+
+3
+
+Modeling a Building
+
+• The deformable model
+encodes the endpoints of
+the segments.
+• Once it has been adjusted,
+the 3D shape of the
+building is known.
+
+4
+
+Modeling a Ridge Line in 3D
+
+Three different views
+Synthetic side view.
+
+5
+
+Automated Driving
+
+Detecting road markings.
+6
+
+Different Types of Contours
+Depth discontinuity contours
+
+Occluding contour
+
+• Depth discontinuity contours have well defined 3D locations.
+• Occluding contours do not and depend on viewpoint.
+7
+
+Occluding Contours
+
+Silhouettes let us carve the space:
+• on one side is the object,
+• on the other empty space.
+8
+
+Line of Sight
+
+The line of sight is tangent to the surface. At one point at
+least:
+• The distance to the line of sight is zero
+• The surface normal is perpendicular to it.
+9
+
+Combining Stereo and Silhouettes
+
+• Using stereo only, the sides of the face are not accurately
+reconstructed.
+• This can be improved by using the silhouettes.
+10
+
+Combining Stereo and Silhouettes
+
+—> Accurate 3D reconstruction even from very low resolution
+noisy images.
+11
+
+Augmented Reality
+
+• Track feature points on page
+• Fit page boundary
+• Detect and use silhouettes when they appear.
+• Replace original texture.
+12
+
+Robustness to Occlusions
+
+• Because we use several sources of information
+simultaneously, the algorithm is robust to occlusions.
+• This is a general principle. In a practical algorithm,
+you want redundancy.
+13
+
+Baseball and Bat
+
+14
+
+Modeling from many Photographs
+
+Hernandez et al., CVIU’04
+
+15
+
+Image Acquisition
+
+16
+
+Visual Hull from One Image
+
+• Silhouettes let us carve the space, on one side is
+the object and on the other empty space.
+• A closed image contour defines a cone inside which
+the object must be.
+• Everything else can be safely removed.
+17
+
+Visual Hull from Two Images
+
+The object must be within the intersection of the two cones
+defined by each individual silhouette.
+
+18
+
+Visual Hull from Many Images
+
+Octree volume
+
+Mesh
+
+Simplified mesh
+19
+
+Levels of Detail
+
+Bounding box Convex Hull
+
+Visual Hull
+
+Real Object
+
+20
+
+Visual Hull in 2D
+
+Concavities are lost
+21
+
+Visual Hulls in Real Time
+
+M. Niskanen et al. BMVC’05
+
+22
+
+Background Subtraction
+
+Visual hull
+
+23
+
+Using Silhouettes
+
+• Shapes inside the visual hull and such
+that the VH surface is tangent along
+viewing edges.
+• Better approximation of the observed
+object shape.
+
+E. Boyer & J.S. Franco CVPR’03
+
+24
+
+Visual Shapes
+
+25
+
+Texture Mapping
+
+… makes it look a lot better!
+26
+
+Combining Stereo and Silhouettes
+
+Real Surface
+
+Visual Hull
+
+Refinement
+27
+
+Reconstruction Pipeline
+
+Image
+Acquisition
+
+Camera
+Calibration
+
+Visual
+Hull
+
+Shape
+Refinement
+
+Texture
+Mapping
+
+28
+
+Image Acquisition
+Objects
+
+Calibration Grid
+
+Image Acquisition
+
+Calibration of the
+camera and
+turntable
+Image
+Sequence
+
+Camera
+Parameters
+
+29
+
+Circular Camera Motion Calibration
+
+Parameters to be estimated:
+–Rotation axis
+
+Rotation axis
+
+–Translation
+–Rotation angles
+–Focal distance
+–Principal point
+
+angles
+
+θ
+
+translation
+
+Principal point
+
+Focal distance
+
+30
+
+Influence of Calibration
+
+Correct Calibration
+
+Decalibrating
+
+When the cameras are ill calibrated:
+• the cones become inconsistent,
+• the visual hull becomes smaller.
+31
+
+Visual Hull Reprojection
+In theory:
+Silhouettes of
+Visual Hull
+
+⊆
+
+Original
+Silhouettes
+
+⊂
+
+Original
+Silhouettes
+
+In practice:
+Silhouettes of
+Visual Hull
+
+
+Calibration heuristic:
+
+Maximize overlap of the re-projected visual hulls
+and the silhouettes
+32
+
+Maximizing the Overlap
+
+When the cameras are well calibrated the overlap of the
+reprojected visual hull and the original silhouettes is largest.
+33
+
+Overlap as a Function of The Rotation Axis
+
+34
+
+Rotating Sequence
+
+35
+
+Visual Hull
+
+36
+
+Second Rotating Sequence
+
+37
+
+Combining Two Sequences
+
+RTS
+
+• Estimate rigid motion + scaling.
+• Intersect the two visual hulls.
+38
+
+Reconstruction Pipeline
+
+Image
+Acquisition
+
+Camera
+Calibration
+
+Visual
+Hull
+
+Shape
+Refinement
+
+Texture
+Mapping
+
+39
+
+3-D Deformable Model
+
+1.
+2.
+
+Use the visual hull to initialize the model.
+Maximize
+•
+•
+•
+
+color consistency,
+silhouette consistency,
+smoothness.
+
+40
+
+Color Consistency
+
+• Define a 3D grid that encloses the object.
+• Each voxel in this grid that lies on the image should project to
+image points that have the same color.
+• This makes it possible to assign to each voxel a “color consistency”
+score.
+41
+
+Silhouette Consistency
+
+The line of sight is tangent to the surface. At one point at
+least:
+• The distance to the line of sight is zero
+• The surface normal is perpendicular to it.
+42
+
+Smoothness Measures
+Laplacian
+
+Biharmonic
+
+m
+
+vi
+Δv = ∑ − v
+m
+i=1
+
+1
+
+2
+
+Δv=
+
+m
+
+1
+1+ ∑
+i=1 mm i
+
+Δ(Δv)
+
+v4
+v...
+
+v3
+
+v
+
+vm
+
+v2
+
+v1
+
+43
+
+Gradient Descent
+
+b
+vik+1 = vik + ∆t(rEtex (vik ) + βrEsil (vik ) + γrEreg (vik ))
+
+rEx
+β
+γ
+
+:
+:
+:
+
+Derivative of corresponding energy term x.
+Silhouette coefficient.
+Regularization coefficient.
+
+44
+
+Reconstruction
+
+83241 vertices, 166482 triangles
+45
+
+Reconstruction
+
+46
+
+Laser Scanner vs Images
+
+Minolta
+Laser
+Scanner
+
+Silhouettes
+
+385355 vertices
+770209 triangles
+
+233262 vertices
+466520 triangles
+
+47
+
+Reconstruction Pipeline
+
+Image
+Acquisition
+
+Camera
+Calibration
+
+Visual
+Hull
+
+Shape
+Refinement
+
+Texture
+Mapping
+
+48
+
+Texture Map
+
+Particl
+Norm
+Colo
+
+Color
+Surfac
+
+(x,y,z
+
+• The texture map is obtained by projecting individual surface
+points into the images and averaging their colors.
+• The reconstruction process ensures that these colors are
+consistent across images.
+49
+
+Textured Reconstruction
+
+57639 vertices, 115282 triangles
+50
+
+Textured Reconstruction
+
+47159 vertices, 94322 triangles
+
+51
+
+Texture Energy
+
+The computation uses an octree to save memory.
+52
+
+Generalization to Articulated Objects
+
+Alldieck et al, CVPR’18
+
+53
+
+Challenge
+
+• The person is moving.
+• The visual hull algorithm expects static
+and silhouettes accurate silhouettes.
+—> Transfer to a canonic pose and use
+a deep net to find the silhouettes.
+
+54
+
+Optional: Registering Visual Cones
+
+Ray in Canonical Frame
+
+Inverse Articulated Motion
+
+Ray
+
+55
+
+Optional: Objective Function
+
+Sum of point to line distances
+
+Prior Terms:
+- Symmetry
+- Prior on Shape
+- Surface
+Smoothness
+56
+
+Optional: Reconstruction
+
+57
+
+Strengths and Limitations
+Strengths:
+• Practical method for recovering shape.
+• Produces high quality texture maps.
+Limitations:
+• Requires many views.
+• Silhouettes must be precisely extractable.
+
+58
+
+

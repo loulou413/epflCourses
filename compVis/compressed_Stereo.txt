@@ -1,0 +1,973 @@
+SHAPE FROM X
+
+• One image:
+• Texture
+• Shading
+
+• Two images or more:
+• Stereo
+• Contours
+• Motion
+
+1
+
+Geometric Stereo
+
+Depth from two or more images:
+• Geometry of image pairs
+• Establishing correspondences
+2
+
+Triangulation
+
+Geometric Stereo: Depth from two images
+3
+
+Epipolar Line
+
+Epipolar Line
+
+Line on which the corresponding point must lie.
+4
+
+Epipolar Lines
+
+Three points shown
+as red crosses.
+
+Corresponding epipolar
+lines.
+5
+
+Epipolar Lines
+
+They can have any orientation.
+6
+
+Epipole
+
+E1 E2
+
+C1
+
+C2
+
+Point at which all epipolar lines intersect:
+➡ Located at the intersection of line joining
+optical centers and image plane.
+7
+
+Reminder: Calibration Grid
+
+xi = PXi
+
+• Take a picture of a calibration grid with each camera.
+• Infer the two projection matrices.
+• Compute the epipolar lines.
+
+8
+
+Without a Calibration Grid
+There is 3 × 3 matrix F such that for all corresponding points x ↔ x'
+x'T Fx = 0.
+Therefore, the epipolar line corresponding to x is l = Fx.
+Given a set of n point matches,we write
+⎡ u1'u1 u1'v1 u1' v1'u1 v1'v1 v1' u1 v1 1⎤
+⎥
+⎢
+:
+:
+:
+:
+:
+:
+: : ⎥f = 0.
+⎢ :
+⎢⎣u'n un u'n v n u'n v 'n un v 'n v n v 'n un v n 1⎥⎦
+→DLT or non − linear minimization.
+Hartley, Chap 9.
+
+9
+
+Epipolar Geometry
+In general:
+
+Parallel image planes
+
+Horizontal baseline
+
+10
+
+Rectification
+
+(u ' , v' )
+
+⎡U ' ⎤ ⎡ r11
+⎢ V ' ⎥ = ⎢r
+⎢ ⎥ ⎢ 21
+⎢⎣W '⎥⎦ ⎢⎣ r31
+
+(u , v)
+
+u' = U '
+v' = V '
+
+r12
+r22
+r32
+
+r13 ⎤ ⎡u ⎤
+r23 ⎥⎥ ⎢⎢ v ⎥⎥
+1 ⎥⎦ ⎢⎣1 ⎥⎦
+
+W'
+
+W'
+
+Reprojection into parallel virtual image planes:
+• Linear operation in projective coordinates
+• Real-time implementation possible
+11
+
+Rectification
+
+From intersecting epipolar lines …
+… to parallel ones.
+12
+
+Disparity
+
+d
+
+The horizontal shift along an epipolar line,
+inversely proportional to distance.
+13
+
+Superposed Images
+
+Red: Left Image
+Cyan: Right Image
+14
+
+Disparity vs Depth
+
+Left
+
+Right
+
+f (X − b /2)
+fY
+ul =
+, vl =
+Z
+Z
+f (X + b /2)
+fY
+ur =
+, vl =
+Z
+Z
+b
+d= f
+Z
+! Disparity is inversely
+proportional to depth.
+15
+
+Window Based Approach to
+Establishing Correspondences
+
+• Compute a cost for each Cn location.
+• Pick the lowest cost one.
+16
+
+Finding a Pattern in an Image
+Straightforward approach:
+
+Pattern
+
+Move pattern everywhere and
+compare with image.
+But how?
+
+17
+
+Sum of Square Differences
+• Subtract pattern and image pixel by pixel and
+add squares:
+ssd(u,v) =
+
+∑ [I(u + x,v + y) − P(x, y)]
+
+2
+
+(x,y )∈N
+
+• If identical ssd=0, otherwise ssd >0
+!Look for minimum of ssd with respect to u
+and v.
+
+Minimum ssd value
+
+18
+
+Correlation
+ssd(u,v) =
+
+∑ [I(u + x,v + y) − P(x, y)]
+
+2
+
+(x,y )∈N
+
+=
+
+2
+2
+I(u
+(
++
+x,v
+,
++
+y)
+)
++
+P(x,
+(
+,
+y)
+)
+− 2 ∑ I(u
+( + x,v
+, + y)P(x,
+) ( , y))
+∑
+∑
+(x,y )∈N
+
+Sum of squares of
+the window
+(slow varying)
+
+(x,y )∈N
+
+Sum of squares of
+the pattern
+(constant)
+
+(x,y )∈N
+
+Correlation
+
+ssd(u,v) is smallest when correlation is largest
+! Correlation measures similarity
+19
+
+Synthetic Example
+
+I
+
+I correlated with P
+P
+
+❋
+
+=
+
+20
+
+Real World Example
+Correlation
+
+Image
+
+Pattern
+
+• The correlation value depends on the local
+gray levels of the pattern and image window.
+• Need to normalize.
+21
+
+Normalized Cross Correlation
+
+∑ [I(u + x,v + y) − I ][P(x, y) − P ]
+ncc(u,v) =
+
+(x,y )∈N
+2
+
+∑ [I(u + x,v + y) − I ] ∑ [P(x, y) − P ]
+(x,y )∈N
+
+2
+
+(x,y )∈N
+
+• Between -1 and 1
+• Invariant to linear transforms
+• Independent of the average gray levels of the
+pattern and the image window
+22
+
+Normalized Example
+Image
+
+Normalized Correlation
+
+Pattern
+
+Point of maximum correlation
+
+23
+
+Searching along Epipolar Lines
+
+ncc
+
+ncc
+or
+d
+
+d
+24
+
+Outdoor Scene
+
+scanline
+
+SSD
+NCCR
+
+25
+
+Ambiguities
+
+scanline
+
+—> Repetitive patterns, textureless areas,
+and occlusions can cause problems.
+
+26
+
+Occlusions
+
+• Some points are only visible in one image.
+• They cannot be matched.
+27
+
+Ignoring Occluded Pixels
+Some pixels have no corresponding pixel in the other image:
+
+Left right consistency test:
+
+28
+
+Disparity Map
+
+Black pixels: No disparity.
+29
+
+Ground Level Stereo
+
+30
+
+Combining Disparity Maps
+
+• Merging several disparity maps.
+• Smoothing the resulting map.
+Fua, MVA’91
+
+31
+
+Variational Approach
+
+32
+
+Solving the Variational Problem
+Discretize the integral and solve a linear problem:
+
+33
+
+Real-Time Implementation
+
+• Many duplicated computations.
+• Can be implemented so that it is fast.
+• Speed is independent from window size.
+34
+
+Then ….
+
+1993:
+256x256,
+60 disps,
+7 fps.
+Faugeras et al., INRIA’93
+
+35
+
+… and more Recently
+
+Subaru's EyeSight System
+http://www.gizmag.com/subaru-new-eyesight-stereoscopic-vision-system/14879/
+
+2011:
+1312x688,
+176 disps,
+160 fps.
+Saneyoshi, CMVA’11
+
+36
+
+... and even More Recently
+Replace Normalized Cross Correlation by
+Siamese nets designed to return a similarity
+score for potentially matching patches.
+
+Zbontar and Lecun, JMLR’16
+
+37
+
+Comparative Results
+Improved performance on
+test data but
+• How does it generalize to
+unseen images?
+• Is it necessary for this kind
+of application?
+Not clear yet.
+
+38
+
+Tesla’s non LiDar Approach
+
+https://www.therobotreport.com/researchers-back-teslas-non-lidar-approach-to-self-driving-cars/
+
+RobotReport’19
+
+39
+
+3D Point Cloud
+
+Disparity map
+
+We can transform each triplet (u,v,d)
+into a 3D point (x,y,z).
+—> A 3D point cloud.
+
+40
+
+Merging Point Clouds
+We can treat image pairs in
+a video sequence as stereo
+pairs and compute a 3D
+cloud for each.
+
+We can then merge the
+3D point clouds.
+—> Potential dense
+models when we have
+enough images.
+41
+
+Perseverance 2022
+
+Max distance in a single day:
+219m (Opportunity, 2008)
+319m (Perseverance, 2022)
+Impressive when 260 million kilometers away!
+42
+
+Window Size
+Small windows:
+• Good precision
+• Sensitive to noise
+Large windows:
+• Diminished precision
+• Increased robustness to noise
+! Same kind of trade-off as for edge-detection.
+
+43
+
+Window Size
+
+15x15
+
+7x7
+
+44
+
+Scale-Space Revisited
+• Using a small window on a
+reduced image is equivalent to
+using a large one on the
+original image.
+• Using difference of Gaussian
+images is an effective way of
+achieving normalization.
+
+Gaussian
+pyramid
+
+Difference of
+Gaussians
+
+!It becomes natural to use
+results obtained using low
+resolution images to guide the
+search at higher resolution.
+
+45
+
+Fronto-Parallel Assumption
+• The disparity is assumed to be the same over the entire
+correlation window, which is equivalent to assuming constant
+depth.
+
+Invalid assumption
+Valid assumption
+! Ok when the surface faces the camera but breaks down
+otherwise.
+
+46
+
+Multi-View Stereo
+
+Multi-view reconstruction setup
+
+—> Adjust correlation window
+shapes to handle orientation.
+Texture-Mapped
+Shaded 3D Model
+3D Model
+Furukawa&Ponce ECCV’06
+
+47
+
+Flying Cameras
+
+48
+
+Multi-View Stereo
+
+Aganj et al. ICCV’09
+
+49
+
+Matterhorn
+
+50
+
+Face Reconstruction
+
+Beeler et al. SIGGRAPH’10
+
+51
+
+Face Reconstruction
+
+Beeler et al. SIGGRAPH’10
+
+52
+
+Dynamic Shape
+
+Valgaerts et al. SIGGRAPH Asia’12
+
+53
+
+Scene Flow
+
+Correspondences across
+cameras and across time
+Stereo Only Stereo + Flow
+
+54
+
+Refining using Shape From Shading
+
+Shape-from-shading can be used to refine the
+shape and provide high-frequency details.
+55
+
+Using Many Cameras
+
+Using 124 calibrated cameras with hardware synchronization
+
+Smith et al. , SIGGRAPH Asia’20
+
+56
+
+Uncertainty
+
+58
+
+<latexit sha1_base64="yVfwQB3P9qgafcPqGMd2jVwxjyI=">AAAGd3icbZRbT9swFIBTBh3LLpTtkYdZq0BoElXCy/YyiY5b2bh0pYXSukOO47QRcRISF6ii/KG978fsp+xtLi1ST88sWTo533diy8eyEwd+qizrT2Hh2eJS8fnyC/Plq9dvVkqrby/SaJhw0eJRECVth6Ui8EPRUr4KRDtOBJNOIC6dm90xv7wTSepHYVONYtGTrB/6ns+Z0qnr0m/qiL4fZuI2ZEnCRh9z0yUb5IueHqFewnjm5FknJ5SatOH3B0pr0T3pYMnNybw1YdQVgWKkkz9F2pxUb+n6mR/83M51eusp1dHfmUecnJhUhO7MHq9LZatiPQ6CA3salI3pqF+vLv6ibsSHUoSKByxNu7YVq17GEuXzQOQmHaYiZvyG9UVXhyGTIu1lj+ebk3WdcYkXJXqGijxmZysyJtN0JPVG1yVTg3SejZP/Y92h8j73Mj+Mh0qEfLKQNwyIisi4WcT1E8FVMNIB44mv90r4gOmzUbqlJg3FPY+kZPpsqFPNu1Yvo+NFHC+r5vkc3wV8F/E24G3EHwB/QPwK8CvER4CPED8C/AjxW8BvEd8DfA/xE8BPEK8DXkf8DvA7xKUEgkSCGgjFgEMnqXmxMSM5WQPxfcD3Ee8A3tEcCnLmKnAW4Lsg96GAlpA1KNSQcACFAyQcQ+EYCW0ooAspT6CAOirPoHCGhFMonCLhHArnSGhCoYmEQygcIqEBhXG39etmz79lOLjYrthWxf6xXd75On3nlo0144OxadjGJ2PHqBl1o2XwwlqhWvhW+L70t/i+uFHcnKgLhWnNOwOMov0P7RdLcw==</latexit>
+
+Precision vs Baseline
+b
+d = f
+Z
+b
+⇒Z = f
+d
+δZ
+b
+Z2
+⇒
+= −f 2 = −
+δd
+d
+fb
+
+• Beyond a certain depth stereo stops being useful.
+• Precision is proportional to baseline length.
+59
+
+Short vs Long Baseline
+
+Short baseline:
+• Good matches
+• Few occlusions
+• Poor precision
+
+Long baseline:
+• Harder to match
+• More occlusions
+• Better precision
+60
+
+Mars Rover
+
+There are four cameras!
+61
+
+Video-Based Motion Capture
+
+Fitting an articulated body model to stereo
+data.
+Plankers & Fua, PAMI’03
+
+62
+
+Trinocular Stereo
+
+63
+
+Multi-Camera Configurations
+3 cameras give both robustness and
+precision.
+4 cameras give additional redundancy.
+
+3 cameras in a T arrangement allow
+the system to see vertical lines.
+
+64
+
+Kinect: Structured Light
+
+▪ The Kinect camera projects a IR pattern and
+measures depth from its distortion.
+▪ Same principle but the second camera is
+replaced by the projector.
+65
+
+Faces from Low-Resolution Videos
+
+•No calibration data
+•Relatively little texture
+•Difficult lighting
+66
+
+Simple Face Model
+
+67
+
+PCA Face Model
+
+99
+
+S = S̄ +
+
+αS
+∑ i j
+i=1
+
+Average shape
+S : Shape vector
+αi : Shape coefficients
+S:
+i
+
+Blanz & Vetter, SIGGRAPH’99
+
+68
+
+3D Face Modeling
+
+69
+
+Correspondences
+
+70
+
+Transfer Function
+
+2
+
+2
+
+j
+k
+F3 (A,Ci−1,Ci ,Ci+1 ) = ∑ Δpi−1,i
++ ∑ Δpi,i+1
+j∈Qi −1
+
+k∈Qi
+
+71
+
+Model Based Bundle Adjustment
+
+Adjusting the PCA coefficients to minimize the objective function
+yields an accurate face reconstruction from low-resolution images.
+
+72
+
+Model from Old Movie
+
+Adjusting the PCA coefficients to minimize the objective function
+yields an accurate face reconstruction from low-resolution images.
+73
+
+Limitations of Window Based Methods
+
+Ground truth
+
+Correlation result
+74
+
+Energy Minimization
+Disparity
+continuous in
+most places,
+
+except at
+depth
+discontinuities
+
+1. Matching pixels should have similar intensities.
+2. Most nearby pixels should have similar disparities
+! Minimize
+X
+X
+X
+2
+2
+[D(x+1, y)−D(x, y)] +µ
+[D(x, y+1)−D(x, y)]2
+[I2 (x+D(x, y), y)−I1 (x, y)] +λ
+
+75
+
+Reminder: Graph-Based Segmentation
+
+•
+
+•
+
+A high probability of being a mitochondria can be
+represented by a strong edge connecting a
+supervoxel to the source and a weak one to the sink.
+And conversely for a low probability.
+76
+
+Reminder: Graph-Based Segmentation
+
+• Another classifier can be trained to assign a high-weight to edges
+connecting supervoxels belonging to the same class and a low one to
+others.
+• Graph-cut can then be used to partition the pixels into separate
+regions.
+
+77
+
+Graph Cut for Stereo
+1
+
+2
+
+… k
+disparities
+pixels
+
+1. Stereo is a labeling problem. —> Use graph cut.
+2. Connect each pixel to each possible disparity value.
+78
+
+Assigning Edge Weights
+2
+
+Constant weight
+1
+
+Assign a weight that is inversely proportional to |I2(x+1,y)-I1(x,y)|
+Assign a weight that is inversely proportional to |I2(x+2,y)-I1(x,y)|
+……
+
+79
+
+Minimizing the Objective Function
+
+Minimize:
+X
+X
+X
+2
+2
+[D(x+1, y)−D(x, y)] +µ
+[D(x, y+1)−D(x, y)]2
+[I2 (x+D(x, y), y)−I1 (x, y)] +λ
+
+Graph cut algorithm:
+• Guarantees an absolute minimum only when there are only two
+possible disparities.
+• Effective heuristics (a-expansion, a-b swap) otherwise.
+
+80
+
+α-Expansion
+1
+
+2
+
+3
+
+…
+
+k
+
+…
+…
+depths
+
+• Nodes having a label different than α
+can either keep it or switch to α.
+• Edges between neighbors are updated
+according to the new labeling.
+• Other edges remain unchanged.
+
+pixels
+
+Boykov et al, ICCV ‘99
+
+81
+
+Example: 3 Expansion
+3
+
+1
+
+2
+
+3
+
+…
+
+3
+
+k
+
+…
+…
+depths
+
+3
+
+3
+
+pixels
+Connect all nodes to
+both 3 and 3
+
+Find minimal cut
+
+82
+
+Example: 3 Expansion
+
+1
+
+2
+
+3
+
+… k
+
+1
+
+2
+
+3
+
+… k
+
+…
+
+…
+…
+
+…
+
+83
+
+Graph Cut Algorithm
+
+1.
+2.
+
+Start with an arbitrary labeling
+For every label α in {1,…,L}
+Find the α-Expansion that minimizes the function
+Update the graph by adding and erasing edges
+
+3.
+4.
+
+Quit when no expansion improves the cost
+Induce pixel labels
+
+84
+
+NCC vs Graph-Cut
+
+Normalized correlation
+
+Graph Cut
+
+85
+
+NCC vs Graph Cut
+left image
+
+true disparities
+
+Normalized correlation
+
+Graph Cuts
+
+86
+
+NCC vs Graph Cut
+
+Strengths and Limitations
+Strengths:
+• Practical method for depth recovery.
+• Runs in real-time on ordinary hardware.
+Limitations:
+• Requires multiple views.
+• Only applicable to reasonably textured objects.
+
+88
+
+
